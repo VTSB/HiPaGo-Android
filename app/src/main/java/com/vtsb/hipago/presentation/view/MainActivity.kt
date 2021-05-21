@@ -1,7 +1,8 @@
-package com.vtsb.hipago
+package com.vtsb.hipago.presentation.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.vtsb.hipago.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
