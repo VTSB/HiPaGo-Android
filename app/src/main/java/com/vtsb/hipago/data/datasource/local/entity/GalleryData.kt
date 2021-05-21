@@ -2,6 +2,7 @@ package com.vtsb.hipago.data.datasource.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import org.json.JSONObject
 import java.sql.Date
 
 
@@ -11,5 +12,5 @@ data class GalleryData (
     @PrimaryKey val id: Long,
     val title: String,
     val date: Date,
-    val etcData: String
+    val extraData: JSONObject
     )
