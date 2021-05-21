@@ -2,6 +2,7 @@ package com.vtsb.hipago.data.datasource.local.entity
 
 import androidx.room.Entity
 import androidx.room.Index
+import androidx.room.PrimaryKey
 import com.vtsb.hipago.domain.entity.TagType
 
 @Entity(
@@ -14,7 +15,7 @@ import com.vtsb.hipago.domain.entity.TagType
     ]
 )
 data class TagData(
-    val id: Long,
+    @PrimaryKey(autoGenerate = true) val tagId: Long,
     val type: TagType,
     val name: String,
     val amount: Long)

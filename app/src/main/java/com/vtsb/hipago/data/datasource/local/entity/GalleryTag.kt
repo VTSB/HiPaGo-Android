@@ -21,7 +21,7 @@ import androidx.room.PrimaryKey
         ),
         ForeignKey(
             entity = TagData::class,
-            parentColumns = ["id"],
+            parentColumns = ["tagId"],
             childColumns = ["tag"]
         )
     ]

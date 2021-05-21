@@ -2,6 +2,7 @@ package com.vtsb.hipago.data.datasource.local.entity
 
 import androidx.room.Entity
 import androidx.room.Index
+import androidx.room.PrimaryKey
 
 
 @Entity(
@@ -12,7 +13,7 @@ import androidx.room.Index
     ]
 )
 data class LanguageTag(
-    val id: Long,
+    @PrimaryKey val id: Long,
     val name: String,
     val local: String,
 )

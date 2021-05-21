@@ -2,6 +2,7 @@ package com.vtsb.hipago.data.datasource.local.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "tag_data_local",
@@ -9,7 +10,7 @@ import androidx.room.ForeignKey
     foreignKeys = [
         ForeignKey(
             entity = TagData::class,
-            parentColumns = ["id"],
+            parentColumns = ["tagId"],
             childColumns = ["id"]
         ),
         ForeignKey(
@@ -20,7 +21,7 @@ import androidx.room.ForeignKey
     ]
 )
 data class TagDataLocal(
-    val id: Long,
+    @PrimaryKey val id: Long,
     val language: Long,
     val local: String
 )
