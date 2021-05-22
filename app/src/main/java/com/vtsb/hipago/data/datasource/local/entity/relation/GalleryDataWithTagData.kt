@@ -1,14 +1,17 @@
 package com.vtsb.hipago.data.datasource.local.entity.relation
 
 import androidx.room.Embedded
+import androidx.room.Junction
 import androidx.room.Relation
 import com.vtsb.hipago.data.datasource.local.entity.GalleryData
+import com.vtsb.hipago.data.datasource.local.entity.TagData
 
-data class LocalGalleryData (
+data class GalleryDataWithTagData(
     @Embedded val galleryData: GalleryData,
     @Relation(
         parentColumn = "id",
-        entityColumn = "id",
+        entityColumn = "tagId",
+        associateBy = Junction(GalleryDataTagDataCrossRef::class)
     )
-    val tags: List<GalleryDataWithLocalTagData>
+    val tagDataList: List<TagData>
 )

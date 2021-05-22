@@ -6,13 +6,13 @@ import org.json.JSONObject
 class JSONConverter {
 
     @TypeConverter
-    fun fromJSONString(value: String?): JSONObject? {
+    fun toJSONObject(value: String?): JSONObject? {
         return value?.let { JSONObject(value) }
     }
 
     @TypeConverter
-    fun jsonObjectToString(date: JSONObject?): String? {
-        return date?.toString()
+    fun fromJSONObject(jsonObject: JSONObject?): String? {
+        return jsonObject?.toString()
     }
 
 }

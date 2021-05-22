@@ -6,10 +6,12 @@ import org.json.JSONObject
 import java.sql.Date
 
 
-@Entity(tableName = "gallery_data",
-    inheritSuperIndices = true)
+@Entity(
+    tableName = "gallery_data",
+    inheritSuperIndices = true,
+)
 data class GalleryData (
-    @PrimaryKey val id: Long,
+    @PrimaryKey public val id: Long,
     val title: String,
     val date: Date,
     val extraData: JSONObject

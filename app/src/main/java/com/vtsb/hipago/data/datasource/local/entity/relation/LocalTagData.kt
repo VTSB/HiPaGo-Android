@@ -9,7 +9,7 @@ data class LocalTagData(
     @Embedded val tagData: TagData,
     @Relation(
         parentColumn = "tagId",
-        entityColumn = "id"
+        entityColumn = "tagId"
     )
     val tagDataLocal: TagDataLocal
 )
