@@ -1,4 +1,4 @@
-package com.vtsb.hipago.data.datasource.local.typeconverter
+package com.vtsb.hipago.data.datasource.local.converter
 
 import androidx.room.TypeConverter
 import java.sql.Date

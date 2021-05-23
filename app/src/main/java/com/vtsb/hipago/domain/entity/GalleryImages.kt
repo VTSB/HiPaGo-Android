@@ -1,3 +1,6 @@
 package com.vtsb.hipago.domain.entity
 
-data class GalleryImages()
+data class GalleryImages(
+    val id: Long,
+    val images: List<Map<ImageType, GalleryImage>>
+)

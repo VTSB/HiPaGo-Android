@@ -2,9 +2,19 @@ package com.vtsb.hipago.util
 
 object Constants {
 
-    const val BASE_HITOMI = "hitomi.la"
-    const val URL_HITOMI = "https://$BASE_HITOMI/"
-    const val URL_LTN_HITOMI = "https://ltn.$BASE_HITOMI/"
+    // ai
+    // mi
+    // bi
+
+
+    const val BASE_MI = "hitomi.la"
+    const val URL_MI = "https://$BASE_MI/"
+    const val URL_LTN_MI = "https://ltn.$BASE_MI/"
+
+    const val BUFFER_SIZE = 1024
+
+    //
+
 
 
 }

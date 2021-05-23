@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
     ]
 )
 data class LanguageTag(
-    @PrimaryKey val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long?,
     val name: String,
     val local: String,
 )
