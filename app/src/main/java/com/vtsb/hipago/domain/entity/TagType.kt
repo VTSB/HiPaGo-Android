@@ -1,7 +1,7 @@
 package com.vtsb.hipago.domain.entity
 
 enum class TagType(
-    val no: Byte,
+    val id: Byte,
     val otherName: String
 ) {
     BEFORE(0, "before"),

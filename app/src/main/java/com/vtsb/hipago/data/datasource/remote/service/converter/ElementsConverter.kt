@@ -7,15 +7,16 @@ import com.vtsb.hipago.data.datasource.remote.entity.TagWithAmount
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.domain.entity.TagType
-import com.vtsb.hipago.util.helper.Wrapper
+import kotlinx.coroutines.flow.StateFlow
 import org.jsoup.select.Elements
 import java.text.ParseException
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 
 class ElementsConverter @Inject constructor(
     private val stringConverter: StringConverter,
-    private val optionLRThumbnail: Wrapper<Boolean>
+    @Named("optionLRThumbnailMSF") private val optionLRThumbnail: StateFlow<Boolean>
 ) {
 
 
@@ -29,7 +30,6 @@ class ElementsConverter @Inject constructor(
         } else null
     }
 
-    @Throws(ParseException::class)
     fun toGalleryBlockDetailed(elements: Elements, no: Long, url: String): GalleryBlock {
 
         val related = toRelatedElements(elements.select("script"))
