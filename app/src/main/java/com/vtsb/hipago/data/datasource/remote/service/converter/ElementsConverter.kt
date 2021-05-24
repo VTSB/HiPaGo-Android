@@ -69,26 +69,14 @@ class ElementsConverter @Inject constructor(
 
     @Throws(ParseException::class)
     fun toGalleryBlockNotDetailed(elements: Elements, no: Long): GalleryBlockWithOtherData {
-        //var elements = elements
-        val related: List<Int>
 
-        //e = elements.select(".dj-img1 img").get(0);
         val thumbnail: String = toThumbnail(elements.select("img"))
-
-        // related
-        related = ArrayList()
-
-        // title
+        val artists = getTexts(elements.select(".artist-list a"))
         val titleElement = elements.select("h1 a")
         val title: String = getText(titleElement)
         val detailedURL = titleElement.attr("href")
 
-        // artists
-        val artists = getTexts(elements.select(".artist-list a"))
-
         val contentElements = elements.select(".dj-content")
-
-        // date
         val dateString = contentElements.select("p").text()
         val date = stringConverter.toDate(dateString.substring(0, dateString.lastIndexOf(':')))
 
@@ -108,7 +96,7 @@ class ElementsConverter @Inject constructor(
                         TagType.ARTIST to artists,
                         TagType.SERIES to series,
                         TagType.TAG to tags
-                    ), thumbnail, related
+                    ), thumbnail, ArrayList()
                 ), detailedURL)
     }
 
@@ -138,8 +126,7 @@ class ElementsConverter @Inject constructor(
         val ele = elements.select("#lang #lang-list a")
         val size = ele.size
 
-        // for skip (all)
-        var i = 1
+        var i = 1 // for skip (all) language
         while (i < size) {
             val e = ele[i]
             val original = e.text()

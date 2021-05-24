@@ -31,13 +31,6 @@ interface GalleryDataService {
         @Header("range") range: String? = null
     ): Response<ResponseBody>
 
-//    @GET("{type}/{tag}-{language}.nozomi")
-//    fun getNumbers(
-//        @Path("type") type: String,
-//        @Path("tag") tag: String,
-//        @Path("language") language: String
-//    ): Response<ResponseBody>
-
     @GET("{name}/version")
     fun getIndexVersion(@Path("name") name: String, @Query("") time: Long): Call<ResponseBody>
 

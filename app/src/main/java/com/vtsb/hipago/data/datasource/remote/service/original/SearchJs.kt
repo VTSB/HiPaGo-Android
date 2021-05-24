@@ -39,8 +39,7 @@ class SearchJs @Inject constructor(
 //        SearchJs.querySplitter = querySplitter
 //    }
 
-    @Throws(InterruptedException::class, IOException::class, NoSuchAlgorithmException::class)
-    fun handle_key_up_in_search_box(query: String?): GetSuggestionForQuery {
+    fun handle_key_up_in_search_box(query: String): GetSuggestionForQuery {
 
         // tag_index_version
         var query = query
@@ -68,7 +67,6 @@ class SearchJs @Inject constructor(
         ) else r
     }
 
-    @Throws(IOException::class)
     fun get_url_at_range(url: String, range: LongArray): ByteArray {
         // todo : use more optimized network connection request
         val response: Response<ResponseBody> = galleryDataService.get_url_at_range(url, "bytes=" + range[0] + "-" + range[1]).execute()
@@ -148,7 +146,6 @@ class SearchJs @Inject constructor(
             subnode_addresses)
     }
 
-    @Throws(IOException::class)
     fun B_Search(field: String, key: ShortArray, node: Node?, serial: Int): Data? {
         if (node == null || node.keys.isEmpty()) {
             return null
@@ -203,7 +200,6 @@ class SearchJs @Inject constructor(
         return true
     }
 
-    @Throws(IOException::class)
     fun get_node_at_address(field: String, address: Long, serial: Int): Node? {
         if (serial != 0 && serial != searchlibJs.search_serial) {
             return null
@@ -232,7 +228,6 @@ class SearchJs @Inject constructor(
         return decode_node(nodedata)
     }
 
-    @Throws(IOException::class)
     fun get_suggestions_from_data(field: String, data: Data?): Array<Suggestion> {
         // todo : not checked correctly. check detail later
         if (data == null) {
