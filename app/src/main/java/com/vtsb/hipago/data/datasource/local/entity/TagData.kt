@@ -16,7 +16,7 @@ import com.vtsb.hipago.domain.entity.TagType
     ]
 )
 data class TagData(
-    @PrimaryKey(autoGenerate = true) val tagId: Long,
+    @PrimaryKey(autoGenerate = true) val tagId: Long? = null,
     val type: TagType,
     val name: String,
     val amount: Long)
