@@ -7,9 +7,9 @@ object Constants {
     // bi
 
 
-    const val BASE_MI = "hitomi.la"
-    const val URL_MI = "https://$BASE_MI/"
-    const val URL_LTN_MI = "https://ltn.$BASE_MI/"
+    const val MI_BASE = "hitomi.la"
+    const val MI_URL = "https://$MI_BASE/"
+    const val MI_URL_LTN = "https://ltn.$MI_BASE/"
 
     const val BUFFER_SIZE = 1024
 
