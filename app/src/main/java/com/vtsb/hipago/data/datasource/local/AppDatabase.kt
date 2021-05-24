@@ -7,6 +7,7 @@ import com.vtsb.hipago.data.datasource.local.converter.DateConverter
 import com.vtsb.hipago.data.datasource.local.converter.GalleryBlockTypeConverter
 import com.vtsb.hipago.data.datasource.local.converter.JSONConverter
 import com.vtsb.hipago.data.datasource.local.dao.GalleryBlockDao
+import com.vtsb.hipago.data.datasource.local.dao.TagDao
 import com.vtsb.hipago.data.datasource.local.entity.*
 import com.vtsb.hipago.data.datasource.local.entity.relation.GalleryDataTagDataCrossRef
 
@@ -26,8 +27,10 @@ import com.vtsb.hipago.data.datasource.local.entity.relation.GalleryDataTagDataC
     GalleryBlockTypeConverter::class,
     JSONConverter::class,
 ])
-public abstract class AppDatabase : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
 
-    public abstract fun galleryBlockDao(): GalleryBlockDao
+    abstract fun galleryBlockDao(): GalleryBlockDao
+
+    abstract fun tagDao(): TagDao
 
 }

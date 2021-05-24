@@ -100,7 +100,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     // dagger
-    def dagger_version = "2.33"
+    def dagger_version = "2.35.1"
     def dagger_android_version = "2.29.1"
     implementation "com.google.dagger:dagger:$dagger_version"
     //implementation "com.google.dagger:dagger-android:$dagger_android_version"
@@ -127,7 +127,11 @@ dependencies {
 
     implementation 'org.jsoup:jsoup:1.13.1'
     implementation 'com.google.guava:guava:30.0-jre'
+    testImplementation "com.google.dagger:hilt-android-testing:$dagger_version"
+    kaptTest "com.google.dagger:hilt-android-compiler:$dagger_version"
 
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
