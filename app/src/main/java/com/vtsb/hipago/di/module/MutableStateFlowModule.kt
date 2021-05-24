@@ -24,6 +24,13 @@ class MutableStateFlowModule {
 
     @Provides
     @Singleton
+    @Named("languageNumberMSF")
+    fun provideLanguageNumberMSF(): MutableStateFlow<Long> =
+        MutableStateFlow(-1)
+
+
+    @Provides
+    @Singleton
     @Named("useLanguageMSF")
     fun provideUseLanguageMSF(@Named("MSF") languageWrapper: MutableStateFlow<String>): MutableStateFlow<String> =
         MutableStateFlow(languageWrapper.value)
