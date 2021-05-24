@@ -8,8 +8,9 @@ import org.json.JSONObject
 import java.sql.Date
 import java.text.ParseException
 import java.util.*
+import javax.inject.Inject
 
-class JSONObjectConverter(
+class JSONObjectConverter @Inject constructor(
     private val stringConverter: StringConverter
 ) {
 

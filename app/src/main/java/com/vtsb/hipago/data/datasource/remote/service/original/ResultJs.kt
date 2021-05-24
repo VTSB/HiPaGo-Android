@@ -6,8 +6,9 @@ import java.io.IOException
 import java.security.NoSuchAlgorithmException
 import java.util.*
 import java.util.regex.Pattern
+import javax.inject.Inject
 
-class ResultJs(
+class ResultJs @Inject constructor(
     private val searchJs: SearchJs,
     private val queryHelper: QueryHelper
 ) {

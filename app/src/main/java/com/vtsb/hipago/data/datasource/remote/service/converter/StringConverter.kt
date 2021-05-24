@@ -7,8 +7,11 @@ import java.net.URLEncoder
 import java.sql.Date
 import java.text.ParseException
 import java.util.*
+import javax.inject.Inject
 
-class StringConverter(private val dateHelper: DateHelper) {
+class StringConverter @Inject constructor(
+    private val dateHelper: DateHelper
+) {
 
     @Throws(ParseException::class)
     fun toDate(dateString: String): Date {
@@ -16,7 +19,7 @@ class StringConverter(private val dateHelper: DateHelper) {
         return Date(date.time)
     }
 
-    fun toLanguageTagList(languageFile: String): List<LanguageTag>? {
+    fun toLanguageTagList(languageFile: String): List<LanguageTag> {
         val languageTagList: MutableList<LanguageTag> = ArrayList<LanguageTag>()
         val languageBitNumberHashMap = HashMap<String, Int>()
         var start: Int
@@ -51,7 +54,7 @@ class StringConverter(private val dateHelper: DateHelper) {
         return languageTagList
     }
 
-    fun toURL(url: String?): String? {
+    fun toURL(url: String): String {
         try {
             return URLEncoder.encode(url, "UTF-8")
         } catch (e: UnsupportedEncodingException) {

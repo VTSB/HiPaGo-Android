@@ -2,20 +2,16 @@ package com.vtsb.hipago.data.datasource.remote.service.original
 
 import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.ResponseBodyConverter
-import io.reactivex.Single
-import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import retrofit2.Call
 import java.io.IOException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
+import javax.inject.Inject
 import kotlin.experimental.and
 
-class SearchlibJs(
+class SearchlibJs @Inject constructor(
     private val galleryDataService: GalleryDataService,
     private val responseBodyConverter: ResponseBodyConverter
 ) {

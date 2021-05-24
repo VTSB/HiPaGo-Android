@@ -12,9 +12,10 @@ import java.io.IOException
 import java.security.NoSuchAlgorithmException
 import java.util.*
 import java.util.regex.Pattern
+import javax.inject.Inject
 import kotlin.experimental.and
 
-class SearchJs(
+class SearchJs @Inject constructor(
     private val commonJs: CommonJs,
     private val searchlibJs: SearchlibJs,
     private val galleryDataService: GalleryDataService,

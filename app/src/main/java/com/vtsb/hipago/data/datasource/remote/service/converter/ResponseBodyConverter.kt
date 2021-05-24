@@ -35,7 +35,7 @@ class ResponseBodyConverter {
 
     @Throws(IOException::class)
     fun toIntegerArrayList(responseBody: ResponseBody): ArrayList<Int> {
-        val integerArrayList = ArrayList<Int>()
+        val integerArrayList = LinkedList<Int>()
         toByteArray(responseBody,
             object: ByteArrayCallback {
                 override fun call(length: Int, byteArray: ByteArray) {
@@ -48,7 +48,7 @@ class ResponseBodyConverter {
                     }
                 }
             })
-        return integerArrayList
+        return ArrayList(integerArrayList)
     }
 
     @Throws(IOException::class)

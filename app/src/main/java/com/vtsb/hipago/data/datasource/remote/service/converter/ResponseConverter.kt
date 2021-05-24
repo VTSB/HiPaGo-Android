@@ -3,8 +3,11 @@ package com.vtsb.hipago.data.datasource.remote.service.converter
 import android.util.Log
 import okhttp3.Response
 import java.io.IOException
+import javax.inject.Inject
 
-class ResponseConverter(private val responseBodyConverter: ResponseBodyConverter) {
+class ResponseConverter @Inject constructor(
+    private val responseBodyConverter: ResponseBodyConverter
+) {
 
     fun toContentLength(response: Response): Long {
         var contentLength = response.header("Content-Range")
@@ -18,7 +21,7 @@ class ResponseConverter(private val responseBodyConverter: ResponseBodyConverter
 
     @Throws(IOException::class)
     fun toByteArray(response: Response, callback: ResponseBodyConverter.ByteArrayCallback) {
-        val responseBody = response.body
+        val responseBody = response.body()
         if (responseBody == null) {
             response.close()
             throw NullPointerException()
