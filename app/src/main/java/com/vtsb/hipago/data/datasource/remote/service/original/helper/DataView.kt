@@ -1,7 +1,6 @@
 package com.vtsb.hipago.data.datasource.remote.service.original.helper
 
 import java.nio.ByteBuffer
-import kotlin.experimental.and
 
 class DataView(private val buffer: ByteArray) {
 

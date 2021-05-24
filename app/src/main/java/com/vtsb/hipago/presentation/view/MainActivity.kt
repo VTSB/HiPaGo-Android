@@ -1,7 +1,7 @@
 package com.vtsb.hipago.presentation.view
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.vtsb.hipago.R
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -3,12 +3,12 @@ package com.vtsb.hipago.data.datasource.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.vtsb.hipago.data.datasource.local.dao.GalleryBlockDao
-import com.vtsb.hipago.data.datasource.local.entity.*
-import com.vtsb.hipago.data.datasource.local.entity.relation.GalleryDataTagDataCrossRef
 import com.vtsb.hipago.data.datasource.local.converter.DateConverter
 import com.vtsb.hipago.data.datasource.local.converter.GalleryBlockTypeConverter
 import com.vtsb.hipago.data.datasource.local.converter.JSONConverter
+import com.vtsb.hipago.data.datasource.local.dao.GalleryBlockDao
+import com.vtsb.hipago.data.datasource.local.entity.*
+import com.vtsb.hipago.data.datasource.local.entity.relation.GalleryDataTagDataCrossRef
 
 
 @Database(entities = [

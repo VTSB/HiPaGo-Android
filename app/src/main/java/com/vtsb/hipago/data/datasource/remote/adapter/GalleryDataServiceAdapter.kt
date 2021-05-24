@@ -10,10 +10,7 @@ import com.vtsb.hipago.data.datasource.remote.service.original.ResultJs
 import com.vtsb.hipago.data.datasource.remote.service.original.SearchJs
 import com.vtsb.hipago.data.datasource.remote.service.original.pojo.Suggestion
 import org.json.JSONObject
-import java.util.*
-
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 class GalleryDataServiceAdapter @Inject constructor(
     private val galleryDataService: GalleryDataService,

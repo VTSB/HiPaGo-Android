@@ -2,7 +2,6 @@ package com.vtsb.hipago.data.datasource.local.converter
 
 import androidx.room.TypeConverter
 import com.vtsb.hipago.domain.entity.GalleryBlockType
-import org.json.JSONObject
 
 class GalleryBlockTypeConverter {
 
