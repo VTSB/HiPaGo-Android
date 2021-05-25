@@ -43,7 +43,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
         return flow
     }
 
-    suspend fun getFromDB(id: Int, save: Boolean, flow: MutableStateFlow<GalleryBlock>) {
+    private suspend fun getFromDB(id: Int, save: Boolean, flow: MutableStateFlow<GalleryBlock>) {
         val galleryBlockWithOtherData = galleryBlockDaoAdapter.getGalleryBlock(id)
         if (galleryBlockWithOtherData == null) {
             getNotDetailed(id, save, flow)
@@ -57,7 +57,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
         }
     }
 
-    suspend fun getNotDetailed(id: Int, save: Boolean, flow: MutableStateFlow<GalleryBlock>) {
+    private suspend fun getNotDetailed(id: Int, save: Boolean, flow: MutableStateFlow<GalleryBlock>) {
         try {
             val galleryBlockWithOtherData = galleryDataServiceAdapter.getNotDetailed(id)
             flow.emit(galleryBlockWithOtherData.galleryBlock)
@@ -66,10 +66,9 @@ class GalleryBlockRepositoryImpl @Inject constructor(
             Log.e(this.javaClass.simpleName, "${e.message}")
             flow.emit(GalleryBlock(id, GalleryBlockType.FAILED, "", Date(0), mapOf(), "", LinkedList()))
         }
-
     }
 
-    suspend fun getDetailed(id: Int, save: Boolean, prevGalleryBlock: GalleryBlock, url:String, flow: MutableStateFlow<GalleryBlock>) {
+    private suspend fun getDetailed(id: Int, save: Boolean, prevGalleryBlock: GalleryBlock, url:String, flow: MutableStateFlow<GalleryBlock>) {
         try {
             val galleryBlock = galleryServiceAdapter.getDetailedGalleryBlock(id, url)
             flow.emit(galleryBlock)
@@ -79,7 +78,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
         }
     }
 
-    suspend fun save(galleryBlock: GalleryBlock, detailedUrl: String) {
+    private suspend fun save(galleryBlock: GalleryBlock, detailedUrl: String) {
         try {
             galleryBlockDaoAdapter.save(galleryBlock, detailedUrl)
         } catch (e: Exception) {
