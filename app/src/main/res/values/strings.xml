@@ -1,3 +1,87 @@
 <resources>
-    <string name="app_name">HiPaGo-Android</string>
+    <string name="app_name">HiPaGo</string>
+
+    <string name="description_igb_thumbnail">Thumbnail Image of GalleryBlock</string>
+    <string name="description_fgi_thumbnail">Thumbnail Image of GalleryBlock</string>
+    <string name="reader_page_image_description">Gallery\'s Image</string>
+
+    <!-- dialog-->
+    <string name="dialog_page_selector_title">페이지 선택</string>
+    <string name="insert_filter">필터 입력</string>
+    <string name="insert_bookmark">북마크 입력</string>
+    <string name="description">설명</string>
+
+
+    <string name="number">번호</string>
+    <string name="type">타입</string>
+    <string name="language">언어</string>
+    <string name="group">그룹</string>
+    <string name="artist">작가</string>
+    <string name="series">작품</string>
+    <string name="character">캐릭터</string>
+    <string name="tag">태그</string>
+
+    <!-- fragment -->
+    <string name="download">다운로드</string>
+    <string name="read">읽기</string>
+    <string name="gallery">갤러리</string>
+    <string name="search_word">검색어</string>
+
+    <string name="fgl_page_previous"><![CDATA[<]]></string>
+    <string name="fgl_page_next"><![CDATA[>]]></string>
+
+    <string name="fiu_info_text">본 어플리케이션은\n특정 웹사이트의 콘텐츠를 단순 제공해드립니다.\n이 앱을 사용함에 있어 생기는 불이익은\n일체 본인에게 있습니다.\n동의하시면 접속하시려는 사이트의 주소를 입력해주세요.</string>
+    <string name="fiu_https_text">http(s)://</string>
+    <string name="fiu_edit_text_hint">url</string>
+    <string name="fiu_remember_text">주소 기억하기</string>
+    <string name="fiu_auto_connect_text">자동 접속</string>
+    <string name="fiu_button_text">제출</string>
+    <string name="detail_view">자세히보기</string>
+
+    <!-- menu -->
+    <string name="settings">설정</string>
+    <string name="filtering">필터링</string>
+    <string name="filter">필터</string>
+    <string name="bookmark">북마크</string>
+
+
+    <string name="view_type">뷰타입</string>
+    <string name="favorite">즐겨찾기</string>
+    <string name="add">추가</string>
+    <string name="indicator">-/-</string>
+
+
+    <string name="recent">최신순</string>
+    <string name="popularity">인기순</string>
+    <string name="recent_watched">최근 본 작품</string>
+
+    <string name="go_back">뒤로가기</string>
+    <string name="random">심심할땐 랜덤</string>
+
+    <string name="menu_lang">언어</string>
+    <string name="menu_lang_all">모든언어</string>
+    <string name="menu_lang_ko">한국어</string>
+    <string name="menu_lang_en">영어</string>
+    <string name="menu_lang_jp">일본어</string>
+
+    <string name="menu_type">타입</string>
+    <string name="menu_type_doujinshi">동인지</string>
+    <string name="menu_type_manga">망가</string>
+    <string name="menu_type_gamecg">게임 CG</string>
+    <string name="menu_type_artistcg">아티스트 CG</string>
+    <string name="menu_type_anime">애니</string>
+    <string name="_1">1</string>
+
+    <!-- toast message -->
+    <string name="gallery_number_load_failed">갤러리번호 로딩에 실패했습니다. 인터넷 연결을 확인해주세요</string>
+    <string name="gallery_info_loading_failed">이미지 데이터 로딩에 실패했습니다.</string>
+    <string name="gallery_info_loading_failed_num">이미지 데이터 로딩에 실패했습니다.(%d)</string>
+    <string name="filter_load_failed">필터 목록 로딩에 실패했습니다.</string>
+    <string name="gallery_info_loading">이미지 데이터 로딩중입니다.</string>
+    <string name="gallery_download_start">다운로드 시작</string>
+    <string name="gallery_download_ignored_by_permission">권한 없이는 다운로드할 수 없습니다.</string>
+    <string name="reader_image_download_start">이미지 저장</string>
+    <string name="slash">/</string>
+
+
 </resources>

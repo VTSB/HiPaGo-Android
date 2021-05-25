@@ -1,4 +1,4 @@
-package com.vtsb.hipago.data.datasource.local.dao.adapter
+package com.vtsb.hipago.data.datasource.local.adapter
 
 import android.util.Log
 import com.google.common.collect.BiMap
