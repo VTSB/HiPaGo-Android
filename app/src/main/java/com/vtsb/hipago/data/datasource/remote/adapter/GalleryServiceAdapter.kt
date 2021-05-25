@@ -22,10 +22,11 @@ class GalleryServiceAdapter @Inject constructor(
         responseBodyConverter.toElements(
             galleryService.getAllSpecificAlphabetTags(typeName, 'a'))
 
-    fun getDetailedGalleryBlock(no: Long, url: String) =
+    fun getDetailedGalleryBlock(id: Int, url: String) =
         elementsConverter.toGalleryBlockDetailed(
             getDetailedGalleryBlockElementRecursive(
-                galleryService.getResponseBody(url)), no, url)
+                galleryService.getResponseBody(url)), id
+        )
 
     fun getDetailedGalleryBlockElementRecursive(responseBody: ResponseBody): Elements {
         val elements = responseBodyConverter.toElements(responseBody)

@@ -16,5 +16,6 @@ data class GalleryData (
     val type: GalleryBlockType,
     val title: String,
     val date: Date,
-    val extraData: JSONObject
+    val thumbnail: String,
+    val url: String
     )

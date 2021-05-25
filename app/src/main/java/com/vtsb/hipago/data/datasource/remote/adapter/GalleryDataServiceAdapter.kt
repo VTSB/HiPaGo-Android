@@ -1,6 +1,6 @@
 package com.vtsb.hipago.data.datasource.remote.adapter
 
-import com.vtsb.hipago.data.datasource.local.entity.LanguageTag
+import com.vtsb.hipago.data.datasource.local.entity.pojo.TagDataWithLocal
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryBlockWithOtherData
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryInfo
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryNumber
@@ -31,7 +31,7 @@ class GalleryDataServiceAdapter @Inject constructor(
         return ArrayList(listOf(*sug.arr))
     }
 
-    fun getGalleryInfo(id: Long): GalleryInfo {
+    fun getGalleryInfo(id: Int): GalleryInfo {
         val responseBody = galleryDataService.getGalleryJsonData(id)
         val jsonString = responseBody.string()
 
@@ -43,12 +43,12 @@ class GalleryDataServiceAdapter @Inject constructor(
         return jsonObjectConverter.toGalleryInfo(jsonObject)
     }
 
-    fun getNotDetailed(id: Long): GalleryBlockWithOtherData =
+    fun getNotDetailed(id: Int): GalleryBlockWithOtherData =
         elementsConverter.toGalleryBlockNotDetailed(
             responseBodyConverter.toElements(
                 galleryDataService.getGalleryBlock(id)), id)
 
-    fun getAllLanguageTags(): List<LanguageTag> =
+    fun getAllLanguageTags(): List<TagDataWithLocal> =
         stringConverter.toLanguageTagList(galleryDataService.getAllLanguages().string())
 
     fun getLanguageTagAmount(language: String): Long =

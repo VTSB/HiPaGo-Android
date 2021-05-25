@@ -3,7 +3,7 @@ package com.vtsb.hipago.domain.entity
 import java.sql.Date
 
 data class GalleryBlock(
-    val id: Long,
+    val id: Int,
     val type: GalleryBlockType,
     val title: String,
     val date: Date,

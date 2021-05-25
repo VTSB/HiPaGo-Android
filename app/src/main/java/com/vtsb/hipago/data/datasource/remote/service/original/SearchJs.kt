@@ -44,7 +44,7 @@ class SearchJs @Inject constructor(
         // tag_index_version
         var query = query
         while (searchlibJs.tag_index_version == null) Thread.sleep(1)
-        if (query == null || query.isEmpty() || pattern_handle_key_up_in_search_box_1.matcher(
+        if (query.isEmpty() || pattern_handle_key_up_in_search_box_1.matcher(
                 query
             ).matches() || pattern_handle_key_up_in_search_box_2.matcher(query)
                 .matches() || query == "-"
@@ -94,12 +94,12 @@ class SearchJs @Inject constructor(
     fun decode_node(data: ByteArray): Node? {
         val view = DataView(data)
         var pos = 0
-        val number_of_keys: Int = view.getInt32(pos, false)
+        val number_of_keys: Int = view.getInt32(pos)
         pos += 4
         val keys = Array(number_of_keys) { ShortArray(4) }
         var top = 0
         for (i in 0 until number_of_keys) {
-            val key_size: Int = view.getInt32(pos, false)
+            val key_size: Int = view.getInt32(pos)
             if (key_size == 0 || key_size > 32) {
                 Log.e(SearchJs::class.java.simpleName, "fatal: !key_size || key_size > 32")
                 return null
@@ -120,14 +120,14 @@ class SearchJs @Inject constructor(
         }
 
         // datas
-        val number_of_datas: Int = view.getInt32(pos, false)
+        val number_of_datas: Int = view.getInt32(pos)
         pos += 4
         // searchList.toArray(arrayOfNulls<String>(searchList.size))
         val datas = LinkedList<Data>()
         for (i in 0 until number_of_datas) {
-            val offset: Long = view.getUint64(pos, false)
+            val offset: Long = view.getUint64(pos)
             pos += 8
-            val length: Int = view.getInt32(pos, false)
+            val length: Int = view.getInt32(pos)
             pos += 4
             datas.add(Data(offset, length))
         }
@@ -136,7 +136,7 @@ class SearchJs @Inject constructor(
         val number_of_subnode_addresses: Int = searchlibJs.B + 1
         val subnode_addresses = LongArray(number_of_subnode_addresses)
         for (i in 0 until number_of_subnode_addresses) {
-            val subnode_address: Long = view.getUint64(pos, false)
+            val subnode_address: Long = view.getUint64(pos)
             pos += 8
             subnode_addresses[i] = subnode_address
         }
@@ -245,7 +245,7 @@ class SearchJs @Inject constructor(
         val inbuf = get_url_at_range(url, longArrayOf(offset, offset + length - 1))
         var pos = 0
         val view = DataView(inbuf)
-        val number_of_suggestions: Int = view.getInt32(pos, false)
+        val number_of_suggestions: Int = view.getInt32(pos)
         val suggestions = LinkedList<Suggestion>()
         pos += 4
         if (number_of_suggestions > 100 || number_of_suggestions <= 0) {
@@ -254,22 +254,22 @@ class SearchJs @Inject constructor(
         }
         for (i in 0 until number_of_suggestions) {
             val ns_sb = StringBuilder()
-            var top: Int = view.getInt32(pos, false)
+            var top: Int = view.getInt32(pos)
             pos += 4
             for (c in 0 until top) {
-                ns_sb.append(view.getUint8(pos, false) as Char)
+                ns_sb.append(view.getUint8(pos).toChar())
                 pos += 1
             }
             val ns = ns_sb.toString()
             val tag_sb = StringBuilder()
-            top = view.getInt32(pos, false)
+            top = view.getInt32(pos)
             pos += 4
             for (c in 0 until top) {
-                tag_sb.append(view.getUint8(pos, false) as Char)
+                tag_sb.append(view.getUint8(pos).toChar())
                 pos += 1
             }
             val tag = tag_sb.toString()
-            val count: Int = view.getInt32(pos, false)
+            val count: Int = view.getInt32(pos)
             pos += 4
             val tagName: String = searchlibJs.sanitize(tag)
             var url_suggestion =
@@ -304,7 +304,7 @@ class SearchJs @Inject constructor(
         val inbuf = get_url_at_range(url, longArrayOf(offset, offset + length - 1))
         var pos = 0
         val view = DataView(inbuf)
-        val number_of_gallery_ids: Int = view.getInt32(pos, false)
+        val number_of_gallery_ids: Int = view.getInt32(pos)
         val galleryids = ArrayList<Int>()
         pos += 4
         val expected_length = number_of_gallery_ids * 4 + 4
@@ -322,7 +322,7 @@ class SearchJs @Inject constructor(
             return ArrayList()
         }
         for (i in 0 until number_of_gallery_ids) {
-            galleryids.add(view.getInt32(pos, false))
+            galleryids.add(view.getInt32(pos))
             pos += 4
         }
         return galleryids
@@ -339,7 +339,7 @@ class SearchJs @Inject constructor(
             val sides = query.split(":").toTypedArray()
             field = sides[0]
             term = if (sides.size == 1) "" else sides[1]
-            //            field = Localization.transformK2ENoThrow(sides[0], 0);
+//            field = Localization.transformK2ENoThrow(sides[0], 0);
 //            if(sides.length == 1)
 //                term = "";
 //            else

@@ -1,7 +1,7 @@
 package com.vtsb.hipago.data.datasource.remote.service.converter
 
 import android.util.Log
-import com.vtsb.hipago.data.datasource.local.entity.LanguageTag
+import com.vtsb.hipago.data.datasource.local.entity.pojo.TagDataWithLocal
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryBlockWithOtherData
 import com.vtsb.hipago.data.datasource.remote.entity.TagWithAmount
 import com.vtsb.hipago.domain.entity.GalleryBlock
@@ -30,10 +30,10 @@ class ElementsConverter @Inject constructor(
         } else null
     }
 
-    fun toGalleryBlockDetailed(elements: Elements, no: Long, url: String): GalleryBlock {
+    fun toGalleryBlockDetailed(elements: Elements, id: Int): GalleryBlock {
 
         val related = toRelatedElements(elements.select("script"))
-        if (related.isEmpty()) Log.e(ElementsConverter::class.java.name, "failed to get related elements $no")
+        if (related.isEmpty()) Log.e(ElementsConverter::class.java.name, "failed to get related elements $id")
 
         val contentElements = elements.select(".content")
         val thumbnail: String = toThumbnail(contentElements.select(".cover img"))
@@ -53,7 +53,7 @@ class ElementsConverter @Inject constructor(
         val tags = getTexts(trElements[5].select(".tags a"))
 
         return GalleryBlock(
-            no, GalleryBlockType.MI_DETAILED, title, date,
+            id, GalleryBlockType.MI_DETAILED, title, date,
             mapOf(
                 TagType.TYPE to listOf(type),
                 TagType.LANGUAGE to listOf(language),
@@ -68,7 +68,7 @@ class ElementsConverter @Inject constructor(
 
 
     @Throws(ParseException::class)
-    fun toGalleryBlockNotDetailed(elements: Elements, no: Long): GalleryBlockWithOtherData {
+    fun toGalleryBlockNotDetailed(elements: Elements, id: Int): GalleryBlockWithOtherData {
 
         val thumbnail: String = toThumbnail(elements.select("img"))
         val artists = getTexts(elements.select(".artist-list a"))
@@ -89,7 +89,7 @@ class ElementsConverter @Inject constructor(
 
         return GalleryBlockWithOtherData(
                 GalleryBlock(
-                    no, GalleryBlockType.MI_NOT_DETAILED, title, date,
+                    id, GalleryBlockType.MI_NOT_DETAILED, title, date,
                     mapOf(
                         TagType.TYPE to listOf(type),
                         TagType.LANGUAGE to listOf(language),
@@ -121,8 +121,8 @@ class ElementsConverter @Inject constructor(
         return related
     }
 
-    fun toLanguageTagList(elements: Elements): List<LanguageTag> {
-        val tags: ArrayList<LanguageTag> = ArrayList<LanguageTag>()
+    fun toLanguageTagList(elements: Elements): List<TagDataWithLocal> {
+        val tags: ArrayList<TagDataWithLocal> = ArrayList<TagDataWithLocal>()
         val ele = elements.select("#lang #lang-list a")
         val size = ele.size
 
@@ -132,7 +132,7 @@ class ElementsConverter @Inject constructor(
             val original = e.text()
             val href = e.attr("href")
             val english = href.substring(href.indexOf('-') + 1, href.lastIndexOf('-'))
-            val languageTag = LanguageTag(name=english, local=original)
+            val languageTag = TagDataWithLocal(name=english, local=original)
             tags.add(languageTag)
             i++
         }

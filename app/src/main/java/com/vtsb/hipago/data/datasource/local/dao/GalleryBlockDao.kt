@@ -2,41 +2,49 @@ package com.vtsb.hipago.data.datasource.local.dao
 
 import androidx.room.*
 import com.vtsb.hipago.data.datasource.local.entity.GalleryData
+import com.vtsb.hipago.data.datasource.local.entity.GalleryRelated
+import com.vtsb.hipago.data.datasource.local.entity.relation.FullGalleryData
 import com.vtsb.hipago.data.datasource.local.entity.relation.GalleryDataTagDataCrossRef
-import com.vtsb.hipago.data.datasource.local.entity.relation.GalleryDataWithTagData
-import org.json.JSONObject
 
 @Dao
-public abstract class GalleryBlockDao {
+abstract class GalleryBlockDao {
 
     @Transaction
-    public open fun insertGalleryBlock(galleryData: GalleryData, galleryTagDataList: List<GalleryDataTagDataCrossRef>) {
+    open fun insertGalleryBlock(galleryData: GalleryData, galleryTagDataList: List<GalleryDataTagDataCrossRef>, galleryRelatedList: List<GalleryRelated>) {
         insertGalleryData(galleryData)
         insertGalleryTagDataList(galleryTagDataList)
+        if (galleryRelatedList.isNotEmpty()) insertGalleryRelatedList(galleryRelatedList)
     }
 
     @Transaction
-    public open fun updateGalleryBlock(galleryData: GalleryData, galleryTagDataList: List<GalleryDataTagDataCrossRef>) {
+    open fun updateGalleryBlock(galleryData: GalleryData, galleryTagDataList: List<GalleryDataTagDataCrossRef>, galleryRelatedList: List<GalleryRelated>) {
         deleteGalleryTagData(galleryData.id)
-        insertGalleryBlock(galleryData, galleryTagDataList)
+        deleteGalleryRelated(galleryData.id)
+        insertGalleryBlock(galleryData, galleryTagDataList, galleryRelatedList)
     }
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract fun insertGalleryData(galleryData: GalleryData)
+    abstract fun insertGalleryData(galleryData: GalleryData)
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    public abstract fun insertGalleryTagDataList(galleryTagDataList: List<GalleryDataTagDataCrossRef>)
+    abstract fun insertGalleryTagDataList(galleryTagDataList: List<GalleryDataTagDataCrossRef>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract fun insertGalleryRelatedList(galleryRelatedList: List<GalleryRelated>)
 
     @Transaction
     @Query("SELECT * FROM gallery_data WHERE `id` = :id;")
-    public abstract fun getLocalGalleryData(id: Long): GalleryDataWithTagData?
+    abstract fun getFullGalleryData(id: Long): FullGalleryData?
 
-    @Query("UPDATE gallery_data SET extraData = :extraData WHERE id = :id;")
-    public abstract fun updateExtraData(id: Long, extraData: JSONObject)
+    @Query("DELETE FROM gallery_related WHERE gallery_related.`id` = :id")
+    abstract fun deleteGalleryRelated(id: Long)
+
+    //@Query("UPDATE gallery_data SET extraData = :extraData WHERE id = :id;")
+    //public abstract fun updateExtraData(id: Long, extraData: JSONObject)
 
     @Query("DELETE FROM gallery_data_tag_data_cross_ref WHERE `id` = :id;")
-    public abstract fun deleteGalleryTagData(id: Long)
+    abstract fun deleteGalleryTagData(id: Long)
 
 }

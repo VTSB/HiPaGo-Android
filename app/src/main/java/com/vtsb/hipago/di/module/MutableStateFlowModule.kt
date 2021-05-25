@@ -22,11 +22,11 @@ class MutableStateFlowModule {
     fun provideLanguageMSF(): MutableStateFlow<String> =
         MutableStateFlow("korean")
 
-    @Provides
-    @Singleton
-    @Named("languageNumberMSF")
-    fun provideLanguageNumberMSF(): MutableStateFlow<Long> =
-        MutableStateFlow(-1)
+//    @Provides
+//    @Singleton
+//    @Named("languageNumberMSF")
+//    fun provideLanguageNumberMSF(): MutableStateFlow<Long> =
+//        MutableStateFlow(-1)
 
 
     @Provides

@@ -42,7 +42,7 @@ class ResponseBodyConverter {
                     val view = DataView(byteArray)
                     var i = 0
                     while (i < length) {
-                        val num: Int = view.getInt32(i, false)
+                        val num: Int = view.getInt32(i)
                         integerArrayList.add(num)
                         i += 4
                     }
@@ -64,7 +64,7 @@ class ResponseBodyConverter {
                         buffer[top] = byteArray[i]
                         if (++top == 4) {
                             val view = DataView(buffer)
-                            integerArrayList.add(view.getInt32(0, false))
+                            integerArrayList.add(view.getInt32(0))
                             top = 0
                         }
                     }

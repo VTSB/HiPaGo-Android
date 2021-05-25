@@ -40,23 +40,19 @@ class CommonJs {
         }
         try {
             var g = Objects.requireNonNull(m.group(1)).toInt(b)
-            if (g < 0x30) {
-                number_of_frontends = 2
-            }
-            if (g < 0x09) {
-                g = 1
-            }
+            if (g < 0x30) { number_of_frontends = 2 }
+            if (g < 0x09) { g = 1 }
             retval = subdomain_from_galleryid(g, number_of_frontends).toString() + retval
         } catch (exception: NumberFormatException) {
-            Log.e(
-                CommonJs::class.java.simpleName,
-                "Failed To convert " + m.group(1) + " (" + url + ")"
-            )
+            Log.e(CommonJs::class.java.simpleName, "Failed To convert " + m.group(1) + " (" + url + ")")
             exception.printStackTrace()
         }
         return retval
     }
 
+    /**
+     * common.js url_from_url
+     */
     fun url_from_url(url: String, base: String?): String {
         return url.replaceFirst(
             regex_url_from_url.toRegex(),
@@ -71,17 +67,15 @@ class CommonJs {
     }
 
     fun url_from_hash(galleryid: Long, image: GalleryFile, dir: String?, ext: String?): String {
-        var dir = dir
-        var ext = ext
-        ext = ext
+        val newExt = ext
             ?: if (dir != null) {
                 dir
             } else {
                 val split: List<String> = image.name.split(regex_url_from_hash)
                 if (split.isEmpty()) image.name else split[split.size - 1]
             }
-        dir = dir ?: "images"
-        return "https://a.hitomi.la/" + dir + "/" + full_path_from_hash(image.hash) + "." + ext
+        val newDir = dir ?: "images"
+        return "https://a.hitomi.la/${newDir}/${full_path_from_hash(image.hash)}.${newExt}"
     }
 
     fun url_from_url_from_hash(

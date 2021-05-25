@@ -4,12 +4,12 @@ import java.nio.ByteBuffer
 
 class DataView(private val buffer: ByteArray) {
 
-    fun getUint8(pos: Int, littleEndian: Boolean): Int {
+    fun getUint8(pos: Int): Int {
         // todo : add littleEndian & bigEndian support
         return if (buffer[pos] < 0) -buffer[pos] else buffer[pos].toInt()
     }
 
-    fun getInt32(pos: Int, littleEndian: Boolean): Int {
+    fun getInt32(pos: Int): Int {
         // todo : add littleEndian & bigEndian support
         var result = 0
         for (i in 0..4) {
@@ -18,7 +18,7 @@ class DataView(private val buffer: ByteArray) {
         return result
     }
 
-    fun getUint64(pos: Int, littleEndian: Boolean): Long {
+    fun getUint64(pos: Int): Long {
         // todo : add littleEndian & bigEndian support
         val data = ByteArray(8)
         System.arraycopy(buffer, pos, data, 0, 8)

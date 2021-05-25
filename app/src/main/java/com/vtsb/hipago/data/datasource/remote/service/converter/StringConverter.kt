@@ -1,6 +1,6 @@
 package com.vtsb.hipago.data.datasource.remote.service.converter
 
-import com.vtsb.hipago.data.datasource.local.entity.LanguageTag
+import com.vtsb.hipago.data.datasource.local.entity.pojo.TagDataWithLocal
 import com.vtsb.hipago.data.datasource.remote.service.converter.helper.DateHelper
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
@@ -19,21 +19,23 @@ class StringConverter @Inject constructor(
         return Date(date.time)
     }
 
-    fun toLanguageTagList(languageFile: String): List<LanguageTag> {
-        val languageTagList: MutableList<LanguageTag> = ArrayList<LanguageTag>()
-        val languageBitNumberHashMap = HashMap<String, Int>()
-        var start: Int
-        var end: Int
-        start = languageFile.indexOf('{')
-        end = languageFile.indexOf('}', start)
-        val bitNumber_language = languageFile.substring(start + 1, end)
-        for (bitNumber_language_str in bitNumber_language.split(",").toTypedArray()) {
-            val split = bitNumber_language_str.split(":").toTypedArray()
-            val bitNumber = split[0].substring(1, split[0].length - 1).toInt()
-            val language = split[1].substring(1, split[1].length - 1)
-            languageBitNumberHashMap[language] = bitNumber
-        }
-        languageBitNumberHashMap["all"] = -1
+    fun toLanguageTagList(languageFile: String): List<TagDataWithLocal> {
+        val languageTagList: MutableList<TagDataWithLocal> = ArrayList<TagDataWithLocal>()
+//        val languageBitNumberHashMap = HashMap<String, Int>()
+
+        var start: Int = languageFile.indexOf('{')
+        var end = languageFile.indexOf('}', start)
+
+//        val bitnumber_language = languageFile.substring(start + 1, end)
+//        for (bitnumber_language_str in bitnumber_language.split(",").toTypedArray()) {
+//            val split = bitnumber_language_str.split(":").toTypedArray()
+//            val bitNumber = split[0].substring(1, split[0].length - 1).toInt()
+//            val language = split[1].substring(1, split[1].length - 1)
+//
+//            languageBitNumberHashMap[language] = bitNumber
+//        }
+
+        //languageBitNumberHashMap["all"] = -1
         start = languageFile.indexOf('{', end)
         end = languageFile.indexOf('}', start)
         val language_localname = languageFile.substring(start + 1, end)
@@ -41,9 +43,10 @@ class StringConverter @Inject constructor(
             val split = language_localname_str.split(":").toTypedArray()
             val language = split[0].substring(1, split[0].length - 1)
             val localName = split[1].substring(1, split[1].length - 1)
-            val bitNumber = languageBitNumberHashMap[language]
-            val languageTag = LanguageTag(
-                id = bitNumber?.toLong(),
+            //val bitNumber = languageBitNumberHashMap[language]
+
+            val languageTag = TagDataWithLocal(
+                //id = bitNumber?.toLong(),
                 name = language,
                 local = localName
             )

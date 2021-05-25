@@ -9,6 +9,7 @@ import com.vtsb.hipago.data.datasource.local.entity.TagData
 data class GalleryDataWithTagData(
     @Embedded val galleryData: GalleryData,
     @Relation(
+        entity = TagData::class,
         parentColumn = "id",
         entityColumn = "tagId",
         associateBy = Junction(GalleryDataTagDataCrossRef::class)

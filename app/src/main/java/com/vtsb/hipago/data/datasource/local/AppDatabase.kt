@@ -15,7 +15,7 @@ import com.vtsb.hipago.data.datasource.local.entity.relation.GalleryDataTagDataC
 @Database(entities = [
     GalleryData::class,
     //GalleryTag::class,
-    LanguageTag::class,
+    GalleryRelated::class,
     TagData::class,
     TagDataLocal::class,
     TagDataTransform::class,

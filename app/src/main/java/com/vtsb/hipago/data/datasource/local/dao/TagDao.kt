@@ -2,15 +2,12 @@ package com.vtsb.hipago.data.datasource.local.dao
 
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteQuery
-import com.vtsb.hipago.data.datasource.local.entity.LanguageTag
 import com.vtsb.hipago.data.datasource.local.entity.TagData
 import com.vtsb.hipago.data.datasource.local.entity.TagDataLocal
 import com.vtsb.hipago.data.datasource.local.entity.TagDataTransform
 import com.vtsb.hipago.data.datasource.local.entity.pojo.SuggestionLocal
 import com.vtsb.hipago.data.datasource.local.entity.pojo.SuggestionOriginal
-import com.vtsb.hipago.data.datasource.local.entity.pojo.TagDataWithLocal
 import com.vtsb.hipago.domain.entity.TagType
-import java.util.*
 
 @Dao
 abstract class TagDao {
@@ -30,23 +27,6 @@ abstract class TagDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insertLocalTags(tagDataLocalList: List<TagDataLocal>)
 
-    @Transaction
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract fun insertLanguageTags(languageTagList: List<LanguageTag>): List<Long>
-
-    @Transaction
-    open fun newInsertLanguageTags(languageTagList: List<LanguageTag>) {
-        val insertResult = insertLanguageTags(languageTagList)
-        val newInsertList: MutableList<LanguageTag> = ArrayList<LanguageTag>()
-        for (i in languageTagList.indices) {
-            if (insertResult[i] == -1L) {
-                newInsertList.add(languageTagList[i])
-            }
-        }
-        if (newInsertList.isNotEmpty()) {
-            insertLanguageTags(newInsertList)
-        }
-    }
 
     fun updateEnglishTag(tagData: TagData) {
         updateEnglishTag(tagData.type, tagData.name, tagData.amount)
@@ -82,21 +62,10 @@ abstract class TagDao {
     @get:Query("SELECT * FROM tag_data_transform;")
     abstract val allTagDataTransforms: List<TagDataTransform>
 
-    @get:Query("SELECT * FROM language_tag;")
-    abstract val allLanguageTags: List<LanguageTag>
-
-    @Query("""SELECT tag_data.name, tag_data_local.local FROM tag_data_local
-            INNER JOIN tag_data ON tag_data.`tagId` = tag_data_local.`tagId` AND tag_data.type=:tagType
-            WHERE tag_data_local.language=:languageNo;""")
-    abstract fun getTagDataWithLocalByType(
-        tagType: TagType,
-        languageNo: Long
-    ): List<TagDataWithLocal>
-
     @Query("""SELECT tag_data_local.local FROM tag_data_local 
                 INNER JOIN tag_data ON tag_data.name=:englishTag AND tag_data.type=:tagType AND tag_data.`tagId` = tag_data_local.`tagId` 
-                WHERE tag_data_local.language=:languageNo LIMIT 1;""")
-    abstract fun getLocalTag(tagType: TagType, englishTag: String, languageNo: Long): String
+                LIMIT 1;""")
+    abstract fun getLocalTag(tagType: TagType, englishTag: String): String
 
     @RawQuery(observedEntities = [TagDataLocal::class, TagData::class])
     abstract fun searchLocal(query: SupportSQLiteQuery?): List<SuggestionLocal>

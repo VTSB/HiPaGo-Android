@@ -11,5 +11,5 @@ data class LocalTagData(
         parentColumn = "tagId",
         entityColumn = "tagId"
     )
-    val tagDataLocal: TagDataLocal
+    val tagDataLocal: TagDataLocal?
 )

@@ -10,11 +10,11 @@ import retrofit2.http.Query
 
 interface GalleryDataService {
 
-    @GET("galleries/{no}.js")
-    fun getGalleryJsonData(@Path("no") no: Long): ResponseBody
+    @GET("galleries/{id}.js")
+    fun getGalleryJsonData(@Path("id") no: Int): ResponseBody
 
-    @GET("galleryblock/{no}.html")
-    fun getGalleryBlock(@Path("no") no: Long): ResponseBody
+    @GET("galleryblock/{id}.html")
+    fun getGalleryBlock(@Path("id") no: Int): ResponseBody
 
     @GET("{type}-{language}.nozomi")
     fun getNumbersFromType(

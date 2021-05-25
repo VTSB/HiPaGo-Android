@@ -69,12 +69,12 @@ class MapModule {
         return stringTypeBiMap
     }
 
-    @Provides
-    @Singleton
-    @Named("languageNumberHashMap")
-    fun provideLanguageNumberHashMap(): HashMap<String, Long> {
-        return HashMap()
-    }
+//    @Provides
+//    @Singleton
+//    @Named("languageNumberHashMap")
+//    fun provideLanguageNumberHashMap(): HashMap<String, Long> {
+//        return HashMap()
+//    }
 
     @Provides
     @Singleton
