@@ -29,7 +29,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
     private val tagConverter: TagConverter,
     ) : GalleryBlockRepository {
 
-    override fun getGalleryBlock(id: Int, save: Boolean=true, skipDB: Boolean=false): StateFlow<GalleryBlock> {
+    override fun getGalleryBlock(id: Int, save: Boolean, skipDB: Boolean): StateFlow<GalleryBlock> {
         val flow = MutableStateFlow(GalleryBlock(id, GalleryBlockType.LOADING, "", Date(0), mapOf(), "", LinkedList()))
 
         CoroutineScope(Dispatchers.IO).launch {
