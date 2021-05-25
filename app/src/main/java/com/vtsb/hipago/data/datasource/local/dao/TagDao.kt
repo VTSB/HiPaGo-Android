@@ -17,7 +17,7 @@ abstract class TagDao {
     abstract fun insertTagDataTransforms(tagDataTransform: List<TagDataTransform>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract fun insertEnglishTag(tagData: TagData): Long
+    abstract fun insertEnglishTag(tagData: TagData): Long?
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -57,7 +57,7 @@ abstract class TagDao {
     }
 
     @Query("SELECT tag_data.`tagId` FROM tag_data WHERE tag_data.type = :type AND tag_data.name = :englishTag;")
-    abstract fun getTagNum(type: TagType, englishTag: String): Long
+    abstract fun getTagNum(type: TagType, englishTag: String): Long?
 
     @get:Query("SELECT * FROM tag_data_transform;")
     abstract val allTagDataTransforms: List<TagDataTransform>

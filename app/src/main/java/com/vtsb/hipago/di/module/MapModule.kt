@@ -111,18 +111,18 @@ class MapModule {
         return tagNumberBiMaps.toArray(arrayOfNulls(tagNumberBiMaps.size))
     }
 
-    @Provides
-    @Singleton
-    @Named("tagNumberSynchronizedBiMap")
-    fun provideTagNumberSynchronizedBiMap(@Named("tagNumberBiMap") tagNumberBiMap: Array<BiMap<String, Long>>): Array<BiMap<String, Long>> {
-        val tagNumberSynchronizedBiMap = LinkedList<BiMap<String, Long>>()
-        for (i in 0..tagNumberBiMap.size) {
-            tagNumberSynchronizedBiMap.add(
-                Maps.synchronizedBiMap(
-                    tagNumberBiMap[i]))
-        }
-        return tagNumberSynchronizedBiMap.toArray(arrayOfNulls(tagNumberSynchronizedBiMap.size))
-    }
+//    @Provides
+//    @Singleton
+//    @Named("tagNumberSynchronizedBiMap")
+//    fun provideTagNumberSynchronizedBiMap(@Named("tagNumberBiMap") tagNumberBiMap: Array<BiMap<String, Long>>): Array<BiMap<String, Long>> {
+//        val tagNumberSynchronizedBiMap = LinkedList<BiMap<String, Long>>()
+//        for (i in 0..tagNumberBiMap.size) {
+//            tagNumberSynchronizedBiMap.add(
+//                Maps.synchronizedBiMap(
+//                    tagNumberBiMap[i]))
+//        }
+//        return tagNumberSynchronizedBiMap.toArray(arrayOfNulls(tagNumberSynchronizedBiMap.size))
+//    }
 
     @Provides
     @Singleton
@@ -135,18 +135,18 @@ class MapModule {
         return tagLocalizationBiMap.toArray(arrayOfNulls(tagLocalizationBiMap.size))
     }
 
-    @Provides
-    @Singleton
-    @Named("tagLocalizationSynchronizedBiMap")
-    fun provideTagLocalizationSynchronizedBiMap(@Named("tagLocalizationBiMap") tagLocalizationBiMap: Array<BiMap<String, String>?>): Array<BiMap<String, String>>? {
-        val tagLocalizationSynchronizedBiMap = LinkedList<BiMap<String, String>>()
-        for (i in 0..tagLocalizationBiMap.size) {
-            tagLocalizationSynchronizedBiMap.add(
-                Maps.synchronizedBiMap(
-                    tagLocalizationBiMap[i]))
-        }
-        return tagLocalizationSynchronizedBiMap.toArray(arrayOfNulls(tagLocalizationSynchronizedBiMap.size))
-    }
+//    @Provides
+//    @Singleton
+//    @Named("tagLocalizationSynchronizedBiMap")
+//    fun provideTagLocalizationSynchronizedBiMap(@Named("tagLocalizationBiMap") tagLocalizationBiMap: Array<BiMap<String, String>?>): Array<BiMap<String, String>>? {
+//        val tagLocalizationSynchronizedBiMap = LinkedList<BiMap<String, String>>()
+//        for (i in 0..tagLocalizationBiMap.size) {
+//            tagLocalizationSynchronizedBiMap.add(
+//                Maps.synchronizedBiMap(
+//                    tagLocalizationBiMap[i]))
+//        }
+//        return tagLocalizationSynchronizedBiMap.toArray(arrayOfNulls(tagLocalizationSynchronizedBiMap.size))
+//    }
 
     @Provides
     @Singleton

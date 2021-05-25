@@ -3,8 +3,10 @@ package com.vtsb.hipago.data.datasource.local.dao
 import androidx.room.*
 import com.vtsb.hipago.data.datasource.local.entity.GalleryData
 import com.vtsb.hipago.data.datasource.local.entity.GalleryRelated
+import com.vtsb.hipago.data.datasource.local.entity.TagData
 import com.vtsb.hipago.data.datasource.local.entity.relation.FullGalleryData
 import com.vtsb.hipago.data.datasource.local.entity.relation.GalleryDataTagDataCrossRef
+import com.vtsb.hipago.domain.entity.TagType
 
 @Dao
 abstract class GalleryBlockDao {
@@ -33,6 +35,12 @@ abstract class GalleryBlockDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insertGalleryRelatedList(galleryRelatedList: List<GalleryRelated>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract fun insertEnglishTag(tagData: TagData): Long?
+
+    @Query("SELECT tag_data.`tagId` FROM tag_data WHERE tag_data.type = :type AND tag_data.name = :englishTag LIMIT 1;")
+    abstract fun getTagNum(type: TagType, englishTag: String): Long?
 
     @Transaction
     @Query("SELECT * FROM gallery_data WHERE `id` = :id;")

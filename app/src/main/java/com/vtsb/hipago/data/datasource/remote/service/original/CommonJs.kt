@@ -60,13 +60,19 @@ class CommonJs {
         )
     }
 
+    /**
+     * common.js full_path_from_hash
+     */
     fun full_path_from_hash(hash: String): String {
         return if (hash.length < 3) {
             hash
         } else hash.replaceFirst(regex_get_path_from_hash.toRegex(), "$2/$1/$hash")
     }
 
-    fun url_from_hash(galleryid: Long, image: GalleryFile, dir: String?, ext: String?): String {
+    /**
+     * common.js url_from_hash
+     */
+    fun url_from_hash(image: GalleryFile, dir: String?, ext: String?): String {
         val newExt = ext
             ?: if (dir != null) {
                 dir
@@ -78,14 +84,16 @@ class CommonJs {
         return "https://a.hitomi.la/${newDir}/${full_path_from_hash(image.hash)}.${newExt}"
     }
 
+    /**
+     * common.js url_from_url_from_hash
+     */
     fun url_from_url_from_hash(
-        galleryid: Long,
         image: GalleryFile,
         dir: String?,
         ext: String?,
         base: String?
     ): String {
-        return url_from_url(url_from_hash(galleryid, image, dir, ext), base)
+        return url_from_url(url_from_hash(image, dir, ext), base)
     }
 
 }

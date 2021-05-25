@@ -42,7 +42,7 @@ class SearchJs @Inject constructor(
     fun handle_key_up_in_search_box(query: String): GetSuggestionForQuery {
 
         // tag_index_version
-        var query = query
+        //var query = query
         while (searchlibJs.tag_index_version == null) Thread.sleep(1)
         if (query.isEmpty() || pattern_handle_key_up_in_search_box_1.matcher(
                 query
@@ -52,10 +52,10 @@ class SearchJs @Inject constructor(
             ++searchlibJs.search_serial
             return GetSuggestionForQuery(ArrayList<Suggestion>().toArray(arrayOfNulls<Suggestion>(0)), 0)
         }
-        query = query.lowercase(Locale.getDefault())
-        val terms: Array<String> = queryHelper.split(query)
+        val newQuery = query.lowercase(Locale.getDefault())
+        val terms: Array<String> = queryHelper.split(newQuery)
         var search_term = terms[terms.size - 1]
-        if (query[query.length - 1] == queryHelper.getChar()) {
+        if (newQuery[newQuery.length - 1] == queryHelper.getChar()) {
             search_term = ""
         }
         search_term = search_term.replace("-", "")
@@ -331,11 +331,10 @@ class SearchJs @Inject constructor(
     @Throws(IOException::class, NoSuchAlgorithmException::class)
     fun get_suggestions_for_query(query: String, serial: Int): GetSuggestionForQuery {
         // todo : add other type splitter
-        var query = query
-        query = query.replace("_", " ")
+        val newQuery = query.replace("_", " ")
         var field = "global"
-        var term = query
-        if (query.contains(":")) {
+        var term = newQuery
+        if (newQuery.contains(":")) {
             val sides = query.split(":").toTypedArray()
             field = sides[0]
             term = if (sides.size == 1) "" else sides[1]
