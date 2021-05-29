@@ -8,4 +8,5 @@ interface GalleryNumberRepository {
     fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, pageSize: Int, doLoadLength: Boolean): GalleryNumber
 
     fun clearBuffer(query: String, language: String)
+
 }

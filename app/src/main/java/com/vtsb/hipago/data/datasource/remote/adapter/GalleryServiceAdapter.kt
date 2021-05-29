@@ -6,7 +6,9 @@ import com.vtsb.hipago.data.datasource.remote.service.converter.ResponseBodyConv
 import okhttp3.ResponseBody
 import org.jsoup.select.Elements
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class GalleryServiceAdapter @Inject constructor(
     private val galleryService: GalleryService,
     private val responseBodyConverter: ResponseBodyConverter,

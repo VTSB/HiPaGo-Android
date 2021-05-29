@@ -13,7 +13,9 @@ import java.text.ParseException
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class ElementsConverter @Inject constructor(
     private val stringConverter: StringConverter,
     @Named("optionLRThumbnailMSF") private val optionLRThumbnail: StateFlow<Boolean>

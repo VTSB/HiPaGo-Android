@@ -8,7 +8,9 @@ import java.sql.Date
 import java.text.ParseException
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class StringConverter @Inject constructor(
     private val dateHelper: DateHelper
 ) {

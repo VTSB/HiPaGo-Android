@@ -9,7 +9,9 @@ import java.sql.Date
 import java.text.ParseException
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class JSONObjectConverter @Inject constructor(
     private val stringConverter: StringConverter
 ) {

@@ -4,16 +4,18 @@ import android.util.Log
 import okhttp3.Response
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ResponseConverter @Inject constructor(
     private val responseBodyConverter: ResponseBodyConverter
 ) {
 
-    fun toContentLength(response: Response): Long {
+    fun toContentLength(response: Response): Int {
         var contentLength = response.header("Content-Range")
         if (contentLength != null) {
             contentLength = contentLength.substring(contentLength.lastIndexOf("/") + 1)
-            return contentLength.toLong()
+            return contentLength.toInt()
         }
         Log.e(ResponseConverter::class.java.simpleName, "failed to get length:$response")
         return 0

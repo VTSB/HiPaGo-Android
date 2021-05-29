@@ -8,7 +8,9 @@ import org.jsoup.select.Elements
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
+import javax.inject.Singleton
 
+@Singleton
 class ResponseBodyConverter {
 
     @Throws(IOException::class)

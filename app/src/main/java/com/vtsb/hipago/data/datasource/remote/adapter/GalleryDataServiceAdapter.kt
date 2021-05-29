@@ -13,7 +13,9 @@ import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class GalleryDataServiceAdapter @Inject constructor(
     private val galleryDataService: GalleryDataService,
     private val resultJs: ResultJs,
@@ -73,7 +75,7 @@ class GalleryDataServiceAdapter @Inject constructor(
     private fun getNumbers(response: Response<ResponseBody>, doLoadLength: Boolean): GalleryNumber {
         val r = response.raw()
         val responseBody = response.body()
-        var numberTotalLength: Long = 0
+        var numberTotalLength = 0
         if (doLoadLength) numberTotalLength = responseConverter.toContentLength(r) / 4
 
         if (responseBody == null) return GalleryNumber(ArrayList(), numberTotalLength)
