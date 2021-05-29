@@ -2,15 +2,12 @@ package com.vtsb.hipago.di.module
 
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
-import com.google.common.collect.Maps
 import com.vtsb.hipago.domain.entity.TagType
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Call
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -54,18 +51,18 @@ class MapModule {
     @Provides
     @Singleton
     @Named("stringTypeBiMap")
-    fun provideStringTypeBiMap(): BiMap<TagType, String> {
-        val stringTypeBiMap = HashBiMap.create<TagType, String>()
-        stringTypeBiMap[TagType.BEFORE] = TagType.BEFORE.otherName
-        stringTypeBiMap[TagType.TYPE] = TagType.TYPE.otherName
-        stringTypeBiMap[TagType.LANGUAGE] = TagType.LANGUAGE.otherName
-        stringTypeBiMap[TagType.GROUP] = TagType.GROUP.otherName
-        stringTypeBiMap[TagType.ARTIST] = TagType.ARTIST.otherName
-        stringTypeBiMap[TagType.SERIES] = TagType.SERIES.otherName
-        stringTypeBiMap[TagType.CHARACTER] = TagType.CHARACTER.otherName
-        stringTypeBiMap[TagType.TAG] = TagType.TAG.otherName
-        stringTypeBiMap[TagType.MALE] = TagType.MALE.otherName
-        stringTypeBiMap[TagType.FEMALE] = TagType.FEMALE.otherName
+    fun provideStringTypeBiMap(): BiMap<String, TagType> {
+        val stringTypeBiMap = HashBiMap.create<String, TagType>()
+        stringTypeBiMap[TagType.BEFORE.otherName] = TagType.BEFORE
+        stringTypeBiMap[TagType.TYPE.otherName] = TagType.TYPE
+        stringTypeBiMap[TagType.LANGUAGE.otherName] = TagType.LANGUAGE
+        stringTypeBiMap[TagType.GROUP.otherName] = TagType.GROUP
+        stringTypeBiMap[TagType.ARTIST.otherName] = TagType.ARTIST
+        stringTypeBiMap[TagType.SERIES.otherName] = TagType.SERIES
+        stringTypeBiMap[TagType.CHARACTER.otherName] = TagType.CHARACTER
+        stringTypeBiMap[TagType.TAG.otherName] = TagType.TAG
+        stringTypeBiMap[TagType.MALE.otherName] = TagType.MALE
+        stringTypeBiMap[TagType.FEMALE.otherName] = TagType.FEMALE
         return stringTypeBiMap
     }
 

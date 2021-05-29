@@ -8,7 +8,7 @@ import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.*
 import com.vtsb.hipago.data.datasource.remote.service.original.ResultJs
 import com.vtsb.hipago.data.datasource.remote.service.original.SearchJs
-import com.vtsb.hipago.data.datasource.remote.service.original.pojo.Suggestion
+import com.vtsb.hipago.data.datasource.remote.service.original.pojo.PojoSuggestion
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
@@ -30,7 +30,7 @@ class GalleryDataServiceMapper @Inject constructor(
     fun doSearch(query: String, language: String): List<Int> =
         resultJs.do_search(query, language)
 
-    fun getSuggestionForQuery(query: String): ArrayList<Suggestion> {
+    fun getSuggestionForQuery(query: String): ArrayList<PojoSuggestion> {
         val sug = searchJs.handle_key_up_in_search_box(query)
         return ArrayList(listOf(*sug.arr))
     }
