@@ -11,6 +11,11 @@
     <string name="insert_bookmark">북마크 입력</string>
     <string name="description">설명</string>
 
+    <!-- Item -->
+    <string name="igb_type1_artist">작가: %s</string>
+    <string name="igb_type1_series">시리즈: %s</string>
+    <string name="igb_type1_language">언어: %s</string>
+    <string name="igb_type1_tags">태그: %s</string>
 
     <string name="number">번호</string>
     <string name="type">타입</string>

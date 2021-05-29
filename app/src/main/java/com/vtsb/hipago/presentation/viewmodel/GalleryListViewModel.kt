@@ -3,6 +3,7 @@ package com.vtsb.hipago.presentation.viewmodel
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.vtsb.hipago.App
 import com.vtsb.hipago.R
 import com.vtsb.hipago.domain.entity.GalleryBlock
@@ -133,7 +134,7 @@ class GalleryListViewModel @Inject constructor(
                     }
                     galleryBlockList.addAll(offset, galleryBlockList)
                 }
-                CoroutineScope(Dispatchers.Main).launch {
+                viewModelScope.launch {
                     listener.onRangeInsertedSync(offset, resultList.size) }
             })
     }
@@ -148,7 +149,7 @@ class GalleryListViewModel @Inject constructor(
                 pagePositionMap[displayPage] = galleryArrayListSize
                 galleryBlockList.addAll(resultList)
             }
-            CoroutineScope(Dispatchers.Main).launch {
+            viewModelScope.launch {
                 listener.onRangeInsertedSync(galleryArrayListSize, resultList.size) }
         })
     }
@@ -207,7 +208,7 @@ class GalleryListViewModel @Inject constructor(
                 pagePositionMap[displayPage]?.let { nowPosition ->
                     synchronized(nowPosition) {
                         galleryBlockList[nowPosition] = galleryBlock
-                        CoroutineScope(Dispatchers.Main).launch {
+                        viewModelScope.launch {
                             listener.onItemChangedSync(nowPosition)
                         }
                     }
