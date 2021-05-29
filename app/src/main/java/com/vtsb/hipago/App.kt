@@ -1,9 +1,14 @@
 package com.vtsb.hipago
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class App : Application() {
+@HiltAndroidApp
+class App : Application()
+
+// korean first letter search.
+// todo : local korean search.
+// more optimized
+// https://linuxism.ustd.ip.or.kr/1451
 
 
-
-}
