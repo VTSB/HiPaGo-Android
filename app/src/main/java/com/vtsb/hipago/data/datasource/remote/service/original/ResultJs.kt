@@ -1,6 +1,6 @@
 package com.vtsb.hipago.data.datasource.remote.service.original
 
-import com.vtsb.hipago.data.datasource.remote.service.original.helper.QueryHelper
+import com.vtsb.hipago.data.util.QueryHelper
 import com.vtsb.hipago.domain.entity.TagType
 import java.io.IOException
 import java.security.NoSuchAlgorithmException

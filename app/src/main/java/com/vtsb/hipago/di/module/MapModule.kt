@@ -148,10 +148,11 @@ class MapModule {
 //        return tagLocalizationSynchronizedBiMap.toArray(arrayOfNulls(tagLocalizationSynchronizedBiMap.size))
 //    }
 
+
     @Provides
     @Singleton
     @Named("tagLocalizationBiMapInv")
-    fun provideTagLocalizationBiMapInv(@Named("tagLocalizationBiMap") tagLocalizationBiMap: Array<BiMap<String, String>>): Array<BiMap<String, String>>? {
+    fun provideTagLocalizationBiMapInv(@Named("tagLocalizationBiMap") tagLocalizationBiMap: Array<BiMap<String, String>>): Array<BiMap<String, String>> {
         val tagLocalizationBiMapInv = LinkedList<BiMap<String, String>>()
         for (map in tagLocalizationBiMap) {
             tagLocalizationBiMapInv.add(map.inverse())

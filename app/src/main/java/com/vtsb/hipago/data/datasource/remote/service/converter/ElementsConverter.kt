@@ -7,6 +7,7 @@ import com.vtsb.hipago.data.datasource.remote.entity.TagWithAmount
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.domain.entity.TagType
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.jsoup.select.Elements
 import java.text.ParseException
@@ -18,7 +19,7 @@ import javax.inject.Singleton
 @Singleton
 class ElementsConverter @Inject constructor(
     private val stringConverter: StringConverter,
-    @Named("optionLRThumbnailMSF") private val optionLRThumbnail: StateFlow<Boolean>
+    @Named("optionLRThumbnailMSF") private val optionLRThumbnail: MutableStateFlow<Boolean>
 ) {
 
 

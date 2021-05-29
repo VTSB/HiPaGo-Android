@@ -8,10 +8,11 @@ import org.jsoup.select.Elements
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ResponseBodyConverter {
+class ResponseBodyConverter @Inject constructor() {
 
     @Throws(IOException::class)
     fun toElements(responseBody: ResponseBody): Elements {

@@ -1,8 +1,11 @@
-package com.vtsb.hipago.data.datasource.remote.service.original.helper
+package com.vtsb.hipago.data.util
 
 import android.util.Log
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class QueryHelper {
+@Singleton
+class QueryHelper @Inject constructor() {
 
     private var mode: Int = 0
 

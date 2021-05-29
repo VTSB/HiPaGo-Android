@@ -4,8 +4,11 @@ import android.util.Log
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryFile
 import java.util.*
 import java.util.regex.Pattern
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class CommonJs {
+@Singleton
+class CommonJs @Inject constructor() {
 
     var galleryblockextension = ".html"
     var galleryblockdir = "galleryblock"

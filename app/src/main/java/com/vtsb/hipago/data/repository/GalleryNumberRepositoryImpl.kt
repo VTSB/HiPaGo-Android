@@ -2,7 +2,7 @@ package com.vtsb.hipago.data.repository
 
 import com.vtsb.hipago.data.datasource.remote.adapter.GalleryDataServiceAdapter
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryNumber
-import com.vtsb.hipago.data.util.QuerySplitter
+import com.vtsb.hipago.data.util.QueryHelper
 import com.vtsb.hipago.data.util.TagConverter
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.entity.TagType
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 class GalleryNumberRepositoryImpl @Inject constructor(
     private val galleryDataServiceAdapter: GalleryDataServiceAdapter,
     private val tagConverter: TagConverter,
-    private val querySplitter: QuerySplitter,
+    private val queryHelper: QueryHelper,
 ) : GalleryNumberRepository {
 
     private val galleryNumberBuffer: MutableMap<String, List<Int>> = HashMap()
@@ -24,7 +24,7 @@ class GalleryNumberRepositoryImpl @Inject constructor(
         val trimQuery = query.trim()
 
         return if (
-            !trimQuery.contains(querySplitter.getChar()) ||
+            !trimQuery.contains(queryHelper.getChar()) ||
             !trimQuery.contains(":"))
             Pair(NumberLoadMode.SEARCH, query)
         else
@@ -32,10 +32,7 @@ class GalleryNumberRepositoryImpl @Inject constructor(
                 NumberLoadMode.FAVORITE.otherName-> NumberLoadMode.FAVORITE
                 NumberLoadMode.RECENTLY_WATCHED.otherName-> NumberLoadMode.RECENTLY_WATCHED
                 else-> NumberLoadMode.NEW
-            },
-                querySplitter.replace(tagConverter.toOriginalQuery(trimQuery))!!)
-
-
+            }, queryHelper.replace(tagConverter.toOriginalQuery(trimQuery)))
     }
 
     override fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryNumber {

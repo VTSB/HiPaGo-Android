@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".App"
-        android:theme="@style/Theme.HiPaGoAndroid">
+        android:theme="@style/Theme.HiPaGo">
         <activity android:name=".presentation.view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

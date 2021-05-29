@@ -55,7 +55,7 @@ class GalleryDataServiceAdapter @Inject constructor(
     fun getAllLanguageTags(): List<TagDataWithLocal> =
         stringConverter.toLanguageTagList(galleryDataService.getAllLanguages().string())
 
-    fun getLanguageTagAmount(language: String): Long =
+    fun getLanguageTagAmount(language: String): Int =
         responseConverter.toContentLength(
             galleryDataService.getNumbersFromType("index", language, "bytes=0-0")
                 .raw()) / 4

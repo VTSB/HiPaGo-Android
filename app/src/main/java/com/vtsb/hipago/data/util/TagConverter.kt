@@ -1,7 +1,6 @@
 package com.vtsb.hipago.data.util
 
 import com.google.common.collect.BiMap
-import com.vtsb.hipago.data.datasource.remote.service.original.helper.QueryHelper
 import com.vtsb.hipago.domain.entity.TagType
 import java.util.*
 import javax.inject.Inject
@@ -17,7 +16,8 @@ class TagConverter @Inject constructor(
     @Named("tagTransformerBiMapInv") private val tagTransformerInv: BiMap<String, String>,
     @Named("tagLocalizationBiMap") private val tagLocalization: Array<BiMap<String, String>>,
     @Named("tagLocalizationBiMapInv") private val tagLocalizationInv: Array<BiMap<String, String>>,
-    private val queryHelper: QueryHelper) {
+    private val queryHelper: QueryHelper
+) {
 
     // auto : display -> data -> localization -> display
     // FullTag : contains ':'

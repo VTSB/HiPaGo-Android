@@ -4,7 +4,7 @@ import android.util.Log
 import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.ResponseBodyConverter
 import com.vtsb.hipago.data.datasource.remote.service.original.helper.DataView
-import com.vtsb.hipago.data.datasource.remote.service.original.helper.QueryHelper
+import com.vtsb.hipago.data.util.QueryHelper
 import com.vtsb.hipago.data.datasource.remote.service.original.pojo.*
 import okhttp3.ResponseBody
 import retrofit2.Response
