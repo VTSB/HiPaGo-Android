@@ -20,6 +20,8 @@ class GalleryListFragment : Fragment() {
 
         binding.viewModel = galleryListViewModel
 
+
+
         return binding.root
     }
 

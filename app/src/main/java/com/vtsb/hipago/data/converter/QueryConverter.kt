@@ -1,11 +1,11 @@
-package com.vtsb.hipago.data.util
+package com.vtsb.hipago.data.converter
 
 import android.util.Log
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class QueryHelper @Inject constructor() {
+class QueryConverter @Inject constructor() {
 
     private var mode: Int = 0
 
@@ -105,7 +105,7 @@ class QueryHelper @Inject constructor() {
         } else if (mode == 1) {
             ','
         } else {
-            Log.e(QueryHelper::class.java.simpleName, "wrong splitMode(getChar): $mode")
+            Log.e(QueryConverter::class.java.simpleName, "wrong splitMode(getChar): $mode")
             0.toChar()
         }
     }

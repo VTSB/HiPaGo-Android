@@ -1,4 +1,4 @@
-package com.vtsb.hipago.data.datasource.remote.adapter
+package com.vtsb.hipago.data.mapper
 
 import com.vtsb.hipago.data.datasource.remote.service.GalleryService
 import com.vtsb.hipago.data.datasource.remote.service.converter.ElementsConverter
@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GalleryServiceAdapter @Inject constructor(
+class GalleryServiceMapper @Inject constructor(
     private val galleryService: GalleryService,
     private val responseBodyConverter: ResponseBodyConverter,
     private val elementsConverter: ElementsConverter,

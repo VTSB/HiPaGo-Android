@@ -1,4 +1,4 @@
-package com.vtsb.hipago.data.datasource.remote.adapter
+package com.vtsb.hipago.data.mapper
 
 import com.vtsb.hipago.data.datasource.local.entity.pojo.TagDataWithLocal
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryBlockWithOtherData
@@ -16,7 +16,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GalleryDataServiceAdapter @Inject constructor(
+class GalleryDataServiceMapper @Inject constructor(
     private val galleryDataService: GalleryDataService,
     private val resultJs: ResultJs,
     private val searchJs: SearchJs,

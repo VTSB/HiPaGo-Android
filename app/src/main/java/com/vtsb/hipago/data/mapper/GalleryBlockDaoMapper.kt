@@ -1,8 +1,8 @@
-package com.vtsb.hipago.data.datasource.local.adapter
+package com.vtsb.hipago.data.mapper
 
 import android.util.Log
 import com.google.common.collect.BiMap
-import com.vtsb.hipago.data.util.TagConverter
+import com.vtsb.hipago.data.converter.TagConverter
 import com.vtsb.hipago.data.datasource.local.dao.GalleryBlockDao
 import com.vtsb.hipago.data.datasource.local.entity.GalleryData
 import com.vtsb.hipago.data.datasource.local.entity.GalleryRelated
@@ -19,7 +19,7 @@ import javax.inject.Singleton
 import kotlin.collections.HashMap
 
 @Singleton
-class GalleryBlockDaoAdapter @Inject constructor(
+class GalleryBlockDaoMapper @Inject constructor(
     private val galleryBlockDao: GalleryBlockDao,
     @Named("tagNumberBiMap") private val tagNumberBiMapArray: Array<BiMap<String, Long>>,
     private val tagConverter: TagConverter

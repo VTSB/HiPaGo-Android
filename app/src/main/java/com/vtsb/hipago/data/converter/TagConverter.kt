@@ -1,4 +1,4 @@
-package com.vtsb.hipago.data.util
+package com.vtsb.hipago.data.converter
 
 import com.google.common.collect.BiMap
 import com.vtsb.hipago.domain.entity.TagType
@@ -16,7 +16,7 @@ class TagConverter @Inject constructor(
     @Named("tagTransformerBiMapInv") private val tagTransformerInv: BiMap<String, String>,
     @Named("tagLocalizationBiMap") private val tagLocalization: Array<BiMap<String, String>>,
     @Named("tagLocalizationBiMapInv") private val tagLocalizationInv: Array<BiMap<String, String>>,
-    private val queryHelper: QueryHelper
+    private val queryConverter: QueryConverter
 ) {
 
     // auto : display -> data -> localization -> display
@@ -24,21 +24,21 @@ class TagConverter @Inject constructor(
     // Just : not convert ' ' to '_'
 
     fun toLocalQueryJust(fullQuery: String): String {
-        val queryArray: Array<String> = queryHelper.splitAutoConvert(fullQuery)
+        val queryArray: Array<String> = queryConverter.splitAutoConvert(fullQuery)
         if (queryArray.size == 1 && queryArray[0].isEmpty()) return fullQuery
         for (i in queryArray.indices) {
             queryArray[i] = toLocalFullTag(queryArray[i])
         }
-        return queryHelper.justCombine(queryArray)
+        return queryConverter.justCombine(queryArray)
     }
 
     fun toOriginalQuery(fullQuery: String): String {
-        val queryArray: Array<String> = queryHelper.splitAutoConvert(fullQuery)
+        val queryArray: Array<String> = queryConverter.splitAutoConvert(fullQuery)
         if (queryArray.size == 1 && queryArray[0].isEmpty()) return fullQuery
         for (i in queryArray.indices) {
             queryArray[i] = toOriginalFullTag(queryArray[i])
         }
-        return queryHelper.combine(queryArray)
+        return queryConverter.combine(queryArray)
     }
 
     fun toLocalFullTag(original: String): String {

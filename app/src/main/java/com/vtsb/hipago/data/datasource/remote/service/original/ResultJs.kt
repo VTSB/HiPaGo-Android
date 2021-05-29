@@ -1,6 +1,6 @@
 package com.vtsb.hipago.data.datasource.remote.service.original
 
-import com.vtsb.hipago.data.util.QueryHelper
+import com.vtsb.hipago.data.converter.QueryConverter
 import com.vtsb.hipago.domain.entity.TagType
 import java.io.IOException
 import java.security.NoSuchAlgorithmException
@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class ResultJs @Inject constructor(
     private val searchJs: SearchJs,
-    private val queryHelper: QueryHelper
+    private val queryConverter: QueryConverter
 ) {
 
     var regex_do_search = "^-"
@@ -24,7 +24,7 @@ class ResultJs @Inject constructor(
         val positive_terms: MutableList<String> = ArrayList()
         val negative_terms: MutableList<String> = ArrayList()
         val terms: Array<String> =
-            queryHelper.splitAutoConvert(query_string.lowercase(Locale.getDefault()).trim { it <= ' ' })
+            queryConverter.splitAutoConvert(query_string.lowercase(Locale.getDefault()).trim { it <= ' ' })
         var searchLanguage: String? = null
         for (s in terms) {
             if (pattern_do_search.matcher(s).matches()) {

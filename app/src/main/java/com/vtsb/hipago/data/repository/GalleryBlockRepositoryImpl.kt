@@ -2,21 +2,18 @@ package com.vtsb.hipago.data.repository
 
 import android.util.Log
 import com.google.common.collect.BiMap
-import com.vtsb.hipago.data.util.TagConverter
-import com.vtsb.hipago.data.datasource.local.adapter.GalleryBlockDaoAdapter
-import com.vtsb.hipago.data.datasource.remote.adapter.GalleryDataServiceAdapter
-import com.vtsb.hipago.data.datasource.remote.adapter.GalleryServiceAdapter
+import com.vtsb.hipago.data.converter.TagConverter
+import com.vtsb.hipago.data.mapper.GalleryBlockDaoMapper
+import com.vtsb.hipago.data.mapper.GalleryDataServiceMapper
+import com.vtsb.hipago.data.mapper.GalleryServiceMapper
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.domain.repository.GalleryBlockRepository
-import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.sql.Date
 import java.util.*
@@ -27,9 +24,9 @@ import javax.inject.Singleton
 @Singleton
 
 class GalleryBlockRepositoryImpl @Inject constructor(
-    private val galleryBlockDaoAdapter: GalleryBlockDaoAdapter,
-    private val galleryServiceAdapter: GalleryServiceAdapter,
-    private val galleryDataServiceAdapter: GalleryDataServiceAdapter,
+    private val galleryBlockDaoMapper: GalleryBlockDaoMapper,
+    private val galleryServiceMapper: GalleryServiceMapper,
+    private val galleryDataServiceMapper: GalleryDataServiceMapper,
     @Named("tagLocalizationBiMap") private val tagLocalizationBiMap: Array<BiMap<String, String>>,
     private val tagConverter: TagConverter,
 ) : GalleryBlockRepository {
@@ -52,7 +49,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
     }
 
     private suspend fun getFromDB(id: Int, save: Boolean, flow: MutableSharedFlow<GalleryBlock>) {
-        val galleryBlockWithOtherData = galleryBlockDaoAdapter.getGalleryBlock(id)
+        val galleryBlockWithOtherData = galleryBlockDaoMapper.getGalleryBlock(id)
         if (galleryBlockWithOtherData == null) {
             getNotDetailed(id, save, flow)
         }
@@ -67,7 +64,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
 
     private suspend fun getNotDetailed(id: Int, save: Boolean, flow: MutableSharedFlow<GalleryBlock>) {
         try {
-            val galleryBlockWithOtherData = galleryDataServiceAdapter.getNotDetailed(id)
+            val galleryBlockWithOtherData = galleryDataServiceMapper.getNotDetailed(id)
             flow.emit(galleryBlockWithOtherData.galleryBlock)
             getDetailed(id, save, galleryBlockWithOtherData.galleryBlock, galleryBlockWithOtherData.detailedURL, flow)
         } catch (e: Exception) {
@@ -78,7 +75,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
 
     private suspend fun getDetailed(id: Int, save: Boolean, prevGalleryBlock: GalleryBlock, url:String, flow: MutableSharedFlow<GalleryBlock>) {
         try {
-            val galleryBlock = galleryServiceAdapter.getDetailedGalleryBlock(id, url)
+            val galleryBlock = galleryServiceMapper.getDetailedGalleryBlock(id, url)
             flow.emit(galleryBlock)
             if (save) save(galleryBlock, url)
         } catch (e: Exception) {
@@ -88,7 +85,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
 
     private fun save(galleryBlock: GalleryBlock, detailedUrl: String) {
         try {
-            galleryBlockDaoAdapter.save(galleryBlock, detailedUrl)
+            galleryBlockDaoMapper.save(galleryBlock, detailedUrl)
         } catch (e: Exception) {
             Log.e(this.javaClass.simpleName, "failed to save galleryBlock(${galleryBlock.id}) : ${e.message}")
         }

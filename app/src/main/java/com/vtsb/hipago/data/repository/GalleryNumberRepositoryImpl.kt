@@ -1,9 +1,9 @@
 package com.vtsb.hipago.data.repository
 
-import com.vtsb.hipago.data.datasource.remote.adapter.GalleryDataServiceAdapter
+import com.vtsb.hipago.data.mapper.GalleryDataServiceMapper
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryNumber
-import com.vtsb.hipago.data.util.QueryHelper
-import com.vtsb.hipago.data.util.TagConverter
+import com.vtsb.hipago.data.converter.QueryConverter
+import com.vtsb.hipago.data.converter.TagConverter
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.entity.TagType
 import com.vtsb.hipago.domain.repository.GalleryNumberRepository
@@ -13,9 +13,9 @@ import javax.inject.Singleton
 
 @Singleton
 class GalleryNumberRepositoryImpl @Inject constructor(
-    private val galleryDataServiceAdapter: GalleryDataServiceAdapter,
+    private val galleryDataServiceMapper: GalleryDataServiceMapper,
     private val tagConverter: TagConverter,
-    private val queryHelper: QueryHelper,
+    private val queryConverter: QueryConverter,
 ) : GalleryNumberRepository {
 
     private val galleryNumberBuffer: MutableMap<String, List<Int>> = HashMap()
@@ -24,7 +24,7 @@ class GalleryNumberRepositoryImpl @Inject constructor(
         val trimQuery = query.trim()
 
         return if (
-            !trimQuery.contains(queryHelper.getChar()) ||
+            !trimQuery.contains(queryConverter.getChar()) ||
             !trimQuery.contains(":"))
             Pair(NumberLoadMode.SEARCH, query)
         else
@@ -32,7 +32,7 @@ class GalleryNumberRepositoryImpl @Inject constructor(
                 NumberLoadMode.FAVORITE.otherName-> NumberLoadMode.FAVORITE
                 NumberLoadMode.RECENTLY_WATCHED.otherName-> NumberLoadMode.RECENTLY_WATCHED
                 else-> NumberLoadMode.NEW
-            }, queryHelper.replace(tagConverter.toOriginalQuery(trimQuery)))
+            }, queryConverter.replace(tagConverter.toOriginalQuery(trimQuery)))
     }
 
     override fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryNumber {
@@ -44,7 +44,7 @@ class GalleryNumberRepositoryImpl @Inject constructor(
                 val key = getBufferKey(query, language)
                 var buffer = galleryNumberBuffer[key]
                 if (buffer == null) {
-                    buffer = galleryDataServiceAdapter.doSearch(query, language)
+                    buffer = galleryDataServiceMapper.doSearch(query, language)
                     galleryNumberBuffer[key] = buffer
                 }
                 return GalleryNumber(buffer.subList(from, to), buffer.size)
@@ -61,7 +61,7 @@ class GalleryNumberRepositoryImpl @Inject constructor(
 
                 when(query) {
                     "index", "popular"->
-                        galleryDataServiceAdapter.getNumbers(
+                        galleryDataServiceMapper.getNumbers(
                             query, language,
                             fromByte, toByte, doLoadLength
                         )
@@ -69,17 +69,17 @@ class GalleryNumberRepositoryImpl @Inject constructor(
                         val typeAndTag = query.split(":")
                         when (val tagType = tagConverter.getType(typeAndTag[0])) {
                             TagType.LANGUAGE ->
-                                galleryDataServiceAdapter.getNumbers(
+                                galleryDataServiceMapper.getNumbers(
                                     "index", typeAndTag[1],
                                     fromByte, toByte, doLoadLength
                                 )
                             TagType.MALE, TagType.FEMALE ->
-                                galleryDataServiceAdapter.getNumbers(
+                                galleryDataServiceMapper.getNumbers(
                                     tagType.otherName, "${tagType.otherName}:${typeAndTag[1]}",
                                     language, fromByte, toByte, doLoadLength
                                 )
                             else ->
-                                galleryDataServiceAdapter.getNumbers(
+                                galleryDataServiceMapper.getNumbers(
                                     tagType.otherName, typeAndTag[1],
                                     language, fromByte, toByte, doLoadLength
                                 )

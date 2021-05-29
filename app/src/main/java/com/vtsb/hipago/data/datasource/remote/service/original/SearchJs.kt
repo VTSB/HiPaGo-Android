@@ -4,7 +4,7 @@ import android.util.Log
 import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.ResponseBodyConverter
 import com.vtsb.hipago.data.datasource.remote.service.original.helper.DataView
-import com.vtsb.hipago.data.util.QueryHelper
+import com.vtsb.hipago.data.converter.QueryConverter
 import com.vtsb.hipago.data.datasource.remote.service.original.pojo.*
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -20,7 +20,7 @@ class SearchJs @Inject constructor(
     private val searchlibJs: SearchlibJs,
     private val galleryDataService: GalleryDataService,
     private val responseBodyConverter: ResponseBodyConverter,
-    private val queryHelper: QueryHelper,
+    private val queryConverter: QueryConverter,
 ) {
 
 
@@ -53,9 +53,9 @@ class SearchJs @Inject constructor(
             return GetSuggestionForQuery(ArrayList<Suggestion>().toArray(arrayOfNulls<Suggestion>(0)), 0)
         }
         val newQuery = query.lowercase(Locale.getDefault())
-        val terms: Array<String> = queryHelper.split(newQuery)
+        val terms: Array<String> = queryConverter.split(newQuery)
         var search_term = terms[terms.size - 1]
-        if (newQuery[newQuery.length - 1] == queryHelper.getChar()) {
+        if (newQuery[newQuery.length - 1] == queryConverter.getChar()) {
             search_term = ""
         }
         search_term = search_term.replace("-", "")
