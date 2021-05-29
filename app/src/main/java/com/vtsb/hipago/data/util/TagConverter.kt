@@ -1,4 +1,4 @@
-package com.vtsb.hipago.data.converter
+package com.vtsb.hipago.data.util
 
 import com.google.common.collect.BiMap
 import com.vtsb.hipago.data.datasource.remote.service.original.helper.QueryHelper

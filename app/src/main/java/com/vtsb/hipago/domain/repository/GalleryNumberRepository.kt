@@ -9,4 +9,6 @@ interface GalleryNumberRepository {
 
     fun clearBuffer(query: String, language: String)
 
+    fun getLoadModeFromQuery(query: String): Pair<NumberLoadMode, String>
+
 }

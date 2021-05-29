@@ -2,7 +2,7 @@ package com.vtsb.hipago.data.datasource.local.adapter
 
 import android.util.Log
 import com.google.common.collect.BiMap
-import com.vtsb.hipago.data.converter.TagConverter
+import com.vtsb.hipago.data.util.TagConverter
 import com.vtsb.hipago.data.datasource.local.dao.GalleryBlockDao
 import com.vtsb.hipago.data.datasource.local.entity.GalleryData
 import com.vtsb.hipago.data.datasource.local.entity.GalleryRelated

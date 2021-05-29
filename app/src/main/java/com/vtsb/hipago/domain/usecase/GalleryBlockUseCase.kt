@@ -22,4 +22,7 @@ class GalleryBlockUseCase @Inject constructor(
     fun clearGalleryNumberBuffer(query: String, language: String) =
         galleryNumberRepository.clearBuffer(query, language)
 
+    fun getLoadModeFromQuery(query: String): Pair<NumberLoadMode, String> =
+        galleryNumberRepository.getLoadModeFromQuery(query)
+
 }
