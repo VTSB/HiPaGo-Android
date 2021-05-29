@@ -4,13 +4,13 @@ import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vtsb.hipago.App
 import com.vtsb.hipago.R
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.usecase.GalleryBlockUseCase
-import com.vtsb.hipago.presentation.view.adapter.RecyclerViewAdapter
+import com.vtsb.hipago.presentation.view.adapter.SearchCursorAdapter
+import com.vtsb.hipago.presentation.view.custom.adapter.RecyclerViewAdapter
 import com.vtsb.hipago.util.Constants.PAGE_SIZE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.sql.Date
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -33,7 +32,7 @@ class GalleryListViewModel @Inject constructor(
     @Named("useLanguageMSF") private val useLanguageMSF: MutableStateFlow<String>,
 ) : ViewModel() {
 
-    val galleryBlockList: MutableList<GalleryBlock> = ArrayList()
+    private val galleryBlockList: MutableList<GalleryBlock> = ArrayList()
     private val galleryIdPageMap: MutableMap<Int, Int> = ConcurrentHashMap()
     private val pagePositionMap: MutableMap<Int, Int> = ConcurrentHashMap()
 
@@ -54,6 +53,12 @@ class GalleryListViewModel @Inject constructor(
 
     var isLoading = false
 
+//    private val searchResultGetter: SearchCursorAdapter.SearchResultGetter =
+//        SearchCursorAdapter.SearchResultGetter { query_text ->
+//            searchResultRepository.getSuggestionsSync(
+//                query_text
+//            )
+//        }
 
 
     // call only once
@@ -80,9 +85,8 @@ class GalleryListViewModel @Inject constructor(
             offset = 3
             galleryBlockList.addAll(galleryBlockList)
             listener.onRangeInsertedSync(0, offset)
-            CoroutineScope(Dispatchers.IO).launch {
-                reloadGalleryBlock(id, 1)
-            }
+            reloadGalleryBlock(id, 1)
+
         } catch (ignored: NumberFormatException) {
             offset = 0
         }
@@ -188,9 +192,7 @@ class GalleryListViewModel @Inject constructor(
                 callback.invoke(galleryBlockList)
 
                 for (id in idList) {
-                    withContext(Dispatchers.IO) {
-                        reloadGalleryBlock(id, displayPage)
-                    }
+                    reloadGalleryBlock(id, displayPage)
                 }
             } finally {
                 isLoading = false
@@ -200,20 +202,22 @@ class GalleryListViewModel @Inject constructor(
 
     }
 
-    private suspend fun reloadGalleryBlock(id: Int, displayPage: Int, skipDB: Boolean = false) {
-        galleryBlockUseCase.getGalleryBlock(id, save = true, skipDB)
-            .collect { galleryBlock ->
-                // todo : filter
+    fun reloadGalleryBlock(id: Int, displayPage: Int, skipDB: Boolean = false) {
+        CoroutineScope(Dispatchers.IO).launch {
+            galleryBlockUseCase.getGalleryBlock(id, save = true, skipDB)
+                .collect { galleryBlock ->
+                    // todo : filter
 
-                pagePositionMap[displayPage]?.let { nowPosition ->
-                    synchronized(nowPosition) {
-                        galleryBlockList[nowPosition] = galleryBlock
-                        viewModelScope.launch {
-                            listener.onItemChangedSync(nowPosition)
+                    pagePositionMap[displayPage]?.let { nowPosition ->
+                        synchronized(nowPosition) {
+                            galleryBlockList[nowPosition] = galleryBlock
+                            viewModelScope.launch {
+                                listener.onItemChangedSync(nowPosition)
+                            }
                         }
                     }
                 }
-            }
+        }
     }
 
 
@@ -247,5 +251,12 @@ class GalleryListViewModel @Inject constructor(
         maxPage.value = length / PAGE_SIZE + if (contentRange % PAGE_SIZE != 0) 1 else 0
     }
 
+    fun getGalleryBlockList(): List<GalleryBlock> = galleryBlockList
+    fun getGalleryIdPageMap(): Map<Int, Int> = galleryIdPageMap
+    fun getPagePositionMap(): Map<Int, Int> = pagePositionMap
+    fun getBPage(): Int = bPage
+    fun getTPage(): Int = tPage
+    fun getQuery(): String = query
+    fun getLanguage(): String = language
 
 }

@@ -3,11 +3,11 @@ package com.vtsb.hipago.presentation.view.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.google.common.base.Splitter
 import com.vtsb.hipago.databinding.ItemGalleryBlockType1Binding
 import com.vtsb.hipago.databinding.ItemGalleryBlockType2Binding
 import com.vtsb.hipago.databinding.ItemSplitterBinding
 import com.vtsb.hipago.domain.entity.GalleryBlock
+import com.vtsb.hipago.presentation.view.custom.adapter.RecyclerViewAdapter
 import com.vtsb.hipago.presentation.viewmodel.GalleryListViewModel
 
 class GalleryListAdapter constructor(
@@ -15,7 +15,7 @@ class GalleryListAdapter constructor(
 ) : RecyclerViewAdapter<RecyclerView.ViewHolder>() {
 
     private val nowViewType = 1
-    private val galleryBlockList: List<GalleryBlock> = galleryListViewModel.galleryBlockList
+    private val galleryBlockList: List<GalleryBlock> = galleryListViewModel.getGalleryBlockList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)

@@ -3,6 +3,7 @@ package com.vtsb.hipago.util
 object Constants {
 
     const val PAGE_SIZE = 25
+    const val PREFETCH_PAGE = 2
 
     // ai
     // mi

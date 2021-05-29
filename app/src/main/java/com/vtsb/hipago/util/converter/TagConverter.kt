@@ -1,4 +1,4 @@
-package com.vtsb.hipago.data.converter
+package com.vtsb.hipago.util.converter
 
 import com.google.common.collect.BiMap
 import com.vtsb.hipago.domain.entity.TagType
@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class TagConverter @Inject constructor(
     //@Named("tagNumberBiMap") private val tagNumber: Array<BiMap<String, Long>>,
     //@Named("stringTypeBiMap") private val numberType: BiMap<TagType, String>,
-    @Named("stringTypeBiMapInv") private val numberTypeInv: BiMap<String, TagType>,
+    @Named("stringTypeBiMap") private val stringType: BiMap<String, TagType>,
     @Named("tagTransformerBiMap") private val tagTransformer: BiMap<String, String>,
     @Named("tagTransformerBiMapInv") private val tagTransformerInv: BiMap<String, String>,
     @Named("tagLocalizationBiMap") private val tagLocalization: Array<BiMap<String, String>>,
@@ -133,7 +133,7 @@ class TagConverter @Inject constructor(
     }
 
     fun getType(term: String): TagType {
-        return numberTypeInv[term]!!
+        return stringType[term]!!
     }
 
     fun toDataTag(tagType: TagType, tag: String): Result {

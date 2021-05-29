@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/nav_recent"
+        android:title="@string/recent" />
+    <item
+        android:id="@+id/nav_popularity"
+        android:title="@string/popularity" />
+    <item
+        android:id="@+id/nav_recent_watched"
+        android:title="@string/recent_watched" />
+    <item
+        android:id="@+id/nav_favorite"
+        android:title="@string/favorite" />
+
+    <item
+        android:id="@+id/random"
+        android:title="@string/random" />
+
+    <item android:title="@string/menu_lang">
+        <menu>
+            <item
+                android:id="@+id/nav_lang_all"
+                android:title="@string/menu_lang_all" />
+            <item
+                android:id="@+id/nav_lang_korean"
+                android:title="@string/menu_lang_ko" />
+            <item
+                android:id="@+id/nav_lang_english"
+                android:title="@string/menu_lang_en" />
+            <item
+                android:id="@+id/nav_lang_japanese"
+                android:title="@string/menu_lang_jp" />
+        </menu>
+    </item>
+
+    <item android:title="@string/menu_type">
+        <menu>
+            <item
+                android:id="@+id/nav_type_doujinshi"
+                android:title="@string/menu_type_doujinshi" />
+            <item
+                android:id="@+id/nav_type_manga"
+                android:title="@string/menu_type_manga" />
+            <item
+                android:id="@+id/nav_type_gamecg"
+                android:title="@string/menu_type_gamecg" />
+            <item
+                android:id="@+id/nav_type_artistcg"
+                android:title="@string/menu_type_artistcg" />
+            <item
+                android:id="@+id/nav_type_anime"
+                android:title="@string/menu_type_anime" />
+
+        </menu>
+    </item>
+
+
+</menu>

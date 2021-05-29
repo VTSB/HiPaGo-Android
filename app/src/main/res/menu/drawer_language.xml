@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/back"
+        android:title="@string/go_back" />
+
+    <item
+        android:id="@+id/random"
+        android:title="@string/random" />
+
+    <item android:title="@string/menu_lang">
+        <menu>
+            <item
+                android:id="@+id/nav_lang_all"
+                android:title="@string/menu_lang_all" />
+            <item
+                android:id="@+id/nav_lang_korean"
+                android:title="@string/menu_lang_ko" />
+            <item
+                android:id="@+id/nav_lang_english"
+                android:title="@string/menu_lang_en" />
+            <item
+                android:id="@+id/nav_lang_japanese"
+                android:title="@string/menu_lang_jp" />
+        </menu>
+    </item>
+
+</menu>
