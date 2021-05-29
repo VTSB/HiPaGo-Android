@@ -20,13 +20,13 @@ interface GalleryDataService {
     fun getNumbersFromType(
         @Path("type") type: String,
         @Path("language") language: String,
-        @Header("range") range: String
+        @Header("range") range: String? = null
     ): Response<ResponseBody>
 
     @GET("{type}/{tag}-{language}.nozomi")
     fun getNumbers(
         @Path("type") type: String,
-        @Path("tag") tag: String? = null,
+        @Path("tag") tag: String,
         @Path("language") language: String,
         @Header("range") range: String? = null
     ): Response<ResponseBody>

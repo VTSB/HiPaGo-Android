@@ -6,7 +6,9 @@ import com.vtsb.hipago.domain.entity.TagType
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class TagConverter @Inject constructor(
     //@Named("tagNumberBiMap") private val tagNumber: Array<BiMap<String, Long>>,
     //@Named("stringTypeBiMap") private val numberType: BiMap<TagType, String>,

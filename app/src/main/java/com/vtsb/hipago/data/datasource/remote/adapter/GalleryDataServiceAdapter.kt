@@ -9,7 +9,9 @@ import com.vtsb.hipago.data.datasource.remote.service.converter.*
 import com.vtsb.hipago.data.datasource.remote.service.original.ResultJs
 import com.vtsb.hipago.data.datasource.remote.service.original.SearchJs
 import com.vtsb.hipago.data.datasource.remote.service.original.pojo.Suggestion
+import okhttp3.ResponseBody
 import org.json.JSONObject
+import retrofit2.Response
 import javax.inject.Inject
 
 class GalleryDataServiceAdapter @Inject constructor(
@@ -56,14 +58,19 @@ class GalleryDataServiceAdapter @Inject constructor(
             galleryDataService.getNumbersFromType("index", language, "bytes=0-0")
                 .raw()) / 4
 
+    fun getNumbers(type: String, language: String, doLoadLength: Boolean = false): GalleryNumber =
+        getNumbers(galleryDataService.getNumbersFromType(type, language, null), doLoadLength)
+
+    fun getNumbers(type: String, language: String, from: Int, to: Int, doLoadLength: Boolean = false): GalleryNumber =
+        getNumbers(galleryDataService.getNumbersFromType(type, language, "bytes=$from-$to"), doLoadLength)
+
     fun getNumbers(type: String, tag: String, language: String, doLoadLength: Boolean = false): GalleryNumber =
-        getNumbers(type, tag, language, null, doLoadLength)
+        getNumbers(galleryDataService.getNumbers(type, tag, language), doLoadLength)
 
     fun getNumbers(type: String, tag: String, language: String, from: Int, to: Int, doLoadLength: Boolean = false): GalleryNumber =
-        getNumbers(type, tag, language, "bytes=$from-$to", doLoadLength)
+        getNumbers(galleryDataService.getNumbers(type, tag, language, "bytes=$from-$to"), doLoadLength)
 
-    private fun getNumbers(type: String, tag: String, language: String, range: String?, doLoadLength: Boolean): GalleryNumber {
-        val response = galleryDataService.getNumbers(type, tag, language, range)
+    private fun getNumbers(response: Response<ResponseBody>, doLoadLength: Boolean): GalleryNumber {
         val r = response.raw()
         val responseBody = response.body()
         var numberTotalLength: Long = 0

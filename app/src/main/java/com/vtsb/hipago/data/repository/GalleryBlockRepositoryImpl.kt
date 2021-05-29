@@ -78,7 +78,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun save(galleryBlock: GalleryBlock, detailedUrl: String) {
+    private fun save(galleryBlock: GalleryBlock, detailedUrl: String) {
         try {
             galleryBlockDaoAdapter.save(galleryBlock, detailedUrl)
         } catch (e: Exception) {
