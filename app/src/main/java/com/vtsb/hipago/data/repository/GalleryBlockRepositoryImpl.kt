@@ -9,9 +9,13 @@ import com.vtsb.hipago.data.datasource.remote.adapter.GalleryServiceAdapter
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.domain.repository.GalleryBlockRepository
+import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.sql.Date
@@ -21,16 +25,20 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
+
 class GalleryBlockRepositoryImpl @Inject constructor(
     private val galleryBlockDaoAdapter: GalleryBlockDaoAdapter,
     private val galleryServiceAdapter: GalleryServiceAdapter,
     private val galleryDataServiceAdapter: GalleryDataServiceAdapter,
     @Named("tagLocalizationBiMap") private val tagLocalizationBiMap: Array<BiMap<String, String>>,
     private val tagConverter: TagConverter,
-    ) : GalleryBlockRepository {
+) : GalleryBlockRepository {
 
-    override fun getGalleryBlock(id: Int, save: Boolean, skipDB: Boolean): StateFlow<GalleryBlock> {
-        val flow = MutableStateFlow(GalleryBlock(id, GalleryBlockType.LOADING, "", Date(0), mapOf(), "", LinkedList()))
+    override fun getGalleryBlock(id: Int, save: Boolean, skipDB: Boolean): SharedFlow<GalleryBlock> {
+
+        //val flow = MutableStateFlow(GalleryBlock(id, GalleryBlockType.LOADING, "", Date(0), mapOf(), "", LinkedList()))
+        val flow = MutableSharedFlow<GalleryBlock>(1, 1, BufferOverflow.DROP_OLDEST)
+
 
         CoroutineScope(Dispatchers.IO).launch {
             if (!skipDB) {
@@ -43,7 +51,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
         return flow
     }
 
-    private suspend fun getFromDB(id: Int, save: Boolean, flow: MutableStateFlow<GalleryBlock>) {
+    private suspend fun getFromDB(id: Int, save: Boolean, flow: MutableSharedFlow<GalleryBlock>) {
         val galleryBlockWithOtherData = galleryBlockDaoAdapter.getGalleryBlock(id)
         if (galleryBlockWithOtherData == null) {
             getNotDetailed(id, save, flow)
@@ -57,7 +65,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getNotDetailed(id: Int, save: Boolean, flow: MutableStateFlow<GalleryBlock>) {
+    private suspend fun getNotDetailed(id: Int, save: Boolean, flow: MutableSharedFlow<GalleryBlock>) {
         try {
             val galleryBlockWithOtherData = galleryDataServiceAdapter.getNotDetailed(id)
             flow.emit(galleryBlockWithOtherData.galleryBlock)
@@ -68,7 +76,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getDetailed(id: Int, save: Boolean, prevGalleryBlock: GalleryBlock, url:String, flow: MutableStateFlow<GalleryBlock>) {
+    private suspend fun getDetailed(id: Int, save: Boolean, prevGalleryBlock: GalleryBlock, url:String, flow: MutableSharedFlow<GalleryBlock>) {
         try {
             val galleryBlock = galleryServiceAdapter.getDetailedGalleryBlock(id, url)
             flow.emit(galleryBlock)

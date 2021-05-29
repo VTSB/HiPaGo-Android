@@ -5,6 +5,7 @@ import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.repository.GalleryBlockRepository
 import com.vtsb.hipago.domain.repository.GalleryNumberRepository
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
@@ -13,10 +14,10 @@ class GalleryBlockUseCase @Inject constructor(
     private val galleryNumberRepository: GalleryNumberRepository,
 ) {
 
-    fun getGalleryNumberListByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, pageSize: Int, doLoadLength: Boolean): GalleryNumber =
-        galleryNumberRepository.getNumbersByPage(loadMode, query, language, page, pageSize, doLoadLength)
+    fun getGalleryNumberListByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryNumber =
+        galleryNumberRepository.getNumbersByPage(loadMode, query, language, page, doLoadLength)
 
-    fun getGalleryBlock(id: Int, save: Boolean=true, skipDB: Boolean=false): StateFlow<GalleryBlock> =
+    fun getGalleryBlock(id: Int, save: Boolean=true, skipDB: Boolean=false): SharedFlow<GalleryBlock> =
         galleryBlockRepository.getGalleryBlock(id, save, skipDB)
 
     fun clearGalleryNumberBuffer(query: String, language: String) =

@@ -5,9 +5,9 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val listener: Listener = object: Listener {
-//        override fun onItemChanged(position: Int) {
-//            AndroidSchedulers.mainThread().scheduleDirect { notifyItemChanged(position) }
-//        }
+        override fun onItemChangedSync(position: Int) {
+            notifyItemChanged(position)
+        }
 //        override fun onRangeInserted(positionStart: Int, itemCount: Int) {
 //            AndroidSchedulers.mainThread().scheduleDirect { onRangeInsertedSync(positionStart, itemCount) }
 //        }
@@ -31,7 +31,7 @@ abstract class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolde
     fun getListener(): Listener = listener
 
     interface Listener {
-//        fun onItemChanged(position: Int)
+        fun onItemChangedSync(position: Int)
 //        fun onRangeInserted(positionStart: Int, itemCount: Int)
 //        fun onRangeRemoved(positionStart: Int, itemCount: Int)
         fun onRangeInsertedSync(positionStart: Int, itemCount: Int)

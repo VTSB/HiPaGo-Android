@@ -1,26 +1,40 @@
 package com.vtsb.hipago.presentation.viewmodel
 
+import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.vtsb.hipago.App
+import com.vtsb.hipago.R
 import com.vtsb.hipago.domain.entity.GalleryBlock
+import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.usecase.GalleryBlockUseCase
 import com.vtsb.hipago.presentation.view.adapter.RecyclerViewAdapter
+import com.vtsb.hipago.util.Constants.PAGE_SIZE
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.sql.Date
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class GalleryListViewModel @Inject constructor(
     private val galleryBlockUseCase: GalleryBlockUseCase,
+    private val application: Application,
     @Named("useLanguageMSF") private val useLanguageMSF: MutableStateFlow<String>,
 ) : ViewModel() {
 
     val galleryBlockList: MutableList<GalleryBlock> = ArrayList()
-    val galleryNumberPageMap: MutableMap<Int, Int> = ConcurrentHashMap()
-    val pagePositionHashMap: MutableMap<Int, Int> = ConcurrentHashMap()
+    private val galleryIdPageMap: MutableMap<Int, Int> = ConcurrentHashMap()
+    private val pagePositionMap: MutableMap<Int, Int> = ConcurrentHashMap()
 
     private lateinit var listener: RecyclerViewAdapter.Listener
     private lateinit var loadMode: NumberLoadMode
@@ -37,16 +51,45 @@ class GalleryListViewModel @Inject constructor(
     val maxPage = MutableLiveData(-1)
     private var contentRange = -1
 
+    var isLoading = false
+
 
 
     // call only once
     fun init(query: String, listener: RecyclerViewAdapter.Listener) {
-
         setQuery(query)
         this.listener = listener
 
+        try {
+            val id = query.toInt()
+            val galleryBlockList: MutableList<GalleryBlock> = java.util.ArrayList()
+            galleryBlockList.add(
+                getSplitter(
+                    application.resources.getString(R.string.gallery)
+                )
+            )
+            galleryBlockList.add(GalleryBlock(id, GalleryBlockType.LOADING, "", Date(0), mapOf(), "", LinkedList()))
+            galleryBlockList.add(
+                getSplitter(
+                    application.resources.getString(R.string.search_word)
+                )
+            )
+            galleryIdPageMap[0] = 1
+            galleryIdPageMap[id] = 1
+            offset = 3
+            galleryBlockList.addAll(galleryBlockList)
+            listener.onRangeInsertedSync(0, offset)
+            CoroutineScope(Dispatchers.IO).launch {
+                reloadGalleryBlock(id, 1)
+            }
+        } catch (ignored: NumberFormatException) {
+            offset = 0
+        }
+
     }
 
+    private fun getSplitter(title: String): GalleryBlock =
+        GalleryBlock(0, GalleryBlockType.LOADING, title, Date(0), mapOf(), "", LinkedList())
 
 
     fun changePage(page: Int) {
@@ -70,12 +113,107 @@ class GalleryListViewModel @Inject constructor(
         if (this.language != language) {
             galleryBlockUseCase.clearGalleryNumberBuffer(this.query, this.language)
             this.language = language
+            this.useLanguageMSF.compareAndSet(language, language)
             resetValues()
         }
     }
 
-    // todo: implement real load functions
+    fun loadTopPage() {
+        if (isLoading || tPage < 1) return
 
+        val displayPage = tPage--
+        loadPage(
+            displayPage, callback = { resultList ->
+                synchronized(pagePositionMap) {
+                    pagePositionMap[displayPage] = 0
+                    val to = bPage
+                    for (i in displayPage + 1 until to) {
+                        val position: Int = pagePositionMap[i] ?: error("loadTopPageSeparated pagePositionHashMap position null:$i")
+                        pagePositionMap[i] = position + resultList.size
+                    }
+                    galleryBlockList.addAll(offset, galleryBlockList)
+                }
+                CoroutineScope(Dispatchers.Main).launch {
+                    listener.onRangeInsertedSync(offset, resultList.size) }
+            })
+    }
+
+    fun loadBottomPage() {
+        if (isLoading || (maxPage.value != -1 && bPage > maxPage.value!!)) return
+
+        val displayPage = bPage++
+        loadPage(displayPage, callback = { resultList ->
+            val galleryArrayListSize: Int = galleryBlockList.size
+            synchronized(pagePositionMap) {
+                pagePositionMap[displayPage] = galleryArrayListSize
+                galleryBlockList.addAll(resultList)
+            }
+            CoroutineScope(Dispatchers.Main).launch {
+                listener.onRangeInsertedSync(galleryArrayListSize, resultList.size) }
+        })
+    }
+
+    fun loadPage(displayPage: Int, callback: (List<GalleryBlock>) -> Unit) {
+        isLoading = true
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val loadPage = displayPage - 1;
+                val galleryNumber = galleryBlockUseCase.getGalleryNumberListByPage(
+                    loadMode,
+                    query,
+                    language,
+                    loadPage,
+                    contentRange == -1
+                )
+
+                //
+                val idList = galleryNumber.numberList
+
+                // todo: apply filter
+                // bla bla~~
+
+
+                if (galleryNumber.length != 0) {
+                    setContentRange(galleryNumber.length)
+                }
+
+                val galleryBlockList = LinkedList<GalleryBlock>()
+                for (id in idList) {
+                    galleryBlockList.add(GalleryBlock(id, GalleryBlockType.LOADING, "", Date(0), mapOf(), "", LinkedList()))
+                    galleryIdPageMap[id] = displayPage
+                }
+
+                callback.invoke(galleryBlockList)
+
+                for (id in idList) {
+                    withContext(Dispatchers.IO) {
+                        reloadGalleryBlock(id, displayPage)
+                    }
+                }
+            } finally {
+                isLoading = false
+            }
+        }
+
+
+    }
+
+    private suspend fun reloadGalleryBlock(id: Int, displayPage: Int, skipDB: Boolean = false) {
+        galleryBlockUseCase.getGalleryBlock(id, save = true, skipDB)
+            .collect { galleryBlock ->
+                // todo : filter
+
+                pagePositionMap[displayPage]?.let { nowPosition ->
+                    synchronized(nowPosition) {
+                        galleryBlockList[nowPosition] = galleryBlock
+                        CoroutineScope(Dispatchers.Main).launch {
+                            listener.onItemChangedSync(nowPosition)
+                        }
+                    }
+                }
+            }
+    }
 
 
     private fun setQuery(query: String) {
@@ -88,8 +226,8 @@ class GalleryListViewModel @Inject constructor(
         this.listener.onRangeRemovedSync(0, galleryBlockList.size)
         // this.disposable.clear()
 
-        this.galleryNumberPageMap.clear()
-        this.pagePositionHashMap.clear()
+        this.galleryIdPageMap.clear()
+        this.pagePositionMap.clear()
         this.galleryBlockList.clear()
         this.setPage(1)
 
@@ -101,6 +239,11 @@ class GalleryListViewModel @Inject constructor(
     private fun setPage(page: Int) {
         bPage = page
         tPage = page - 1
+    }
+
+    private fun setContentRange(length: Int) {
+        contentRange = length
+        maxPage.value = length / PAGE_SIZE + if (contentRange % PAGE_SIZE != 0) 1 else 0
     }
 
 

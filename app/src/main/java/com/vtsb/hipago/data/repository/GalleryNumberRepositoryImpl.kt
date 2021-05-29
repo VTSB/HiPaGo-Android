@@ -7,6 +7,7 @@ import com.vtsb.hipago.data.util.TagConverter
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.entity.TagType
 import com.vtsb.hipago.domain.repository.GalleryNumberRepository
+import com.vtsb.hipago.util.Constants.PAGE_SIZE
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,13 +34,13 @@ class GalleryNumberRepositoryImpl @Inject constructor(
                 else-> NumberLoadMode.NEW
             },
                 querySplitter.replace(tagConverter.toOriginalQuery(trimQuery))!!)
-        
+
 
     }
 
-    override fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, pageSize: Int, doLoadLength: Boolean): GalleryNumber {
-        val from = (page * pageSize)
-        val to = from + pageSize
+    override fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryNumber {
+        val from = (page * PAGE_SIZE)
+        val to = from + PAGE_SIZE
 
         return when (loadMode) {
             NumberLoadMode.SEARCH-> {
