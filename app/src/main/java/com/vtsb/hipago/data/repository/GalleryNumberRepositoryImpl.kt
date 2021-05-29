@@ -33,7 +33,7 @@ class GalleryNumberRepositoryImpl @Inject constructor(
                 else-> NumberLoadMode.NEW
             },
                 querySplitter.replace(tagConverter.toOriginalQuery(trimQuery))!!)
-        }
+        
 
     }
 
