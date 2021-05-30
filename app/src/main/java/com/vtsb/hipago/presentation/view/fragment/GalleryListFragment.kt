@@ -31,6 +31,7 @@ import com.vtsb.hipago.R
 import com.vtsb.hipago.databinding.FragmentGalleryListBinding
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryBlockType
+import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.entity.TagType
 import com.vtsb.hipago.presentation.view.MainActivity
 import com.vtsb.hipago.presentation.view.adapter.GalleryListAdapter
@@ -312,7 +313,37 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        TODO("Not yet implemented")
+        val id = item.itemId
+
+        var loadMode: String? = null
+        var language: String? = null
+        when(id) {
+            R.id.nav_recent-> loadMode = "index"
+            R.id.nav_popularity-> loadMode = "popular"
+            R.id.nav_recent_watched-> loadMode = NumberLoadMode.RECENTLY_WATCHED.otherName
+            R.id.nav_favorite-> loadMode = NumberLoadMode.FAVORITE.otherName
+            R.id.nav_lang_all-> language = "all"
+            R.id.nav_lang_korean-> language = "korean"
+            R.id.nav_lang_english-> language = "english"
+            R.id.nav_lang_japanese-> language = "japanese"
+            R.id.nav_type_doujinshi-> loadMode = "type:doujinshi"
+            R.id.nav_type_manga-> loadMode = "type:manga"
+            R.id.nav_type_gamecg-> loadMode = "type:gamecg"
+            R.id.nav_type_artistcg-> loadMode = "type:artistcg"
+            R.id.nav_type_anime-> loadMode = "type:anime"
+            R.id.back-> requireActivity().onBackPressed()
+            else-> Log.e(this.javaClass.simpleName, "wrong navView Item:${item.title}($id)")
+        } 
+
+        if (loadMode != null) {
+             viewModel.changeLoadMode(loadMode)
+        } else if (language != null) {
+            viewModel.changeLanguage(language)
+        }
+
+        changeSelectedColor()
+        drawerLayout.closeDrawer(GravityCompat.START)
+        return false
     }
 
     @SuppressLint("RestrictedApi")
