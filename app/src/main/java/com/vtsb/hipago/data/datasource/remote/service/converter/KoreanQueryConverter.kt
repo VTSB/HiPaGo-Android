@@ -43,7 +43,7 @@ class KoreanQueryConverter @Inject constructor() {
      * @return 10진수 유니코드
      */
     private fun convertCharToUnicode(ch: Char): Int {
-        return ch.toInt()
+        return ch.code
     }
 
     /**
@@ -91,8 +91,7 @@ class KoreanQueryConverter @Inject constructor() {
      * @return SQL Query 조건 문자열
      */
     fun makeQuery(strSearch: String, columnName: String): String {
-        var strSearch = strSearch
-        strSearch = strSearch.trim { it <= ' ' } ?: "null"
+        val trimQuery = strSearch.trim { it <= ' ' }
         val retQuery = StringBuilder()
         var nChoPosition: Int
         var nNextChoPosition: Int
@@ -100,17 +99,17 @@ class KoreanQueryConverter @Inject constructor() {
         var EndUnicode: Int
         var nQueryIndex = 0
         val query = StringBuilder()
-        for (nIndex in strSearch.indices) {
+        for (nIndex in trimQuery.indices) {
             nChoPosition = -1
             nNextChoPosition = -1
             StartUnicode = -1
             EndUnicode = -1
-            if (strSearch[nIndex].toInt() == QUERY_DEL_LIM) continue
+            if (trimQuery[nIndex].code == QUERY_DEL_LIM) continue
             if (nQueryIndex != 0) {
                 query.append(" AND ")
             }
             for (nChoIndex in CHO_LIST.indices) {
-                if (strSearch[nIndex] == CHO_LIST[nChoIndex]) {
+                if (trimQuery[nIndex] == CHO_LIST[nChoIndex]) {
                     nChoPosition = nChoIndex
                     nNextChoPosition = nChoPosition + 1
                     while (nNextChoPosition < CHO_SEARCH_LIST.size) {
@@ -124,7 +123,7 @@ class KoreanQueryConverter @Inject constructor() {
                 StartUnicode = HANGUL_BEGIN_UNICODE + nChoPosition * HANGUL_CHO_UNIT
                 EndUnicode = HANGUL_BEGIN_UNICODE + nNextChoPosition * HANGUL_CHO_UNIT
             } else {
-                val Unicode = convertCharToUnicode(strSearch[nIndex])
+                val Unicode = convertCharToUnicode(trimQuery[nIndex])
                 if (Unicode in HANGUL_BEGIN_UNICODE..HANGUL_END_UNICODE) {
                     val jong = (Unicode - HANGUL_BEGIN_UNICODE) % HANGUL_CHO_UNIT % HANGUL_JUNG_UNIT
                     if (jong == 0) { // 초성+중성으로 되어 있는 경우
@@ -139,46 +138,46 @@ class KoreanQueryConverter @Inject constructor() {
             if (StartUnicode > 0 && EndUnicode > 0) {
                 if (StartUnicode == EndUnicode) query.append("substr(").append(columnName)
                     .append(",").append(nIndex + 1).append(",1)='").append(
-                        strSearch[nIndex]
+                        trimQuery[nIndex]
                     ).append("'") else query.append("(substr(").append(columnName).append(",")
                     .append(nIndex + 1).append(",1)>='").append(convertUnicodeToChar(StartUnicode))
                     .append("' AND substr(").append(columnName).append(",").append(nIndex + 1)
                     .append(",1)<'").append(convertUnicodeToChar(EndUnicode)).append("')")
             } else {
-                if (Character.isLowerCase(strSearch[nIndex])) { // 영문 소문자
+                if (Character.isLowerCase(trimQuery[nIndex])) { // 영문 소문자
                     query.append("(substr(").append(columnName).append(",").append(nIndex + 1)
                         .append(",1)='").append(
-                            strSearch[nIndex]
+                            trimQuery[nIndex]
                         ).append("'").append(" OR substr(").append(columnName).append(",")
                         .append(nIndex + 1).append(",1)='").append(
                             Character.toUpperCase(
-                                strSearch[nIndex]
+                                trimQuery[nIndex]
                             )
                         ).append("')")
-                } else if (Character.isUpperCase(strSearch[nIndex])) { // 영문 대문자
+                } else if (Character.isUpperCase(trimQuery[nIndex])) { // 영문 대문자
                     query.append("(substr(").append(columnName).append(",").append(nIndex + 1)
                         .append(",1)='").append(
-                            strSearch[nIndex]
+                            trimQuery[nIndex]
                         ).append("'").append(" OR substr(").append(columnName).append(",")
                         .append(nIndex + 1).append(",1)='").append(
                             Character.toLowerCase(
-                                strSearch[nIndex]
+                                trimQuery[nIndex]
                             )
                         ).append("')")
                 } else  // 기타 문자
                     query.append("substr(").append(columnName).append(",").append(nIndex + 1)
                         .append(",1)='").append(
-                            strSearch[nIndex]
+                            trimQuery[nIndex]
                         ).append("'")
             }
             nQueryIndex++
         }
-        if (query.isNotEmpty() && strSearch.trim { it <= ' ' }.isNotEmpty()) {
+        if (query.isNotEmpty() && trimQuery.trim { it <= ' ' }.isNotEmpty()) {
             //if (query.length() > 0 && strSearch != null && strSearch.trim().length() > 0) {
             retQuery.append("(").append(query.toString()).append(")")
-            if (strSearch.contains(" ")) {
+            if (trimQuery.contains(" ")) {
                 // 공백 구분 단어에 대해 단어 모두 포함 검색
-                val tokens = strSearch.split(" ").toTypedArray()
+                val tokens = trimQuery.split(" ").toTypedArray()
                 retQuery.append(" OR (")
                 var i = 0
                 val isSize = tokens.size
@@ -193,7 +192,7 @@ class KoreanQueryConverter @Inject constructor() {
                 retQuery.append(")")
             } else {
                 // LIKE 검색 추가
-                retQuery.append(" OR ").append(columnName).append(" like '%").append(strSearch)
+                retQuery.append(" OR ").append(columnName).append(" like '%").append(trimQuery)
                     .append("%'")
             }
         } else {

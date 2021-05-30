@@ -8,7 +8,6 @@ import com.vtsb.hipago.util.converter.QueryConverter
 import com.vtsb.hipago.util.converter.TagConverter
 import java.io.IOException
 import java.security.NoSuchAlgorithmException
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,13 +20,13 @@ class SearchRepositoryImpl @Inject constructor(
 ) : SearchRepository {
 
 
-    override fun getSuggestionList(text: String): List<Suggestion>? {
-        val query: String = queryConverter.getLastQuery(text)
+    override fun getSuggestionList(query: String): List<Suggestion>? {
+        val lastQuery: String = queryConverter.getLastQuery(query)
 
 
 
         return try {
-            galleryDataServiceMapper.getSuggestionForQuery(query)
+            galleryDataServiceMapper.getSuggestionForQuery(lastQuery)
         } catch (e: InterruptedException) {
             e.printStackTrace()
             null

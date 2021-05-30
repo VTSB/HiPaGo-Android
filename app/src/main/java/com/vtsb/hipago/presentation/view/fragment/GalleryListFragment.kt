@@ -12,6 +12,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -63,7 +64,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
 
-        val galleryListFragmentArgs: GalleryListFragmentArgs = GalleryListFragmentArgs.fromBundle(arguments)
+        val galleryListFragmentArgs: GalleryListFragmentArgs = GalleryListFragmentArgs.fromBundle(requireArguments())
         query = galleryListFragmentArgs.query
 
         adapter = GalleryListAdapter(viewModel)
@@ -286,7 +287,8 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
             "english" -> languageItem = navigationView.findViewById(R.id.nav_lang_english)
             "japanese" -> languageItem = navigationView.findViewById(R.id.nav_lang_japanese)
         }
-        val c = resources.getColor(R.color.colorMain)
+
+        val c = getColor(R.color.colorMain)
         if (loadModeItem != null) {
             loadModeItem!!.setTextColor(ColorStateList.valueOf(c))
         }
