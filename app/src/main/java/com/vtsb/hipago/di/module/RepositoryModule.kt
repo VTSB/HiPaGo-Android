@@ -1,9 +1,11 @@
 package com.vtsb.hipago.di.module
 
 import com.vtsb.hipago.data.repository.GalleryBlockRepositoryImpl
+import com.vtsb.hipago.data.repository.GalleryImageRepositoryImpl
 import com.vtsb.hipago.data.repository.GalleryNumberRepositoryImpl
 import com.vtsb.hipago.data.repository.SearchRepositoryImpl
 import com.vtsb.hipago.domain.repository.GalleryBlockRepository
+import com.vtsb.hipago.domain.repository.GalleryImageRepository
 import com.vtsb.hipago.domain.repository.GalleryNumberRepository
 import com.vtsb.hipago.domain.repository.SearchRepository
 import dagger.Binds
@@ -20,6 +22,9 @@ abstract class RepositoryModule {
     @Singleton
     abstract fun bindGalleryBlockRepository(galleryBlockRepositoryImpl: GalleryBlockRepositoryImpl): GalleryBlockRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindGalleryImageRepository(galleryImageRepositoryImpl: GalleryImageRepositoryImpl): GalleryImageRepository
 
     @Binds
     @Singleton

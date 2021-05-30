@@ -4,13 +4,11 @@ import com.google.common.collect.BiMap
 import com.vtsb.hipago.data.datasource.local.entity.pojo.TagDataWithLocal
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryBlockWithOtherData
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryInfo
-import com.vtsb.hipago.domain.entity.GalleryIds
 import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.*
 import com.vtsb.hipago.data.datasource.remote.service.original.ResultJs
 import com.vtsb.hipago.data.datasource.remote.service.original.SearchJs
-import com.vtsb.hipago.domain.entity.Suggestion
-import com.vtsb.hipago.domain.entity.TagType
+import com.vtsb.hipago.domain.entity.*
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -47,7 +45,7 @@ class GalleryDataServiceMapper @Inject constructor(
         return ArrayList(newList)
     }
 
-    fun getGalleryInfo(id: Int): GalleryInfo {
+    fun getGalleryImages(id: Int): GalleryImages {
         val responseBody = galleryDataService.getGalleryJsonData(id).execute().body()
         val jsonString = responseBody!!.string()
 
@@ -56,7 +54,18 @@ class GalleryDataServiceMapper @Inject constructor(
 
         val jsonObject = JSONObject(jsonString.substring(idx1, idx2 + 1))
 
-        return jsonObjectConverter.toGalleryInfo(jsonObject)
+        val info = jsonObjectConverter.toGalleryInfo(jsonObject)
+        // change
+        val list: MutableList<GalleryImage> = java.util.ArrayList()
+        for(file in info.files) {
+            val imageTypes: MutableSet<ImageType> = hashSetOf(ImageType.ORIGINAL)
+            if (file.haswebp == 1) imageTypes.add(ImageType.WEBP)
+            if (file.hasavif == 1) imageTypes.add(ImageType.AVIF)
+
+            list.add(GalleryImage(file.name, file.hash, imageTypes))
+        }
+
+        return GalleryImages(id, list)
     }
 
     fun getNotDetailed(id: Int): GalleryBlockWithOtherData =
