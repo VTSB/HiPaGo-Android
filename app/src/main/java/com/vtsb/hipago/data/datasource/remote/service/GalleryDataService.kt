@@ -11,17 +11,17 @@ import retrofit2.http.Query
 interface GalleryDataService {
 
     @GET("galleries/{id}.js")
-    fun getGalleryJsonData(@Path("id") no: Int): ResponseBody
+    fun getGalleryJsonData(@Path("id") no: Int): Call<ResponseBody>
 
     @GET("galleryblock/{id}.html")
-    fun getGalleryBlock(@Path("id") no: Int): ResponseBody
+    fun getGalleryBlock(@Path("id") no: Int): Call<ResponseBody>
 
     @GET("{type}-{language}.nozomi")
     fun getNumbersFromType(
         @Path("type") type: String,
         @Path("language") language: String,
         @Header("range") range: String? = null
-    ): Response<ResponseBody>
+    ): Call<ResponseBody>
 
     @GET("{type}/{tag}-{language}.nozomi")
     fun getNumbers(
@@ -29,13 +29,13 @@ interface GalleryDataService {
         @Path("tag") tag: String,
         @Path("language") language: String,
         @Header("range") range: String? = null
-    ): Response<ResponseBody>
+    ): Call<ResponseBody>
 
     @GET("{name}/version")
     fun getIndexVersion(@Path("name") name: String, @Query("") time: Long): Call<ResponseBody>
 
     @GET("language_support.js")
-    fun getAllLanguages(): ResponseBody
+    fun getAllLanguages(): Call<ResponseBody>
 
     @GET("{paths}")
     fun get_url_at_range(

@@ -6,13 +6,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.vtsb.hipago.presentation.view.converter.ListConverter"/>
         <import type="com.vtsb.hipago.domain.entity.TagType"/>
 
         <variable
             name="model"
             type="com.vtsb.hipago.domain.entity.GalleryBlock" />
-
     </data>
 
 
@@ -25,7 +23,7 @@
             android:layout_width="100dp"
             android:layout_height="0dp"
             android:contentDescription="@string/description_igb_thumbnail"
-            app:bindThumbnail="@{model}"
+            app:bindThumbnail="@{model.thumbnail}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
@@ -57,8 +55,9 @@
             android:layout_marginLeft="4dp"
             android:layout_marginTop="4dp"
             android:maxLines="1"
-            android:text="@{String.format(@string/item_gallery_block_type1_artist, ListConverter.Companion.toString(model.tags[TagType.ARTIST]))}"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            app:bindTagType1_1="@{@string/igb_type1_artist}"
+            app:bindTagType1_2="@{model.tags[TagType.ARTIST]}"
             app:layout_constraintStart_toEndOf="@+id/item_thumbnail"
             app:layout_constraintTop_toBottomOf="@+id/item_title"
             tools:text="@string/igb_type1_artist" />
@@ -72,8 +71,9 @@
             android:layout_marginLeft="4dp"
             android:layout_marginTop="2dp"
             android:maxLines="1"
-            android:text="@{String.format(@string/igb_type1_series, ListConverter.Companion.toString(model.tags[TagType.SERIES]))}"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            app:bindTagType1_1="@{@string/igb_type1_series}"
+            app:bindTagType1_2="@{model.tags[TagType.SERIES]}"
             app:layout_constraintStart_toEndOf="@+id/item_thumbnail"
             app:layout_constraintTop_toBottomOf="@+id/item_artist"
             tools:text="@string/igb_type1_series" />
@@ -87,8 +87,9 @@
             android:layout_marginLeft="4dp"
             android:layout_marginTop="2dp"
             android:maxLines="1"
-            android:text="@{String.format(@string/igb_type1_language, ListConverter.Companion.toString(model.tags[TagType.LANGUAGE]))}"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            app:bindTagType1_1="@{@string/igb_type1_language}"
+            app:bindTagType1_2="@{model.tags[TagType.LANGUAGE]}"
             app:layout_constraintStart_toEndOf="@+id/item_thumbnail"
             app:layout_constraintTop_toBottomOf="@+id/item_series"
             tools:text="@string/igb_type1_language" />
@@ -102,8 +103,9 @@
             android:layout_marginLeft="4dp"
             android:layout_marginTop="2dp"
             android:maxLines="1"
-            android:text="@{String.format(@string/igb_type1_tags, ListConverter.Companion.toString(model.tags[TagType.TAG]))}"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            app:bindTagType1_1="@{@string/igb_type1_tags}"
+            app:bindTagType1_2="@{model.tags[TagType.TAG]}"
             app:layout_constraintStart_toEndOf="@+id/item_thumbnail"
             app:layout_constraintTop_toBottomOf="@+id/item_language"
             tools:text="@string/igb_type1_tags" />

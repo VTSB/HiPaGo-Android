@@ -2,7 +2,7 @@ package com.vtsb.hipago.data.repository
 
 import android.util.Log
 import com.google.common.collect.BiMap
-import com.vtsb.hipago.data.converter.TagConverter
+import com.vtsb.hipago.util.converter.TagConverter
 import com.vtsb.hipago.data.mapper.GalleryBlockDaoMapper
 import com.vtsb.hipago.data.mapper.GalleryDataServiceMapper
 import com.vtsb.hipago.data.mapper.GalleryServiceMapper
@@ -22,7 +22,6 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-
 class GalleryBlockRepositoryImpl @Inject constructor(
     private val galleryBlockDaoMapper: GalleryBlockDaoMapper,
     private val galleryServiceMapper: GalleryServiceMapper,
@@ -68,7 +67,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
             flow.emit(galleryBlockWithOtherData.galleryBlock)
             getDetailed(id, save, galleryBlockWithOtherData.galleryBlock, galleryBlockWithOtherData.detailedURL, flow)
         } catch (e: Exception) {
-            Log.e(this.javaClass.simpleName, "${e.message}")
+            Log.e(this.javaClass.simpleName, "$id", e)
             flow.emit(GalleryBlock(id, GalleryBlockType.FAILED, "", Date(0), mapOf(), "", LinkedList()))
         }
     }

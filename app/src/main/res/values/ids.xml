@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <!-- https://stackoverflow.com/questions/24885223/why-doesnt-recyclerview-have-onitemclicklistener -->
-    <item name="item_click_support" type="id" />
-
-
-</resources>

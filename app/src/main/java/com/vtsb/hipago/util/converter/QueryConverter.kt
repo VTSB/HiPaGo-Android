@@ -1,4 +1,4 @@
-package com.vtsb.hipago.data.converter
+package com.vtsb.hipago.util.converter
 
 import android.util.Log
 import javax.inject.Inject

@@ -1,10 +1,10 @@
 package com.vtsb.hipago.data.datasource.remote.service.original
 
 import android.util.Log
+import com.vtsb.hipago.util.converter.QueryConverter
 import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.ResponseBodyConverter
 import com.vtsb.hipago.data.datasource.remote.service.original.helper.DataView
-import com.vtsb.hipago.data.converter.QueryConverter
 import com.vtsb.hipago.data.datasource.remote.service.original.pojo.*
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -50,7 +50,7 @@ class SearchJs @Inject constructor(
                 .matches() || query == "-"
         ) {
             ++searchlibJs.search_serial
-            return GetSuggestionForQuery(ArrayList<Suggestion>().toArray(arrayOfNulls<Suggestion>(0)), 0)
+            return GetSuggestionForQuery(ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0)), 0)
         }
         val newQuery = query.lowercase(Locale.getDefault())
         val terms: Array<String> = queryConverter.split(newQuery)
@@ -63,7 +63,7 @@ class SearchJs @Inject constructor(
         //Suggestion[] results = r.getArr();
         val results_serial: Int = r.serial
         return if (results_serial != searchlibJs.search_serial) GetSuggestionForQuery(
-            ArrayList<Suggestion>().toArray(arrayOfNulls<Suggestion>(0)), 0
+            ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0)), 0
         ) else r
     }
 
@@ -228,10 +228,10 @@ class SearchJs @Inject constructor(
         return decode_node(nodedata)
     }
 
-    fun get_suggestions_from_data(field: String, data: Data?): Array<Suggestion> {
+    fun get_suggestions_from_data(field: String, data: Data?): Array<PojoSuggestion> {
         // todo : not checked correctly. check detail later
         if (data == null) {
-            return ArrayList<Suggestion>().toArray(arrayOfNulls<Suggestion>(0))
+            return ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0))
         }
 
         //String url = SearchlibJs.domain + "/" + SearchlibJs.index_dir + "/" + field + "." + SearchlibJs.tag_index_version + ".data";
@@ -240,24 +240,24 @@ class SearchJs @Inject constructor(
         val length: Int = data.length
         if (length > 10000 || length <= 0) {
             Log.e(SearchJs::class.java.simpleName, "length $length is too long")
-            return ArrayList<Suggestion>().toArray(arrayOfNulls<Suggestion>(0))
+            return ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0))
         }
         val inbuf = get_url_at_range(url, longArrayOf(offset, offset + length - 1))
         var pos = 0
         val view = DataView(inbuf)
         val number_of_suggestions: Int = view.getInt32(pos)
-        val suggestions = LinkedList<Suggestion>()
+        val suggestions = LinkedList<PojoSuggestion>()
         pos += 4
         if (number_of_suggestions > 100 || number_of_suggestions <= 0) {
             Log.e(SearchJs::class.java.simpleName, "number_of_suggestions $number_of_suggestions is too long")
-            return ArrayList<Suggestion>().toArray(arrayOfNulls<Suggestion>(0))
+            return ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0))
         }
         for (i in 0 until number_of_suggestions) {
             val ns_sb = StringBuilder()
             var top: Int = view.getInt32(pos)
             pos += 4
             for (c in 0 until top) {
-                ns_sb.append(view.getUint8(pos).toChar())
+                ns_sb.append(view.getUint8(pos).toInt().toChar())
                 pos += 1
             }
             val ns = ns_sb.toString()
@@ -265,7 +265,7 @@ class SearchJs @Inject constructor(
             top = view.getInt32(pos)
             pos += 4
             for (c in 0 until top) {
-                tag_sb.append(view.getUint8(pos).toChar())
+                tag_sb.append(view.getUint8(pos).toInt().toChar())
                 pos += 1
             }
             val tag = tag_sb.toString()
@@ -282,9 +282,9 @@ class SearchJs @Inject constructor(
                     "/index-" + tagName + searchlibJs.separator + "1" + searchlibJs.extension
             }
 
-            suggestions.add(Suggestion(tag, count, url_suggestion, ns))
+            suggestions.add(PojoSuggestion(tag, count, url_suggestion, ns))
         }
-        return suggestions.toArray(arrayOfNulls<Suggestion>(suggestions.size))
+        return suggestions.toArray(arrayOfNulls<PojoSuggestion>(suggestions.size))
     }
 
     @Throws(IOException::class)
@@ -346,9 +346,9 @@ class SearchJs @Inject constructor(
         }
         val key: ShortArray = searchlibJs.hash_term(term)
         val node: Node = get_node_at_address(field, 0, serial)
-            ?: return GetSuggestionForQuery(ArrayList<Suggestion>().toArray(arrayOfNulls<Suggestion>(0)), serial)
+            ?: return GetSuggestionForQuery(ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0)), serial)
         val data: Data = B_Search(field, key, node, serial)
-            ?: return GetSuggestionForQuery(ArrayList<Suggestion>().toArray(arrayOfNulls<Suggestion>(0)), serial)
+            ?: return GetSuggestionForQuery(ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0)), serial)
         return GetSuggestionForQuery(get_suggestions_from_data(field, data), serial)
     }
 

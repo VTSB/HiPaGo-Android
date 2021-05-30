@@ -18,16 +18,16 @@ class GalleryServiceMapper @Inject constructor(
     fun getAllLanguages() =
         elementsConverter.toLanguageTagList(
             responseBodyConverter.toElements(
-                galleryService.getAllLanguages()))
+                galleryService.getAllLanguages().execute().body()!!))
 
     fun getAllSpecificAlphabetTags(typeName: String) =
         responseBodyConverter.toElements(
-            galleryService.getAllSpecificAlphabetTags(typeName, 'a'))
+            galleryService.getAllSpecificAlphabetTags(typeName, 'a').execute().body()!!)
 
     fun getDetailedGalleryBlock(id: Int, url: String) =
         elementsConverter.toGalleryBlockDetailed(
             getDetailedGalleryBlockElementRecursive(
-                galleryService.getResponseBody(url)), id
+                galleryService.getResponseBody(url).execute().body()!!), id
         )
 
     fun getDetailedGalleryBlockElementRecursive(responseBody: ResponseBody): Elements {
@@ -35,8 +35,7 @@ class GalleryServiceMapper @Inject constructor(
         val windowLocation = elementsConverter.toWindowLocation(elements)
         if (windowLocation != null) {
             return getDetailedGalleryBlockElementRecursive(
-                galleryService.getResponseBody(
-                    windowLocation.substring(18)))
+                galleryService.getResponseBody(windowLocation.substring(18)).execute().body()!!)
         }
         return elements
     }

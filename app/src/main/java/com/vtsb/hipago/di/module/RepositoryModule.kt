@@ -2,8 +2,10 @@ package com.vtsb.hipago.di.module
 
 import com.vtsb.hipago.data.repository.GalleryBlockRepositoryImpl
 import com.vtsb.hipago.data.repository.GalleryNumberRepositoryImpl
+import com.vtsb.hipago.data.repository.SearchRepositoryImpl
 import com.vtsb.hipago.domain.repository.GalleryBlockRepository
 import com.vtsb.hipago.domain.repository.GalleryNumberRepository
+import com.vtsb.hipago.domain.repository.SearchRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -22,5 +24,9 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindGalleryNumberRepository(galleryNumberRepositoryImpl: GalleryNumberRepositoryImpl): GalleryNumberRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSearchRepository(searchRepositoryImpl: SearchRepositoryImpl): SearchRepository
 
 }

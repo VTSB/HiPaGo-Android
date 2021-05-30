@@ -4,6 +4,7 @@ import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.ResponseBodyConverter
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Response
 import java.io.IOException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -95,16 +96,11 @@ class SearchlibJs @Inject constructor(
     }
 
     @Throws(IOException::class)
-    fun get_index_version(name: String): String? {
-        val responseBodyCall: Call<ResponseBody> = name.let {
-            galleryDataService.getIndexVersion(
-                it,
-                Date().time
-            )
+    fun get_index_version(name: String): String {
+        return galleryDataService.getIndexVersion(name, Date().time)
+            .execute().body().let {
+            responseBodyConverter.toIndexVersion(it!!)
         }
-        val response = responseBodyCall.execute()
-        val responseBody = response.body()
-        return responseBody?.let { responseBodyConverter.toIndexVersion(it) }
     }
 
 }

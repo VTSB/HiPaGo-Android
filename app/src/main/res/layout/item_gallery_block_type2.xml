@@ -11,6 +11,9 @@
         <variable
             name="model"
             type="com.vtsb.hipago.domain.entity.GalleryBlock" />
+        <variable
+            name="converter"
+            type="com.vtsb.hipago.presentation.view.converter.ListConverter.Companion" />
     </data>
 
 
@@ -24,7 +27,7 @@
             android:layout_width="120dp"
             android:layout_height="0dp"
             android:contentDescription="@string/description_igb_thumbnail"
-            app:bindThumbnail="@{model}"
+            app:bindThumbnail="@{model.thumbnail}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
@@ -58,7 +61,6 @@
             android:layout_marginLeft="4dp"
             android:layout_marginTop="2dp"
             android:maxLines="1"
-            android:text="@{model.tags[TagType.TYPE][0]}"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:textSize="12sp"
             android:textStyle="bold"
@@ -73,7 +75,6 @@
             android:layout_marginTop="2dp"
             android:gravity="center_horizontal"
             android:maxLines="1"
-            android:text="@{model[TagType.LANGUAGE][0]}"
             android:textAlignment="center"
             android:textSize="12sp"
             android:textStyle="bold"
