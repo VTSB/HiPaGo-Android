@@ -1,6 +1,7 @@
 package com.vtsb.hipago.presentation.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -79,7 +80,7 @@ class GalleryListViewModel @Inject constructor(
             offset = 3
             galleryBlockList.addAll(galleryBlockList)
             listener.onRangeInsertedSync(0, offset)
-            reloadGalleryBlock(id, 1)
+            reloadGalleryBlock(id, 1, 1)
 
         } catch (ignored: NumberFormatException) {
             offset = 0
@@ -160,7 +161,7 @@ class GalleryListViewModel @Inject constructor(
 
     fun loadPage(displayPage: Int, callback: (List<GalleryBlock>) -> Unit) {
         isLoading = true
-
+        Log.d("test", "loadPage $displayPage")
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val loadPage = displayPage - 1;
@@ -180,7 +181,9 @@ class GalleryListViewModel @Inject constructor(
 
 
                 if (galleryNumber.length != 0) {
-                    setContentRange(galleryNumber.length)
+                    viewModelScope.launch {
+                        setContentRange(galleryNumber.length)
+                    }
                 }
 
                 val galleryBlockList = LinkedList<GalleryBlock>()
@@ -191,9 +194,11 @@ class GalleryListViewModel @Inject constructor(
 
                 callback.invoke(galleryBlockList)
 
-                for (id in idList) {
-                    reloadGalleryBlock(id, displayPage)
+                for ((from, id) in idList.withIndex()) {
+                    reloadGalleryBlock(id, displayPage, from)
                 }
+            } catch (t: Throwable) {
+                Log.e("LoadPage", "failed $displayPage", t)
             } finally {
                 isLoading = false
             }
@@ -202,13 +207,20 @@ class GalleryListViewModel @Inject constructor(
 
     }
 
-    fun reloadGalleryBlock(id: Int, displayPage: Int, skipDB: Boolean = false) {
+    fun reloadGalleryBlock(id: Int, position:Int) {
+        val displayPage = galleryIdPageMap[id]!!
+        val offset = position - displayPage * PAGE_SIZE - offset
+        reloadGalleryBlock(id, displayPage, offset)
+    }
+
+    private fun reloadGalleryBlock(id: Int, displayPage: Int, offset: Int, skipDB: Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
             galleryBlockUseCase.getGalleryBlock(id, save = true, skipDB)
                 .collect { galleryBlock ->
                     // todo : filter
 
-                    pagePositionMap[displayPage]?.let { nowPosition ->
+                    pagePositionMap[displayPage]?.let { it ->
+                        val nowPosition = it + offset
                         synchronized(nowPosition) {
                             galleryBlockList[nowPosition] = galleryBlock
                             viewModelScope.launch {
@@ -219,6 +231,7 @@ class GalleryListViewModel @Inject constructor(
                 }
         }
     }
+
 
 
 
