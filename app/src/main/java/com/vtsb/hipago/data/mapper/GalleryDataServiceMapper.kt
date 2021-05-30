@@ -4,18 +4,16 @@ import com.google.common.collect.BiMap
 import com.vtsb.hipago.data.datasource.local.entity.pojo.TagDataWithLocal
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryBlockWithOtherData
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryInfo
-import com.vtsb.hipago.data.datasource.remote.entity.GalleryNumber
+import com.vtsb.hipago.domain.entity.GalleryIds
 import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.*
 import com.vtsb.hipago.data.datasource.remote.service.original.ResultJs
 import com.vtsb.hipago.data.datasource.remote.service.original.SearchJs
-import com.vtsb.hipago.data.datasource.remote.service.original.pojo.PojoSuggestion
 import com.vtsb.hipago.domain.entity.Suggestion
 import com.vtsb.hipago.domain.entity.TagType
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
-import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
@@ -73,29 +71,29 @@ class GalleryDataServiceMapper @Inject constructor(
         responseConverter.toContentLength(
             galleryDataService.getNumbersFromType("index", language, "bytes=0-0").execute().raw()) / 4
 
-    fun getNumbers(type: String, language: String, doLoadLength: Boolean = false): GalleryNumber =
+    fun getNumbers(type: String, language: String, doLoadLength: Boolean = false): GalleryIds =
         getNumbers(galleryDataService.getNumbersFromType(type, language, null), doLoadLength)
 
-    fun getNumbers(type: String, language: String, from: Int, to: Int, doLoadLength: Boolean = false): GalleryNumber =
+    fun getNumbers(type: String, language: String, from: Int, to: Int, doLoadLength: Boolean = false): GalleryIds =
         getNumbers(galleryDataService.getNumbersFromType(type, language, "bytes=$from-$to"), doLoadLength)
 
-    fun getNumbers(type: String, tag: String, language: String, doLoadLength: Boolean = false): GalleryNumber =
+    fun getNumbers(type: String, tag: String, language: String, doLoadLength: Boolean = false): GalleryIds =
         getNumbers(galleryDataService.getNumbers(type, tag, language), doLoadLength)
 
-    fun getNumbers(type: String, tag: String, language: String, from: Int, to: Int, doLoadLength: Boolean = false): GalleryNumber =
+    fun getNumbers(type: String, tag: String, language: String, from: Int, to: Int, doLoadLength: Boolean = false): GalleryIds =
         getNumbers(galleryDataService.getNumbers(type, tag, language, "bytes=$from-$to"), doLoadLength)
 
-    private fun getNumbers(call: Call<ResponseBody>, doLoadLength: Boolean): GalleryNumber {
+    private fun getNumbers(call: Call<ResponseBody>, doLoadLength: Boolean): GalleryIds {
         val response = call.execute()
         val r = response.raw()
         val responseBody = response.body()
         var numberTotalLength = 0
         if (doLoadLength) numberTotalLength = responseConverter.toContentLength(r) / 4
 
-        if (responseBody == null) return GalleryNumber(ArrayList(), numberTotalLength)
+        if (responseBody == null) return GalleryIds(ArrayList(), numberTotalLength)
         val numbers: List<Int> = responseBodyConverter.toIntegerArrayList(responseBody)
 
-        return GalleryNumber(numbers, numberTotalLength)
+        return GalleryIds(numbers, numberTotalLength)
     }
 
 
