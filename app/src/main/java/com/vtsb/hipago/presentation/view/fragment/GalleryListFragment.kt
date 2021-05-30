@@ -216,6 +216,22 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
             false
         }
 
+        binding.prev.setOnClickListener {
+            val nowPage: Int = viewModel.nowPage.value!!
+            if (nowPage == 1) return@setOnClickListener
+
+            if (!startScroller.isRunning)
+                movePage(nowPage - 1)
+        }
+        binding.next.setOnClickListener {
+            val nowPage: Int = viewModel.nowPage.value!!
+            if (nowPage == viewModel.maxPage.value) return@setOnClickListener
+
+            if (!startScroller.isRunning)
+                movePage(nowPage + 1)
+        }
+
+
         setHasOptionsMenu(true)
         val activity: MainActivity = requireActivity() as MainActivity
 
@@ -333,7 +349,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
             R.id.nav_type_anime-> loadMode = "type:anime"
             R.id.back-> requireActivity().onBackPressed()
             else-> Log.e(this.javaClass.simpleName, "wrong navView Item:${item.title}($id)")
-        } 
+        }
 
         if (loadMode != null) {
              viewModel.changeLoadMode(loadMode)
