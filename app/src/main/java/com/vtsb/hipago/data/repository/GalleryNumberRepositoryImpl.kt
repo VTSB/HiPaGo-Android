@@ -24,9 +24,10 @@ class GalleryNumberRepositoryImpl @Inject constructor(
         when(val trimQuery = query.trim()) {
             NumberLoadMode.FAVORITE.otherName-> Pair(NumberLoadMode.FAVORITE, trimQuery)
             NumberLoadMode.RECENTLY_WATCHED.otherName-> Pair(NumberLoadMode.RECENTLY_WATCHED, trimQuery)
+            ""-> Pair(NumberLoadMode.NEW, "index")
+            "index", "popular"-> Pair(NumberLoadMode.NEW, trimQuery)
             else-> {
-                if (trimQuery.isEmpty()) Pair(NumberLoadMode.NEW, "index")
-                else if (trimQuery.contains(queryConverter.getChar()) || !trimQuery.contains(':'))
+                if (trimQuery.contains(queryConverter.getChar()) || !trimQuery.contains(':'))
                     Pair(NumberLoadMode.SEARCH, query)
                 else
                     Pair(NumberLoadMode.NEW, queryConverter.replace(tagConverter.toOriginalQuery(trimQuery)))
