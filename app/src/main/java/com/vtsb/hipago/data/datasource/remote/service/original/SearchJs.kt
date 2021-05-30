@@ -257,7 +257,7 @@ class SearchJs @Inject constructor(
             var top: Int = view.getInt32(pos)
             pos += 4
             for (c in 0 until top) {
-                ns_sb.append(view.getUint8(pos).toChar())
+                ns_sb.append(view.getUint8(pos).toInt().toChar())
                 pos += 1
             }
             val ns = ns_sb.toString()
@@ -265,7 +265,7 @@ class SearchJs @Inject constructor(
             top = view.getInt32(pos)
             pos += 4
             for (c in 0 until top) {
-                tag_sb.append(view.getUint8(pos).toChar())
+                tag_sb.append(view.getUint8(pos).toInt().toChar())
                 pos += 1
             }
             val tag = tag_sb.toString()

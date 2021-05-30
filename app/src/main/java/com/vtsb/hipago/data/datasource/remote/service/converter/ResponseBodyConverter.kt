@@ -43,12 +43,6 @@ class ResponseBodyConverter @Inject constructor() {
         toByteArray(responseBody,
             object: ByteArrayCallback {
                 override fun call(length: Int, byteArray: ByteArray) {
-
-                    var s = ""
-                    for (byte in byteArray) {
-                        s += "$byte "
-                    }
-                    Log.d("LoadPage", "bytes:$s")
                     val view = DataView(byteArray)
                     var i = 0
                     while (i < length) {
@@ -58,7 +52,6 @@ class ResponseBodyConverter @Inject constructor() {
                     }
                 }
             })
-        Log.d("LoadPage", integerList.toString())
         return ArrayList(integerList)
     }
 

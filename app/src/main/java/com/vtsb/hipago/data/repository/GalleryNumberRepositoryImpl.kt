@@ -38,7 +38,6 @@ class GalleryNumberRepositoryImpl @Inject constructor(
         val from = (page * PAGE_SIZE)
         val to = from + PAGE_SIZE
 
-        Log.d("loadPage", "getNumbersByPage ${loadMode.otherName}, $query, $language, $page, $doLoadLength")
         return when (loadMode) {
             NumberLoadMode.SEARCH-> {
                 val key = getBufferKey(query, language)
@@ -58,7 +57,6 @@ class GalleryNumberRepositoryImpl @Inject constructor(
             NumberLoadMode.NEW->{
                 val fromByte = from * 4
                 val toByte = to * 4 - 1
-
                 when(query) {
                     "index", "popular"->
                         galleryDataServiceMapper.getNumbers(

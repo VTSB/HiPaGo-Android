@@ -71,7 +71,6 @@ class ElementsConverter @Inject constructor(
 
     @Throws(ParseException::class)
     fun toGalleryBlockNotDetailed(elements: Elements, id: Int): GalleryBlockWithOtherData {
-
         val thumbnail: String = toThumbnail(elements.select("img"))
         val artists = getTexts(elements.select(".artist-list a"))
         val titleElement = elements.select("h1 a")
