@@ -1,5 +1,6 @@
 package com.vtsb.hipago.data.repository
 
+import android.util.Log
 import com.vtsb.hipago.util.converter.QueryConverter
 import com.vtsb.hipago.util.converter.TagConverter
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryNumber
@@ -20,25 +21,24 @@ class GalleryNumberRepositoryImpl @Inject constructor(
 
     private val galleryNumberBuffer: MutableMap<String, List<Int>> = HashMap()
 
-    override fun getLoadModeFromQuery(query: String): Pair<NumberLoadMode, String> {
-        val trimQuery = query.trim()
-
-        return if (
-            !trimQuery.contains(queryConverter.getChar()) ||
-            !trimQuery.contains(":"))
-            Pair(NumberLoadMode.SEARCH, query)
-        else
-            Pair(when (trimQuery) {
-                NumberLoadMode.FAVORITE.otherName-> NumberLoadMode.FAVORITE
-                NumberLoadMode.RECENTLY_WATCHED.otherName-> NumberLoadMode.RECENTLY_WATCHED
-                else-> NumberLoadMode.NEW
-            }, queryConverter.replace(tagConverter.toOriginalQuery(trimQuery)))
-    }
+    override fun getLoadModeFromQuery(query: String): Pair<NumberLoadMode, String> =
+        when(val trimQuery = query.trim()) {
+            NumberLoadMode.FAVORITE.otherName-> Pair(NumberLoadMode.FAVORITE, trimQuery)
+            NumberLoadMode.RECENTLY_WATCHED.otherName-> Pair(NumberLoadMode.RECENTLY_WATCHED, trimQuery)
+            else-> {
+                if (trimQuery.isNotEmpty() && (trimQuery.contains(queryConverter.getChar()) || !trimQuery.contains(':'))) {
+                    Pair(NumberLoadMode.SEARCH, query)
+                } else {
+                    Pair(NumberLoadMode.NEW, queryConverter.replace(tagConverter.toOriginalQuery(trimQuery)))
+                }
+            }
+        }
 
     override fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryNumber {
         val from = (page * PAGE_SIZE)
         val to = from + PAGE_SIZE
 
+        Log.d("loadPage", "getNumbersByPage ${loadMode.otherName}, $query, $language, $page, $doLoadLength")
         return when (loadMode) {
             NumberLoadMode.SEARCH-> {
                 val key = getBufferKey(query, language)
