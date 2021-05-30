@@ -14,6 +14,7 @@ import com.vtsb.hipago.domain.entity.Suggestion
 import com.vtsb.hipago.domain.entity.TagType
 import okhttp3.ResponseBody
 import org.json.JSONObject
+import retrofit2.Call
 import retrofit2.Response
 import java.util.*
 import javax.inject.Inject
@@ -49,8 +50,8 @@ class GalleryDataServiceMapper @Inject constructor(
     }
 
     fun getGalleryInfo(id: Int): GalleryInfo {
-        val responseBody = galleryDataService.getGalleryJsonData(id)
-        val jsonString = responseBody.string()
+        val responseBody = galleryDataService.getGalleryJsonData(id).execute().body()
+        val jsonString = responseBody!!.string()
 
         val idx1 = jsonString.indexOf('{')
         val idx2 = jsonString.lastIndexOf('}')
@@ -63,15 +64,14 @@ class GalleryDataServiceMapper @Inject constructor(
     fun getNotDetailed(id: Int): GalleryBlockWithOtherData =
         elementsConverter.toGalleryBlockNotDetailed(
             responseBodyConverter.toElements(
-                galleryDataService.getGalleryBlock(id)), id)
+                galleryDataService.getGalleryBlock(id).execute().body()!!), id)
 
     fun getAllLanguageTags(): List<TagDataWithLocal> =
-        stringConverter.toLanguageTagList(galleryDataService.getAllLanguages().string())
+        stringConverter.toLanguageTagList(galleryDataService.getAllLanguages().execute().body()!!.string())
 
     fun getLanguageTagAmount(language: String): Int =
         responseConverter.toContentLength(
-            galleryDataService.getNumbersFromType("index", language, "bytes=0-0")
-                .raw()) / 4
+            galleryDataService.getNumbersFromType("index", language, "bytes=0-0").execute().raw()) / 4
 
     fun getNumbers(type: String, language: String, doLoadLength: Boolean = false): GalleryNumber =
         getNumbers(galleryDataService.getNumbersFromType(type, language, null), doLoadLength)
@@ -85,7 +85,8 @@ class GalleryDataServiceMapper @Inject constructor(
     fun getNumbers(type: String, tag: String, language: String, from: Int, to: Int, doLoadLength: Boolean = false): GalleryNumber =
         getNumbers(galleryDataService.getNumbers(type, tag, language, "bytes=$from-$to"), doLoadLength)
 
-    private fun getNumbers(response: Response<ResponseBody>, doLoadLength: Boolean): GalleryNumber {
+    private fun getNumbers(call: Call<ResponseBody>, doLoadLength: Boolean): GalleryNumber {
+        val response = call.execute()
         val r = response.raw()
         val responseBody = response.body()
         var numberTotalLength = 0

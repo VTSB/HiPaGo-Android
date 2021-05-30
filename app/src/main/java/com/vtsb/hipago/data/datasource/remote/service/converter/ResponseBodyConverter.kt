@@ -1,5 +1,6 @@
 package com.vtsb.hipago.data.datasource.remote.service.converter
 
+import android.util.Log
 import com.vtsb.hipago.data.datasource.remote.service.original.helper.DataView
 import com.vtsb.hipago.util.Constants.BUFFER_SIZE
 import okhttp3.ResponseBody
@@ -37,21 +38,28 @@ class ResponseBodyConverter @Inject constructor() {
     }
 
     @Throws(IOException::class)
-    fun toIntegerArrayList(responseBody: ResponseBody): ArrayList<Int> {
-        val integerArrayList = LinkedList<Int>()
+    fun toIntegerArrayList(responseBody: ResponseBody): List<Int> {
+        val integerList: MutableList<Int> = LinkedList()
         toByteArray(responseBody,
             object: ByteArrayCallback {
                 override fun call(length: Int, byteArray: ByteArray) {
+
+                    var s = ""
+                    for (byte in byteArray) {
+                        s += "$byte "
+                    }
+                    Log.d("LoadPage", "bytes:$s")
                     val view = DataView(byteArray)
                     var i = 0
                     while (i < length) {
                         val num: Int = view.getInt32(i)
-                        integerArrayList.add(num)
+                        integerList.add(num)
                         i += 4
                     }
                 }
             })
-        return ArrayList(integerArrayList)
+        Log.d("LoadPage", integerList.toString())
+        return ArrayList(integerList)
     }
 
     @Throws(IOException::class)
