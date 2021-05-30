@@ -1,5 +1,6 @@
 package com.vtsb.hipago.data.mapper
 
+import com.google.common.collect.BiMap
 import com.vtsb.hipago.data.datasource.local.entity.pojo.TagDataWithLocal
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryBlockWithOtherData
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryInfo
@@ -9,11 +10,16 @@ import com.vtsb.hipago.data.datasource.remote.service.converter.*
 import com.vtsb.hipago.data.datasource.remote.service.original.ResultJs
 import com.vtsb.hipago.data.datasource.remote.service.original.SearchJs
 import com.vtsb.hipago.data.datasource.remote.service.original.pojo.PojoSuggestion
+import com.vtsb.hipago.domain.entity.Suggestion
+import com.vtsb.hipago.domain.entity.TagType
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
+import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
+import kotlin.collections.ArrayList
 
 @Singleton
 class GalleryDataServiceMapper @Inject constructor(
@@ -25,14 +31,21 @@ class GalleryDataServiceMapper @Inject constructor(
     private val elementsConverter: ElementsConverter,
     private val stringConverter: StringConverter,
     private val jsonObjectConverter: JSONObjectConverter,
+    @Named("stringTypeBiMap") private val stringType: BiMap<String, TagType>,
 ) {
 
     fun doSearch(query: String, language: String): List<Int> =
         resultJs.do_search(query, language)
 
-    fun getSuggestionForQuery(query: String): ArrayList<PojoSuggestion> {
+    fun getSuggestionForQuery(query: String): List<Suggestion> {
         val sug = searchJs.handle_key_up_in_search_box(query)
-        return ArrayList(listOf(*sug.arr))
+
+        val newList: MutableList<Suggestion> = LinkedList()
+        for (pojoSug in sug.arr) {
+            newList.add(Suggestion(pojoSug.s, stringType[pojoSug.n]!!, pojoSug.t))
+        }
+
+        return ArrayList(newList)
     }
 
     fun getGalleryInfo(id: Int): GalleryInfo {

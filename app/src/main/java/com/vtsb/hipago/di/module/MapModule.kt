@@ -73,12 +73,12 @@ class MapModule {
 //        return HashMap()
 //    }
 
-    @Provides
-    @Singleton
-    @Named("stringTypeBiMapInv")
-    fun provideStringTypeBiMapInv(@Named("stringTypeBiMap") numberTypeBiMap: BiMap<TagType, String>): BiMap<String, TagType> {
-        return numberTypeBiMap.inverse()
-    }
+//    @Provides
+//    @Singleton
+//    @Named("stringTypeBiMapInv")
+//    fun provideStringTypeBiMapInv(@Named("stringTypeBiMap") numberTypeBiMap: BiMap<TagType, String>): BiMap<String, TagType> {
+//        return numberTypeBiMap.inverse()
+//    }
 
     @Provides
     @Singleton
