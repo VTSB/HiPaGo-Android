@@ -26,11 +26,11 @@ class GalleryNumberRepositoryImpl @Inject constructor(
             NumberLoadMode.FAVORITE.otherName-> Pair(NumberLoadMode.FAVORITE, trimQuery)
             NumberLoadMode.RECENTLY_WATCHED.otherName-> Pair(NumberLoadMode.RECENTLY_WATCHED, trimQuery)
             else-> {
-                if (trimQuery.isNotEmpty() && (trimQuery.contains(queryConverter.getChar()) || !trimQuery.contains(':'))) {
+                if (trimQuery.isEmpty()) Pair(NumberLoadMode.NEW, "index")
+                else if (trimQuery.contains(queryConverter.getChar()) || !trimQuery.contains(':'))
                     Pair(NumberLoadMode.SEARCH, query)
-                } else {
+                else
                     Pair(NumberLoadMode.NEW, queryConverter.replace(tagConverter.toOriginalQuery(trimQuery)))
-                }
             }
         }
 
