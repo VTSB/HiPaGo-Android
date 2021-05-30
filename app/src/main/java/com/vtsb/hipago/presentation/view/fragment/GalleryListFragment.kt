@@ -6,13 +6,14 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
-import android.widget.SearchView
-import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,12 +26,15 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
+import com.google.common.collect.BiMap
 import com.vtsb.hipago.R
 import com.vtsb.hipago.databinding.FragmentGalleryListBinding
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryBlockType
+import com.vtsb.hipago.domain.entity.TagType
 import com.vtsb.hipago.presentation.view.MainActivity
 import com.vtsb.hipago.presentation.view.adapter.GalleryListAdapter
+import com.vtsb.hipago.presentation.view.adapter.SearchCursorAdapter
 import com.vtsb.hipago.presentation.view.custom.listener.RecyclerItemClickListener
 import com.vtsb.hipago.presentation.viewmodel.GalleryListViewModel
 import com.vtsb.hipago.util.Constants.PREFETCH_PAGE
@@ -39,6 +43,7 @@ import com.vtsb.hipago.util.converter.TagConverter
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.math.abs
 import kotlin.properties.Delegates
 
@@ -48,6 +53,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
     private val viewModel: GalleryListViewModel by viewModels()
     @Inject lateinit var tagConverter: TagConverter
     @Inject lateinit var queryConverter: QueryConverter
+    @Inject @Named("stringTypeBiMap") lateinit var stringTypeBiMap: BiMap<String, TagType>
 
     private lateinit var adapter: GalleryListAdapter
     private lateinit var recyclerView: RecyclerView
@@ -55,7 +61,6 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
     private lateinit var navigationView: NavigationView
 
     private lateinit var startScroller: SmoothScroller
-    private lateinit var query: String
 
     private var colorPrimary by Delegates.notNull<Int>()
     private var loadModeItem: NavigationMenuItemView? = null
@@ -63,9 +68,9 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
-
         val galleryListFragmentArgs: GalleryListFragmentArgs = GalleryListFragmentArgs.fromBundle(requireArguments())
-        query = galleryListFragmentArgs.query
+        val query = galleryListFragmentArgs.query
+        viewModel.setQuery(query)
 
         adapter = GalleryListAdapter(viewModel)
         adapter.setHasStableIds(true)
@@ -220,7 +225,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
 
         val mAppBarConfiguration =
             AppBarConfiguration.Builder().setOpenableLayout(binding.drawerLayout).build()
-        val navController = Navigation.findNavController(activity, R.id.fragment_container)
+        val navController = Navigation.findNavController(activity, R.id.nav_host_fragment)
         NavigationUI.setupActionBarWithNavController(activity, navController, mAppBarConfiguration)
         NavigationUI.setupWithNavController(binding.navView, navController)
 
@@ -243,22 +248,67 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
 
         val searchAutoCompleteTextView = searchView.findViewById<AutoCompleteTextView>(androidx.appcompat.R.id.search_src_text)
         searchAutoCompleteTextView.threshold = 0
+        searchView.suggestionsAdapter = SearchCursorAdapter(
+            viewModel.searchResultGetter, stringTypeBiMap, searchView.context, null)
+        searchView.setOnSuggestionListener(object : SearchView.OnSuggestionListener {
+            override fun onSuggestionSelect(position: Int): Boolean {
+                return false
+            }
 
-
-
-        viewModel.init(query, adapter.listener)
+            override fun onSuggestionClick(position: Int): Boolean {
+                val cursor = searchView.suggestionsAdapter.cursor
+                cursor.moveToPosition(position)
+                val tag = cursor.getString(1)
+                val before = cursor.getString(4)
+                val nowQuery = searchView.query.toString()
+                val splitter: Char = queryConverter.getChar()
+                val adder = if (splitter == ' ') " " else "$splitter "
+                val transformedTag: String = queryConverter.transformNotSplitAble(tag)
+                val idx = nowQuery.lastIndexOf(splitter)
+                var newQuery = if (idx == -1) "" else nowQuery.substring(0, idx) + adder
+                newQuery += if (before == null) "$transformedTag:" else "$before:$transformedTag$adder"
+                searchView.setQuery(newQuery, false)
+                return true
+            }
+        })
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                Navigation.findNavController(requireView()).navigate(
+                    GalleryListFragmentDirections
+                        .actionGalleryListFragmentSelf()
+                        .setQuery(query)
+                )
+                return false
+            }
+            override fun onQueryTextChange(newText: String): Boolean = false
+        })
 
         super.onCreateOptionsMenu(menu, inflater)
+
+        searchView.setQuery(viewModel.getQuery(), false)
+        viewModel.init(adapter.listener)
     }
 
-    private fun getColor(resId: Int): Int {
-        val typedValue = TypedValue()
-        val theme = requireActivity().theme
-        theme.resolveAttribute(resId, typedValue, true)
-        val arr = requireActivity().obtainStyledAttributes(typedValue.data, intArrayOf(resId))
-        val color = arr.getColor(0, -1)
-        arr.recycle()
-        return color
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home-> {
+                drawerLayout.openDrawer(GravityCompat.START)
+                changeSelectedColor()
+            }
+//            R.id.glm_settings->
+//                Navigation.findNavController(requireView()).navigate(
+//                    GalleryListFragmentDirections
+//                        .actionGalleryListFragmentToSettingFragment()
+//                )
+//            R.id.glm_bookmark-> {
+//
+//            }
+//            R.id.glm_filtering-> Navigation.findNavController(requireView()).navigate(
+//                GalleryListFragmentDirections
+//                    .actionGalleryListFragmentToFilterFragment()
+//            )
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -307,6 +357,15 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
             .scrollToPositionWithOffset(page, 0)
     }
 
+    private fun getColor(resId: Int): Int {
+        val typedValue = TypedValue()
+        val theme = requireActivity().theme
+        theme.resolveAttribute(resId, typedValue, true)
+        val arr = requireActivity().obtainStyledAttributes(typedValue.data, intArrayOf(resId))
+        val color = arr.getColor(0, -1)
+        arr.recycle()
+        return color
+    }
 
 
 

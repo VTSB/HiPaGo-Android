@@ -8,7 +8,9 @@ import com.vtsb.hipago.R
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.domain.entity.NumberLoadMode
+import com.vtsb.hipago.domain.entity.Suggestion
 import com.vtsb.hipago.domain.usecase.GalleryBlockUseCase
+import com.vtsb.hipago.domain.usecase.SearchUseCase
 import com.vtsb.hipago.presentation.view.adapter.SearchCursorAdapter
 import com.vtsb.hipago.presentation.view.custom.adapter.RecyclerViewAdapter
 import com.vtsb.hipago.util.Constants.PAGE_SIZE
@@ -28,6 +30,7 @@ import kotlin.collections.ArrayList
 @HiltViewModel
 class GalleryListViewModel @Inject constructor(
     private val galleryBlockUseCase: GalleryBlockUseCase,
+    private val searchUseCase: SearchUseCase,
     private val application: Application,
     @Named("useLanguageMSF") private val useLanguageMSF: MutableStateFlow<String>,
 ) : ViewModel() {
@@ -51,35 +54,26 @@ class GalleryListViewModel @Inject constructor(
     val maxPage = MutableLiveData(-1)
     private var contentRange = -1
 
-    var isLoading = false
+    private var isLoading = false
+    private var haveInit = false
 
-//    private val searchResultGetter: SearchCursorAdapter.SearchResultGetter =
-//        SearchCursorAdapter.SearchResultGetter { query_text ->
-//            searchResultRepository.getSuggestionsSync(
-//                query_text
-//            )
-//        }
+    val searchResultGetter = object: SearchCursorAdapter.SearchResultGetter {
+            override fun getSuggestions(query: String): List<Suggestion> =
+                searchUseCase.getSuggestions(query)}
 
 
     // call only once
-    fun init(query: String, listener: RecyclerViewAdapter.Listener) {
-        setQuery(query)
+    fun init(listener: RecyclerViewAdapter.Listener) {
+        if(haveInit) return
+        haveInit = true
         this.listener = listener
 
         try {
             val id = query.toInt()
             val galleryBlockList: MutableList<GalleryBlock> = java.util.ArrayList()
-            galleryBlockList.add(
-                getSplitter(
-                    application.resources.getString(R.string.gallery)
-                )
-            )
+            galleryBlockList.add(getSplitter(application.resources.getString(R.string.gallery)))
             galleryBlockList.add(GalleryBlock(id, GalleryBlockType.LOADING, "", Date(0), mapOf(), "", LinkedList()))
-            galleryBlockList.add(
-                getSplitter(
-                    application.resources.getString(R.string.search_word)
-                )
-            )
+            galleryBlockList.add(getSplitter(application.resources.getString(R.string.search_word)))
             galleryIdPageMap[0] = 1
             galleryIdPageMap[id] = 1
             offset = 3
@@ -90,7 +84,13 @@ class GalleryListViewModel @Inject constructor(
         } catch (ignored: NumberFormatException) {
             offset = 0
         }
+        loadBottomPage()
+    }
 
+    fun setQuery(query: String) {
+        val result = galleryBlockUseCase.getLoadModeFromQuery(query)
+        this.loadMode = result.first
+        this.query = result.second
     }
 
     private fun getSplitter(title: String): GalleryBlock =
@@ -221,11 +221,7 @@ class GalleryListViewModel @Inject constructor(
     }
 
 
-    private fun setQuery(query: String) {
-        val result = galleryBlockUseCase.getLoadModeFromQuery(query)
-        this.loadMode = result.first
-        this.query = result.second
-    }
+
 
     private fun resetValues() {
         this.listener.onRangeRemovedSync(0, galleryBlockList.size)

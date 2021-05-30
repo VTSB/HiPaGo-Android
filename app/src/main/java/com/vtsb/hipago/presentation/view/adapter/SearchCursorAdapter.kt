@@ -8,7 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CursorAdapter
+import androidx.cursoradapter.widget.CursorAdapter
 import androidx.databinding.DataBindingUtil
 import com.google.common.collect.BiMap
 import com.vtsb.hipago.databinding.ItemSearchSuggestionBinding

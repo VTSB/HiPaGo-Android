@@ -2,6 +2,8 @@ package com.vtsb.hipago.presentation.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import com.vtsb.hipago.R
 import com.vtsb.hipago.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -9,7 +11,16 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ActivityMainBinding.inflate(layoutInflater)
+        //val binding = ActivityMainBinding.inflate(layoutInflater)
+        //val navHostFragment = binding.navHostFragment as NavHostFragment
+
+
+        setContentView(R.layout.activity_main)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        val navGraph = navController.navInflater.inflate(R.navigation.navigation_graph)
+
+        navController.graph = navGraph
 
 //        val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 //
