@@ -8,20 +8,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.cursoradapter.widget.CursorAdapter
+import android.widget.CursorAdapter
 import androidx.databinding.DataBindingUtil
 import com.google.common.collect.BiMap
 import com.vtsb.hipago.databinding.ItemSearchSuggestionBinding
 import com.vtsb.hipago.domain.entity.Suggestion
 import com.vtsb.hipago.domain.entity.TagType
-import java.util.*
 
 
 class SearchCursorAdapter constructor(
     private val searchResultGetter: SearchResultGetter,
     private val stringType: BiMap<String, TagType>,
     context: Context,
-    cursor: Cursor,
+    cursor: Cursor?,
 ) : CursorAdapter(context, cursor, FLAG_REGISTER_CONTENT_OBSERVER) {
 
     override fun newView(context: Context, cursor: Cursor, parent: ViewGroup): View {
@@ -55,7 +54,7 @@ class SearchCursorAdapter constructor(
     }
 
     interface SearchResultGetter {
-        fun getSuggestions(query: String?): ArrayList<Suggestion>
+        fun getSuggestions(query: String): List<Suggestion>
     }
 
 }

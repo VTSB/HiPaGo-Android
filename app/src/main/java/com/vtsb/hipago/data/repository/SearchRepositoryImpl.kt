@@ -20,7 +20,7 @@ class SearchRepositoryImpl @Inject constructor(
 ) : SearchRepository {
 
 
-    override fun getSuggestionList(query: String): List<Suggestion>? {
+    override fun getSuggestionList(query: String): List<Suggestion> {
         val lastQuery: String = queryConverter.getLastQuery(query)
 
 
@@ -29,13 +29,13 @@ class SearchRepositoryImpl @Inject constructor(
             galleryDataServiceMapper.getSuggestionForQuery(lastQuery)
         } catch (e: InterruptedException) {
             e.printStackTrace()
-            null
+            ArrayList()
         } catch (e: IOException) {
             e.printStackTrace()
-            null
+            ArrayList()
         } catch (e: NoSuchAlgorithmException) {
             e.printStackTrace()
-            null
+            ArrayList()
         }
 
     }
