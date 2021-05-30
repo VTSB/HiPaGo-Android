@@ -2,6 +2,7 @@ package com.vtsb.hipago.presentation.viewmodel
 
 import android.app.Application
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import com.vtsb.hipago.domain.usecase.GalleryBlockUseCase
 import com.vtsb.hipago.domain.usecase.SearchUseCase
 import com.vtsb.hipago.presentation.view.adapter.SearchCursorAdapter
 import com.vtsb.hipago.presentation.view.custom.adapter.RecyclerViewAdapter
+import com.vtsb.hipago.util.Constants
 import com.vtsb.hipago.util.Constants.PAGE_SIZE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -51,8 +53,9 @@ class GalleryListViewModel @Inject constructor(
 
 
 
-    val nowPage = MutableLiveData(1)
-    val maxPage = MutableLiveData(-1)
+    private val loadStatus = MutableLiveData(0)
+    private val nowPage = MutableLiveData(1)
+    private val maxPage = MutableLiveData(-1)
     private var contentRange = -1
 
     private var isLoading = false
@@ -85,10 +88,11 @@ class GalleryListViewModel @Inject constructor(
         } catch (ignored: NumberFormatException) {
             offset = 0
         }
-        loadBottomPage()
+        loadPageInitially()
     }
 
     fun setQuery(query: String) {
+        Log.d("test", "setQuery $query")
         val result = galleryBlockUseCase.getLoadModeFromQuery(query)
         this.loadMode = result.first
         this.query = result.second
@@ -110,8 +114,9 @@ class GalleryListViewModel @Inject constructor(
 
     fun changeLoadMode(loadMode: String) {
         if (this.query != loadMode) {
-            setQuery(query)
+            setQuery(loadMode)
             resetValues()
+            loadPageInitially()
         }
     }
 
@@ -121,10 +126,35 @@ class GalleryListViewModel @Inject constructor(
             this.language = language
             this.useLanguageMSF.compareAndSet(language, language)
             resetValues()
+            loadPageInitially()
         }
     }
 
-    fun loadTopPage() {
+    private fun loadPageInitially() {
+        Log.d("test", "loadPageInitially $query, $loadMode")
+        loadStatus.value = 0
+        loadBottomPage()
+    }
+
+    fun onScroll(topPos: Int, bottomPos: Int) {
+        val firstGalleryBlock: GalleryBlock = galleryBlockList[topPos]
+        val firstPage: Int = galleryIdPageMap[firstGalleryBlock.id] ?: return
+        nowPage.value = firstPage
+
+        if (firstPage <= tPage + Constants.PREFETCH_PAGE) {
+            loadTopPage()
+        }
+
+        // bottom
+        val lastGalleryBlock: GalleryBlock = galleryBlockList[bottomPos]
+        val lastPage: Int = galleryIdPageMap[lastGalleryBlock.id] ?: return
+
+        if (lastPage >= bPage - Constants.PREFETCH_PAGE) {
+            loadBottomPage()
+        }
+    }
+
+    private fun loadTopPage() {
         if (isLoading || tPage < 1) return
 
         val displayPage = tPage--
@@ -144,7 +174,7 @@ class GalleryListViewModel @Inject constructor(
             })
     }
 
-    fun loadBottomPage() {
+    private fun loadBottomPage() {
         if (isLoading || (maxPage.value != -1 && bPage > maxPage.value!!)) return
 
         val displayPage = bPage++
@@ -159,7 +189,7 @@ class GalleryListViewModel @Inject constructor(
         })
     }
 
-    fun loadPage(displayPage: Int, callback: (List<GalleryBlock>) -> Unit) {
+    private fun loadPage(displayPage: Int, callback: (List<GalleryBlock>) -> Unit) {
         isLoading = true
         Log.d("test", "loadPage $displayPage")
         CoroutineScope(Dispatchers.IO).launch {
@@ -170,20 +200,17 @@ class GalleryListViewModel @Inject constructor(
                     query,
                     language,
                     loadPage,
-                    contentRange == -1
-                )
+                    contentRange == -1)
 
-                //
                 val idList = galleryNumber.numberList
 
                 // todo: apply filter
                 // bla bla~~
 
 
-                if (galleryNumber.length != 0) {
-                    viewModelScope.launch {
-                        setContentRange(galleryNumber.length)
-                    }
+                viewModelScope.launch {
+                    if (loadStatus.value == 0) loadStatus.value = 1
+                    if (galleryNumber.length != 0) setContentRange(galleryNumber.length)
                 }
 
                 val galleryBlockList = LinkedList<GalleryBlock>()
@@ -199,6 +226,9 @@ class GalleryListViewModel @Inject constructor(
                 }
             } catch (t: Throwable) {
                 Log.e("LoadPage", "failed $displayPage", t)
+                viewModelScope.launch {
+                    loadStatus.value = -1
+                }
             } finally {
                 isLoading = false
             }
@@ -232,10 +262,6 @@ class GalleryListViewModel @Inject constructor(
         }
     }
 
-
-
-
-
     private fun resetValues() {
         this.listener.onRangeRemovedSync(0, galleryBlockList.size)
         // this.disposable.clear()
@@ -267,5 +293,8 @@ class GalleryListViewModel @Inject constructor(
     fun getTPage(): Int = tPage
     fun getQuery(): String = query
     fun getLanguage(): String = language
+    fun getLoadStatus(): LiveData<Int> = loadStatus
+    fun getMaxPage(): LiveData<Int> = maxPage
+    fun getNowPage(): LiveData<Int> = nowPage
 
 }

@@ -8,6 +8,7 @@ import com.vtsb.hipago.presentation.view.converter.ListConverter
 
 @BindingAdapter("bindThumbnail")
 fun bindThumbnail(view: ImageView, url: String) {
+    if (url.isEmpty()) return
     Glide.with(view)
         .load("https:$url")
         .into(view)

@@ -12,6 +12,7 @@ import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -29,7 +30,6 @@ import com.google.android.material.navigation.NavigationView
 import com.google.common.collect.BiMap
 import com.vtsb.hipago.R
 import com.vtsb.hipago.databinding.FragmentGalleryListBinding
-import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.entity.TagType
@@ -38,7 +38,6 @@ import com.vtsb.hipago.presentation.view.adapter.GalleryListAdapter
 import com.vtsb.hipago.presentation.view.adapter.SearchCursorAdapter
 import com.vtsb.hipago.presentation.view.custom.listener.RecyclerItemClickListener
 import com.vtsb.hipago.presentation.viewmodel.GalleryListViewModel
-import com.vtsb.hipago.util.Constants.PREFETCH_PAGE
 import com.vtsb.hipago.util.converter.QueryConverter
 import com.vtsb.hipago.util.converter.TagConverter
 import dagger.hilt.android.AndroidEntryPoint
@@ -76,7 +75,6 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
         adapter = GalleryListAdapter(viewModel)
         adapter.setHasStableIds(true)
 
-
         colorPrimary = getColor(android.R.attr.textColorPrimary)
 
         val binding = FragmentGalleryListBinding.inflate(inflater, container, false)
@@ -86,7 +84,6 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
-
 
         recyclerView.adapter = adapter
         recyclerView.setHasFixedSize(true)
@@ -99,26 +96,9 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
 
                 // top
                 val firstPosition = manager.findFirstVisibleItemPosition()
-                if (firstPosition == -1) return
-
-                val firstGalleryBlock: GalleryBlock = viewModel.getGalleryBlockList()[firstPosition]
-                val firstPage: Int = viewModel.getGalleryIdPageMap()[firstGalleryBlock.id] ?: return
-
-                viewModel.nowPage.value = firstPage
-
-                if (firstPage <= viewModel.getTPage() + PREFETCH_PAGE) {
-                    viewModel.loadTopPage()
-                }
-
-                // bottom
                 val lastPosition = manager.findLastVisibleItemPosition()
-                val lastGalleryBlock: GalleryBlock =
-                    viewModel.getGalleryBlockList()[lastPosition]
-                val lastPage: Int = viewModel.getGalleryIdPageMap()[lastGalleryBlock.id] ?: return
-
-                if (lastPage >= viewModel.getBPage() - PREFETCH_PAGE) {
-                    viewModel.loadBottomPage()
-                }
+                if (firstPosition == -1) return
+                viewModel.onScroll(firstPosition, lastPosition)
             }
         })
         recyclerView.addOnItemTouchListener(RecyclerItemClickListener(requireContext(), object: RecyclerItemClickListener.OnItemClickListener.Normal {
@@ -186,18 +166,13 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
                 text = if (idx == -1) text else text.substring(0, idx)
                 var toPage = text.toInt()
                 if (toPage >= viewModel.getTPage() && toPage <= viewModel.getBPage()) {
-                    if (abs(toPage - viewModel.nowPage.value!!) > 2) {
+                    if (abs(toPage - viewModel.getNowPage().value!!) > 2) {
                         teleportPage(toPage)
                     } else {
                         movePage(toPage)
                     }
                 } else {
-                    toPage =
-                        1.coerceAtLeast(
-                            toPage.coerceAtMost(
-                                viewModel.maxPage.value!!
-                            )
-                        )
+                    toPage = 1.coerceAtLeast(toPage.coerceAtMost(viewModel.getMaxPage().value!!))
                     viewModel.changePage(toPage)
                 }
 
@@ -217,20 +192,27 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
         }
 
         binding.prev.setOnClickListener {
-            val nowPage: Int = viewModel.nowPage.value!!
+            val nowPage: Int = viewModel.getNowPage().value!!
             if (nowPage == 1) return@setOnClickListener
 
             if (!startScroller.isRunning)
                 movePage(nowPage - 1)
         }
         binding.next.setOnClickListener {
-            val nowPage: Int = viewModel.nowPage.value!!
-            if (nowPage == viewModel.maxPage.value) return@setOnClickListener
+            val nowPage: Int = viewModel.getNowPage().value!!
+            if (nowPage == viewModel.getMaxPage().value) return@setOnClickListener
 
             if (!startScroller.isRunning)
                 movePage(nowPage + 1)
         }
 
+        viewModel.getLoadStatus().observe(viewLifecycleOwner, {
+            when (it) {
+                -1-> Toast.makeText(requireContext(), R.string.gallery_number_load_failed, Toast.LENGTH_LONG).show()
+                0-> binding.progressbar.visibility = View.VISIBLE
+                1-> binding.progressbar.visibility = View.GONE
+            }
+        })
 
         setHasOptionsMenu(true)
         val activity: MainActivity = requireActivity() as MainActivity
@@ -329,11 +311,11 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
+
 
         var loadMode: String? = null
         var language: String? = null
-        when(id) {
+        when(val id = item.itemId) {
             R.id.nav_recent-> loadMode = "index"
             R.id.nav_popularity-> loadMode = "popular"
             R.id.nav_recent_watched-> loadMode = NumberLoadMode.RECENTLY_WATCHED.otherName
@@ -350,7 +332,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
             R.id.back-> requireActivity().onBackPressed()
             else-> Log.e(this.javaClass.simpleName, "wrong navView Item:${item.title}($id)")
         }
-
+        Log.d("test", "selected $loadMode, $language")
         if (loadMode != null) {
              viewModel.changeLoadMode(loadMode)
         } else if (language != null) {
@@ -377,31 +359,29 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
             "type:anime" -> navigationView.findViewById(R.id.nav_type_anime)
             else -> null
         }
-        languageItem = null
-        when (viewModel.getLanguage()) {
-            "all" -> languageItem = navigationView.findViewById(R.id.nav_lang_all)
-            "korean" -> languageItem = navigationView.findViewById(R.id.nav_lang_korean)
-            "english" -> languageItem = navigationView.findViewById(R.id.nav_lang_english)
-            "japanese" -> languageItem = navigationView.findViewById(R.id.nav_lang_japanese)
+        languageItem = when (viewModel.getLanguage()) {
+            "all" -> navigationView.findViewById(R.id.nav_lang_all)
+            "korean" -> navigationView.findViewById(R.id.nav_lang_korean)
+            "english" -> navigationView.findViewById(R.id.nav_lang_english)
+            "japanese" -> navigationView.findViewById(R.id.nav_lang_japanese)
+            else-> null
         }
 
         val c = getColor(R.color.colorMain)
-        if (loadModeItem != null) {
-            loadModeItem!!.setTextColor(ColorStateList.valueOf(c))
-        }
-        if (languageItem != null) {
-            languageItem!!.setTextColor(ColorStateList.valueOf(c))
-        }
+        loadModeItem?.setTextColor(ColorStateList.valueOf(c))
+        languageItem?.setTextColor(ColorStateList.valueOf(c))
     }
 
     private fun movePage(page: Int) {
-        startScroller.targetPosition = viewModel.getPagePositionMap()[page]!!
+        val position = viewModel.getPagePositionMap()[page] ?: return
+        startScroller.targetPosition = position
         recyclerView.layoutManager?.startSmoothScroll(startScroller)
     }
 
     private fun teleportPage(page: Int) {
+        val position = viewModel.getPagePositionMap()[page] ?: return
         (recyclerView.layoutManager as LinearLayoutManager)
-            .scrollToPositionWithOffset(page, 0)
+            .scrollToPositionWithOffset(position, 0)
     }
 
     private fun getColor(resId: Int): Int {
