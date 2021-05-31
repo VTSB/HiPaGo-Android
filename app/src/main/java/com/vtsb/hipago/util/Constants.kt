@@ -3,12 +3,6 @@ package com.vtsb.hipago.util
 object Constants {
 
 
-    const val PAGE_SIZE = 25
-    const val PREFETCH_PAGE = 2
-
-    const val SEARCH_LIMIT = 100
-
-
     // ai
     // mi
     // bi
@@ -20,7 +14,17 @@ object Constants {
 
     const val BUFFER_SIZE = 1024
 
+
     //
+
+    const val PAGE_SIZE = 25
+    const val PREFETCH_PAGE = 2
+
+    const val SEARCH_LIMIT = 100
+
+
+    const val PATH_BASE_EXTERNAL = "HiPaGo/"
+
 
 
 
