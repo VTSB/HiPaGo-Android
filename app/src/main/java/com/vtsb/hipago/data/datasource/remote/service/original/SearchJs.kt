@@ -1,11 +1,11 @@
 package com.vtsb.hipago.data.datasource.remote.service.original
 
 import android.util.Log
-import com.vtsb.hipago.util.converter.QueryConverter
 import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.ResponseBodyConverter
 import com.vtsb.hipago.data.datasource.remote.service.original.helper.DataView
 import com.vtsb.hipago.data.datasource.remote.service.original.pojo.*
+import com.vtsb.hipago.util.converter.QueryConverter
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.io.IOException

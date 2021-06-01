@@ -11,7 +11,6 @@ import com.vtsb.hipago.databinding.FragmentGalleryDetailBinding
 import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.presentation.view.MainActivity
 import com.vtsb.hipago.presentation.view.adapter.GalleryListAdapter
-import com.vtsb.hipago.presentation.view.adapter.binding.GalleryDetailBindingComponent
 import com.vtsb.hipago.presentation.view.adapter.binding.MyDataBindingComponent
 import com.vtsb.hipago.presentation.view.custom.listener.RecyclerItemClickListener
 import com.vtsb.hipago.presentation.viewmodel.GalleryDetailViewModel

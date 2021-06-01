@@ -3,7 +3,6 @@ package com.vtsb.hipago.data.mapper
 import com.google.common.collect.BiMap
 import com.vtsb.hipago.data.datasource.local.entity.pojo.TagDataWithLocal
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryBlockWithOtherData
-import com.vtsb.hipago.data.datasource.remote.entity.GalleryInfo
 import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.*
 import com.vtsb.hipago.data.datasource.remote.service.original.ResultJs

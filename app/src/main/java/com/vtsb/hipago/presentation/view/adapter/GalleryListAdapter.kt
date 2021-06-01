@@ -8,7 +8,6 @@ import com.vtsb.hipago.databinding.ItemGalleryBlockType2Binding
 import com.vtsb.hipago.databinding.ItemSplitterBinding
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.presentation.view.custom.adapter.RecyclerViewAdapter
-import com.vtsb.hipago.presentation.viewmodel.GalleryListViewModel
 
 class GalleryListAdapter constructor(
     private val galleryBlockList: List<GalleryBlock>

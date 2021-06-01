@@ -6,10 +6,7 @@ import com.vtsb.hipago.data.datasource.remote.service.converter.ResponseBodyConv
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import java.util.*
 import javax.inject.Inject
 import kotlin.experimental.and

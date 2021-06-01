@@ -1,7 +1,7 @@
 package com.vtsb.hipago.data.repository
 
-import com.vtsb.hipago.domain.entity.GalleryIds
 import com.vtsb.hipago.data.mapper.GalleryDataServiceMapper
+import com.vtsb.hipago.domain.entity.GalleryIds
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.entity.TagType
 import com.vtsb.hipago.domain.repository.GalleryNumberRepository

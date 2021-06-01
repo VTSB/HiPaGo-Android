@@ -1,6 +1,5 @@
 package com.vtsb.hipago.data.datasource.remote.service.converter
 
-import android.util.Log
 import com.vtsb.hipago.data.datasource.remote.service.original.helper.DataView
 import com.vtsb.hipago.util.Constants.BUFFER_SIZE
 import okhttp3.ResponseBody

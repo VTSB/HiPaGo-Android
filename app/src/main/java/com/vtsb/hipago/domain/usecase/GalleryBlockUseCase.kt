@@ -1,7 +1,7 @@
 package com.vtsb.hipago.domain.usecase
 
-import com.vtsb.hipago.domain.entity.GalleryIds
 import com.vtsb.hipago.domain.entity.GalleryBlock
+import com.vtsb.hipago.domain.entity.GalleryIds
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.repository.GalleryBlockRepository
 import com.vtsb.hipago.domain.repository.GalleryNumberRepository

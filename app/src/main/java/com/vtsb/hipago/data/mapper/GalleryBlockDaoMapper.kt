@@ -2,7 +2,6 @@ package com.vtsb.hipago.data.mapper
 
 import android.util.Log
 import com.google.common.collect.BiMap
-import com.vtsb.hipago.util.converter.TagConverter
 import com.vtsb.hipago.data.datasource.local.dao.GalleryBlockDao
 import com.vtsb.hipago.data.datasource.local.entity.GalleryData
 import com.vtsb.hipago.data.datasource.local.entity.GalleryRelated
@@ -11,12 +10,12 @@ import com.vtsb.hipago.data.datasource.local.entity.relation.GalleryDataTagDataC
 import com.vtsb.hipago.data.datasource.remote.entity.GalleryBlockWithOtherData
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.TagType
+import com.vtsb.hipago.util.converter.TagConverter
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
-import kotlin.collections.HashMap
 
 @Singleton
 class GalleryBlockDaoMapper @Inject constructor(

@@ -2,7 +2,6 @@ package com.vtsb.hipago.data.repository
 
 import com.vtsb.hipago.data.datasource.remote.service.original.CommonJs
 import com.vtsb.hipago.data.mapper.GalleryDataServiceMapper
-import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryImages
 import com.vtsb.hipago.domain.repository.GalleryImageRepository
 import com.vtsb.hipago.util.helper.FileHelper
