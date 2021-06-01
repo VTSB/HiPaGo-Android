@@ -29,14 +29,28 @@ class GalleryBlockDaoMapper @Inject constructor(
         val fullGalleryData = galleryBlockDao.getFullGalleryData(id.toLong()) ?: return null
 
         val galleryData = fullGalleryData.galleryDataWithTagData.galleryData
-        val tags = HashMap<TagType, List<String>>()
+        val tags = EnumMap<TagType, List<String>>(TagType::class.java)
         for(tagData in fullGalleryData.galleryDataWithTagData.tagDataList) {
-            var tagList = tags[tagData.type] as LinkedList<String>?
+
+            val newTag: String
+            val newTagType: TagType
+            when (val tagType = tagData.type) {
+                TagType.MALE, TagType.FEMALE-> {
+                    newTag = "${tagData.name}${tagType.ext}"
+                    newTagType = TagType.TAG
+                }
+                else ->{
+                    newTag = tagData.name
+                    newTagType = tagData.type
+                }
+            }
+
+            var tagList = tags[newTagType] as LinkedList<String>?
             if (tagList == null) {
                 tagList = LinkedList()
-                tags[tagData.type] = tagList
+                tags[newTagType] = tagList
             }
-            tagList.add(tagData.name)
+            tagList.add(newTag)
         }
 
         val relatedList = LinkedList<Int>()
@@ -82,27 +96,30 @@ class GalleryBlockDaoMapper @Inject constructor(
     }
 
     private fun getGalleryDataTagDataCrossRefList(id: Long, tagType: TagType, tagList: List<String>?): List<GalleryDataTagDataCrossRef> {
-        val tagNumberBiMap = tagNumberBiMapArray[tagType.id.toInt()]
+        //val tagNumberBiMap = tagNumberBiMapArray[tagType.id.toInt()]
         val results = LinkedList<GalleryDataTagDataCrossRef>()
         if (tagList == null) return results
         for (tag in tagList) {
-            results.add(getGalleryDataTagDataCrossRef(id, tagType, tag, tagNumberBiMap))
+            results.add(getGalleryDataTagDataCrossRef(id, tagType, tag))
         }
         return results
     }
 
-    private fun getGalleryDataTagDataCrossRef(id: Long, tagType: TagType, tag: String, tagNumberBiMap: BiMap<String, Long>): GalleryDataTagDataCrossRef {
-        val original = tagConverter.toDataTag(tagType, tag).tag
+    private fun getGalleryDataTagDataCrossRef(id: Long, tagType: TagType, tag: String): GalleryDataTagDataCrossRef {
+        val result = tagConverter.toDataTag(tagType, tag)
+        val original = result.tag
+        val newTagType = result.tagType
 
+        val tagNumberBiMap = tagNumberBiMapArray[newTagType.id.toInt()]
         var tagId = tagNumberBiMap[original]
         if (tagId == null) {
-            tagId = galleryBlockDao.getTagNum(tagType, original)
+            tagId = galleryBlockDao.getTagNum(newTagType, original)
 
             if (tagId == null) {
-                val tagData = TagData(null, tagType, original, 1L)
+                val tagData = TagData(null, newTagType, original, 1L)
                 tagId = galleryBlockDao.insertEnglishTag(tagData)
                 if (tagId == null) {
-                    Log.e(this.javaClass.name, "number insert fail:$tagType, $tag")
+                    Log.e(this.javaClass.name, "number insert fail:$newTagType, $tag")
                     throw IOException()
                 }
             }
