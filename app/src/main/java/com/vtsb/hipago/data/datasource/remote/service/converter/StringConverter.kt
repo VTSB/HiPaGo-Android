@@ -55,7 +55,6 @@ class StringConverter @Inject constructor(
             languageTagList.add(languageTag)
         }
 
-        //Log.d("check", languageTagList.toString());
         return languageTagList
     }
 

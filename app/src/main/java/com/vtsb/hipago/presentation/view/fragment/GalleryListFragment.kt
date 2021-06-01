@@ -332,7 +332,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
             R.id.back-> requireActivity().onBackPressed()
             else-> Log.e(this.javaClass.simpleName, "wrong navView Item:${item.title}($id)")
         }
-        Log.d("test", "selected $loadMode, $language")
+        
         if (loadMode != null) {
              viewModel.changeLoadMode(loadMode)
         } else if (language != null) {

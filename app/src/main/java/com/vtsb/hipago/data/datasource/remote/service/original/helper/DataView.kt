@@ -1,5 +1,6 @@
 package com.vtsb.hipago.data.datasource.remote.service.original.helper
 
+import android.util.Log
 import java.nio.ByteBuffer
 
 class DataView(private val buffer: ByteArray) {
@@ -9,7 +10,7 @@ class DataView(private val buffer: ByteArray) {
 
     fun getInt32(pos: Int): Int {
         var result = 0
-        for (i in 0..4) {
+        for (i in 0 until 4) {
             result = result or (getUint8(pos + i).toInt() shl 8 * (3-i))
         }
         return result

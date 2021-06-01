@@ -94,14 +94,17 @@ class SearchJs @Inject constructor(
     fun decode_node(data: ByteArray): Node? {
         val view = DataView(data)
         var pos = 0
+
         val number_of_keys: Int = view.getInt32(pos)
         pos += 4
+
         val keys = Array(number_of_keys) { ShortArray(4) }
+
         var top = 0
         for (i in 0 until number_of_keys) {
             val key_size: Int = view.getInt32(pos)
             if (key_size == 0 || key_size > 32) {
-                Log.e(SearchJs::class.java.simpleName, "fatal: !key_size || key_size > 32")
+                Log.e(this.javaClass.simpleName, "fatal: !key_size || key_size > 32 $key_size")
                 return null
             }
             pos += 4
@@ -345,10 +348,8 @@ class SearchJs @Inject constructor(
 //                term = Localization.transformK2ENoThrow(sides[1], field);
         }
         val key: ShortArray = searchlibJs.hash_term(term)
-        val node: Node = get_node_at_address(field, 0, serial)
-            ?: return GetSuggestionForQuery(ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0)), serial)
-        val data: Data = B_Search(field, key, node, serial)
-            ?: return GetSuggestionForQuery(ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0)), serial)
+        val node: Node = get_node_at_address(field, 0, serial) ?: return GetSuggestionForQuery(ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0)), serial)
+        val data: Data = B_Search(field, key, node, serial) ?: return GetSuggestionForQuery(ArrayList<PojoSuggestion>().toArray(arrayOfNulls<PojoSuggestion>(0)), serial)
         return GetSuggestionForQuery(get_suggestions_from_data(field, data), serial)
     }
 
