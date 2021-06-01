@@ -1,10 +1,12 @@
 package com.vtsb.hipago.data.datasource.remote.service.original
 
+import android.util.Log
 import com.vtsb.hipago.data.datasource.remote.service.GalleryDataService
 import com.vtsb.hipago.data.datasource.remote.service.converter.ResponseBodyConverter
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Response
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -39,51 +41,28 @@ class SearchlibJs @Inject constructor(
     var languages_index_version: String? = null
     var nozomiurl_index_version: String? = null
 
-/*
-    fun init(galleryDataService: GalleryDataService) {
-        SearchlibJs.galleryDataService = galleryDataService
-        Single.fromCallable {
-            get_index_version(
-                "tagindex"
-            )
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                tag_index_version = getIndexVersion("tagindex")
+            } catch(t: Throwable) {
+                Log.e(this.javaClass.simpleName, "failed to load tagIndex", t)
+            }
         }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : SingleObserver<String> {
-                override fun onSubscribe(d: Disposable) {}
-                override fun onSuccess(s: String) {
-                    tag_index_version = s
-                }
-
-                override fun onError(e: Throwable) {
-                    e.printStackTrace()
-                }
-            })
-        Single.fromCallable {
-            get_index_version(
-                "galleriesindex"
-            )
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                galleries_index_version = getIndexVersion("galleriesindex")
+            } catch(t: Throwable) {
+                Log.e(this.javaClass.simpleName, "failed to load galleriesIndex", t)
+            }
         }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : SingleObserver<String> {
-                override fun onSubscribe(d: Disposable) {}
-                override fun onSuccess(s: String) {
-                    galleries_index_version = s
-                }
-
-                override fun onError(e: Throwable) {
-                    e.printStackTrace()
-                }
-            })
-    }*/
+    }
 
     fun sanitize(input: String): String {
         return input.replace(regex_sanitize.toRegex(), "")
     }
 
     // or uint8
-    @Throws(NoSuchAlgorithmException::class)
     fun hash_term(term: String): ShortArray {
         val messageDigest = MessageDigest.getInstance("SHA-256")
         val hash = messageDigest.digest(term.toByteArray())
@@ -95,12 +74,10 @@ class SearchlibJs @Inject constructor(
         return result
     }
 
-    @Throws(IOException::class)
-    fun get_index_version(name: String): String {
-        return galleryDataService.getIndexVersion(name, Date().time)
-            .execute().body().let {
-            responseBodyConverter.toIndexVersion(it!!)
-        }
-    }
+    fun getIndexVersion(name: String): String =
+        responseBodyConverter.toIndexVersion(
+            galleryDataService.getIndexVersion(
+                name, Date().time).execute().body()!!)
+
 
 }
