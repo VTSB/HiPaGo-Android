@@ -73,7 +73,7 @@ class GalleryNumberRepositoryImpl @Inject constructor(
                                 )
                             TagType.MALE, TagType.FEMALE ->
                                 galleryDataServiceMapper.getNumbers(
-                                    tagType.otherName, "${tagType.otherName}:${typeAndTag[1]}",
+                                    TagType.TAG.otherName, "${tagType.otherName}:${typeAndTag[1]}",
                                     language, fromByte, toByte, doLoadLength
                                 )
                             else ->

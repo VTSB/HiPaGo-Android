@@ -61,6 +61,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
     private lateinit var navigationView: NavigationView
 
     private lateinit var startScroller: SmoothScroller
+    private lateinit var query: String
 
     private var colorPrimary by Delegates.notNull<Int>()
     private var loadModeItem: NavigationMenuItemView? = null
@@ -69,7 +70,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
         val galleryListFragmentArgs: GalleryListFragmentArgs = GalleryListFragmentArgs.fromBundle(requireArguments())
-        val query = galleryListFragmentArgs.query
+        query = galleryListFragmentArgs.query
         viewModel.setQuery(query)
 
         adapter = GalleryListAdapter(viewModel.getGalleryBlockList())
@@ -284,7 +285,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
 
         super.onCreateOptionsMenu(menu, inflater)
 
-        searchView.setQuery(viewModel.getQuery(), false)
+        searchView.setQuery(query, false)
         viewModel.init(adapter.listener)
     }
 
@@ -332,7 +333,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
             R.id.back-> requireActivity().onBackPressed()
             else-> Log.e(this.javaClass.simpleName, "wrong navView Item:${item.title}($id)")
         }
-        
+
         if (loadMode != null) {
              viewModel.changeLoadMode(loadMode)
         } else if (language != null) {
