@@ -11,12 +11,10 @@ import com.vtsb.hipago.presentation.view.custom.adapter.RecyclerViewAdapter
 import com.vtsb.hipago.presentation.viewmodel.GalleryListViewModel
 
 class GalleryListAdapter constructor(
-    galleryListViewModel: GalleryListViewModel
+    private val galleryBlockList: List<GalleryBlock>
 ) : RecyclerViewAdapter<RecyclerView.ViewHolder>() {
 
     private val nowViewType = 1
-    private val galleryBlockList: List<GalleryBlock> = galleryListViewModel.getGalleryBlockList()
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
