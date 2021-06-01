@@ -6,13 +6,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.BindingAdapter
-import androidx.databinding.DataBindingComponent
 import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import com.vtsb.hipago.R
-import com.vtsb.hipago.databinding.ItemGalleryBlockType1Binding
+import com.vtsb.hipago.data.datasource.remote.service.converter.helper.DateHelper
 import com.vtsb.hipago.databinding.ItemTagBinding
 import com.vtsb.hipago.databinding.ItemTagListBinding
 import com.vtsb.hipago.domain.entity.GalleryBlock
@@ -21,15 +20,20 @@ import com.vtsb.hipago.domain.entity.TagType
 import com.vtsb.hipago.presentation.view.custom.listener.ClickListenerWithValue
 import com.vtsb.hipago.util.converter.QueryConverter
 import com.vtsb.hipago.util.converter.TagConverter
+import java.sql.Date
 import javax.inject.Inject
 
 // https://stackoverflow.com/questions/41926128/why-bindingadapter-must-be-static-method
 class GalleryDetailBindingComponent @Inject constructor(
     private val tagConverter: TagConverter,
     private val queryConverter: QueryConverter,
-): DataBindingComponent {
+    private val dateHelper: DateHelper,
+) {
 
-
+    @BindingAdapter("bindDate")
+    fun bindDate(view: TextView, date: Date) {
+        view.text = dateHelper.newDateFormat().format(date)
+    }
 
     @BindingAdapter("inflateTags")
     fun inflateTags(layout: LinearLayout, galleryBlock: GalleryBlock) {
@@ -58,36 +62,10 @@ class GalleryDetailBindingComponent @Inject constructor(
         }
     }
 
-
-    @BindingAdapter("inflateData", "inflateListener")
-    fun inflateData(layout: ChipGroup, tags: List<String>?, listener: ClickListenerWithValue<TagType>?) {
-        val inflater = LayoutInflater.from(layout.context)
-        layout.removeAllViews()
-        if (tags == null) {
-            val binding: ItemTagBinding = ItemTagBinding.inflate(inflater, layout, false)
-            binding.tag = "None"
-            layout.addView(binding.root)
-        } else {
-            for (tag in tags) {
-                val binding: ItemTagBinding = ItemTagBinding.inflate(inflater, layout, false)
-                binding.tag = tag
-                binding.itTag.setOnClickListener(listener)
-                val c = tag[tag.length - 1]
-                if (c == '♂') {
-                    binding.itTag.setChipBackgroundColorResource(R.color.chip_tag_male)
-                } else if (c == '♀') {
-                    binding.itTag.setChipBackgroundColorResource(R.color.chip_tag_female)
-                }
-                layout.addView(binding.root)
-            }
-        }
-    }
-
     private fun getTagListView(inflater: LayoutInflater, layout: LinearLayout, resourceId: Int, tags: List<String>?, tagType: TagType): View {
         val binding = ItemTagListBinding.inflate(inflater, layout, false)
         binding.info = layout.resources.getString(resourceId)
-        binding.tags = tags
-        binding.listener = object : ClickListenerWithValue<TagType>(tagType) {
+        val listener = object : ClickListenerWithValue<TagType>(tagType) {
             override fun onClick(view: View) {
                 val chip = view as Chip
                 val text = chip.text as String
@@ -114,6 +92,26 @@ class GalleryDetailBindingComponent @Inject constructor(
 //                )
             }
         }
+        binding.tagsView.removeAllViews()
+        if (tags == null) {
+            val itemBinding = ItemTagBinding.inflate(inflater, layout, false)
+            itemBinding.tag = "None"
+            layout.addView(itemBinding.root)
+        } else {
+            for (tag in tags) {
+                val itemBinding = ItemTagBinding.inflate(inflater, layout, false)
+                itemBinding.tag = tag
+                itemBinding.itTag.setOnClickListener(listener)
+                val c = tag[tag.length - 1]
+                if (c == '♂') {
+                    itemBinding.itTag.setChipBackgroundColorResource(R.color.chip_tag_male)
+                } else if (c == '♀') {
+                    itemBinding.itTag.setChipBackgroundColorResource(R.color.chip_tag_female)
+                }
+                layout.addView(itemBinding.root)
+            }
+        }
+
         return binding.root
     }
 

@@ -12,6 +12,7 @@ import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.presentation.view.MainActivity
 import com.vtsb.hipago.presentation.view.adapter.GalleryListAdapter
 import com.vtsb.hipago.presentation.view.adapter.binding.GalleryDetailBindingComponent
+import com.vtsb.hipago.presentation.view.adapter.binding.MyDataBindingComponent
 import com.vtsb.hipago.presentation.view.custom.listener.RecyclerItemClickListener
 import com.vtsb.hipago.presentation.viewmodel.GalleryDetailViewModel
 import com.vtsb.hipago.util.converter.TagConverter
@@ -23,13 +24,13 @@ class GalleryDetailFragment : Fragment() {
 
     private val viewModel: GalleryDetailViewModel by viewModels()
 
-    @Inject lateinit var bindingComponent: GalleryDetailBindingComponent
+    @Inject lateinit var bindingComponent: MyDataBindingComponent
     @Inject lateinit var tagConverter: TagConverter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = DataBindingUtil.inflate<FragmentGalleryDetailBinding>(inflater, R.layout.fragment_gallery_detail, container, false, bindingComponent)
 
-        val galleryInformationFragmentArgs = GalleryDetailFragmentArgs.fromBundle(arguments)
+        val galleryInformationFragmentArgs = GalleryDetailFragmentArgs.fromBundle(requireArguments())
         val galleryBlock = galleryInformationFragmentArgs.galleryBlock
         viewModel.init(galleryBlock)
 
