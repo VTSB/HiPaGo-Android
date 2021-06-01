@@ -1,6 +1,6 @@
 package com.vtsb.hipago.data.repository
 
-import com.vtsb.hipago.data.datasource.remote.entity.GalleryNumber
+import com.vtsb.hipago.domain.entity.GalleryIds
 import com.vtsb.hipago.data.mapper.GalleryDataServiceMapper
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.entity.TagType
@@ -34,7 +34,7 @@ class GalleryNumberRepositoryImpl @Inject constructor(
             }
         }
 
-    override fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryNumber {
+    override fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryIds {
         val from = (page * PAGE_SIZE)
         val to = from + PAGE_SIZE
 
@@ -46,13 +46,13 @@ class GalleryNumberRepositoryImpl @Inject constructor(
                     buffer = galleryDataServiceMapper.doSearch(query, language)
                     galleryNumberBuffer[key] = buffer
                 }
-                return GalleryNumber(buffer.subList(from, to), buffer.size)
+                return GalleryIds(buffer.subList(from, to), buffer.size)
             }
             NumberLoadMode.FAVORITE-> {
-                GalleryNumber(listOf(), 0)
+                GalleryIds(listOf(), 0)
             }
             NumberLoadMode.RECENTLY_WATCHED-> {
-                GalleryNumber(listOf(), 0)
+                GalleryIds(listOf(), 0)
             }
             NumberLoadMode.NEW->{
                 val fromByte = from * 4

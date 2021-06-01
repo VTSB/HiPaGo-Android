@@ -72,7 +72,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
         val query = galleryListFragmentArgs.query
         viewModel.setQuery(query)
 
-        adapter = GalleryListAdapter(viewModel)
+        adapter = GalleryListAdapter(viewModel.getGalleryBlockList())
         adapter.setHasStableIds(true)
 
         colorPrimary = getColor(android.R.attr.textColorPrimary)
@@ -106,10 +106,10 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
                 val galleryBlock = viewModel.getGalleryBlockList()[position]
                 if (galleryBlock.type != GalleryBlockType.LOADING &&
                     galleryBlock.type != GalleryBlockType.FAILED) {
-//                    Navigation.findNavController(view).navigate(
-//                        GalleryListFragmentDirections
-//                            .actionGalleryListFragmentToGalleryInformationFragment(galleryBlock)
-//                    )
+                    Navigation.findNavController(view).navigate(
+                        GalleryListFragmentDirections
+                            .actionGalleryListFragmentToGalleryDetailFragment(galleryBlock)
+                    )
                 }
             }
 

@@ -31,10 +31,8 @@ class GalleryBlockRepositoryImpl @Inject constructor(
 ) : GalleryBlockRepository {
 
     override fun getGalleryBlock(id: Int, save: Boolean, skipDB: Boolean): SharedFlow<GalleryBlock> {
-
         //val flow = MutableStateFlow(GalleryBlock(id, GalleryBlockType.LOADING, "", Date(0), mapOf(), "", LinkedList()))
         val flow = MutableSharedFlow<GalleryBlock>(1, 1, BufferOverflow.DROP_OLDEST)
-
 
         CoroutineScope(Dispatchers.IO).launch {
             if (!skipDB) {
@@ -77,6 +75,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
             val galleryBlock = galleryServiceMapper.getDetailedGalleryBlock(id, url)
             flow.emit(galleryBlock)
             if (save) save(galleryBlock, url)
+
         } catch (e: Exception) {
             if (save) save(prevGalleryBlock, url)
         }

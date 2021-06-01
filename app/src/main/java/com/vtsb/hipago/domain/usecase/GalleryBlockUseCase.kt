@@ -1,6 +1,6 @@
 package com.vtsb.hipago.domain.usecase
 
-import com.vtsb.hipago.data.datasource.remote.entity.GalleryNumber
+import com.vtsb.hipago.domain.entity.GalleryIds
 import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.NumberLoadMode
 import com.vtsb.hipago.domain.repository.GalleryBlockRepository
@@ -13,7 +13,7 @@ class GalleryBlockUseCase @Inject constructor(
     private val galleryNumberRepository: GalleryNumberRepository,
 ) {
 
-    fun getGalleryNumberListByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryNumber =
+    fun getGalleryNumberListByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryIds =
         galleryNumberRepository.getNumbersByPage(loadMode, query, language, page, doLoadLength)
 
     fun getGalleryBlock(id: Int, save: Boolean=true, skipDB: Boolean=false): SharedFlow<GalleryBlock> =

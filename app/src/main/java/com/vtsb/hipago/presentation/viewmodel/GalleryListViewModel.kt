@@ -202,7 +202,7 @@ class GalleryListViewModel @Inject constructor(
                     loadPage,
                     contentRange == -1)
 
-                val idList = galleryNumber.numberList
+                val idList = galleryNumber.idList
 
                 // todo: apply filter
                 // bla bla~~

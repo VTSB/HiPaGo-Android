@@ -63,7 +63,7 @@ class RecyclerItemClickListener constructor(
         interface Normal {
             fun onItemClick(view: View, position: Int)
             fun onItemLongClick(view: View, position: Int)
-            class Builder : Normal {
+            open class Builder : Normal {
                 override fun onItemClick(view: View, position: Int) {}
                 override fun onItemLongClick(view: View, position: Int) {}
             }
