@@ -38,5 +38,8 @@
         <action
             android:id="@+id/action_galleryDetailFragment_self"
             app:destination="@id/galleryDetailFragment" />
+        <action
+            android:id="@+id/action_galleryDetailFragment_to_galleryListFragment"
+            app:destination="@id/galleryListFragment" />
     </fragment>
 </navigation>

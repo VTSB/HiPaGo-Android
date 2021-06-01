@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.BindingAdapter
+import androidx.navigation.Navigation
 import com.google.android.material.chip.Chip
 import com.vtsb.hipago.R
 import com.vtsb.hipago.data.datasource.remote.service.converter.helper.DateHelper
@@ -18,6 +19,7 @@ import com.vtsb.hipago.domain.entity.GalleryBlock
 import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.domain.entity.TagType
 import com.vtsb.hipago.presentation.view.custom.listener.ClickListenerWithValue
+import com.vtsb.hipago.presentation.view.fragment.GalleryDetailFragmentDirections
 import com.vtsb.hipago.util.converter.QueryConverter
 import com.vtsb.hipago.util.converter.TagConverter
 import java.sql.Date
@@ -47,7 +49,6 @@ class GalleryDetailBindingComponent @Inject constructor(
                 layout.addView(getTagListView(inflater, layout, R.string.artist, galleryBlock.tags[TagType.ARTIST], TagType.ARTIST))
                 layout.addView(getTagListView(inflater, layout, R.string.series, galleryBlock.tags[TagType.SERIES], TagType.SERIES))
                 layout.addView(getTagListView(inflater, layout, R.string.tag, galleryBlock.tags[TagType.TAG], TagType.TAG))
-
             }
             GalleryBlockType.MI_DETAILED-> {
                 layout.addView(getTagListView(inflater, layout, R.string.type, galleryBlock.tags[TagType.TYPE], TagType.TYPE))
@@ -69,28 +70,24 @@ class GalleryDetailBindingComponent @Inject constructor(
             override fun onClick(view: View) {
                 val chip = view as Chip
                 val text = chip.text as String
-                val type: TagType = value
+                val type: TagType = this.value
                 if (type === TagType.ID) {
                     val clipboardManager = view.getContext()
                         .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clipData = ClipData.newPlainText("GalleryNo", text)
                     clipboardManager.setPrimaryClip(clipData)
-                    Toast.makeText(view.getContext(), "ID가 복사되었습니다.($text)", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(view.getContext(), "ID가 복사되었습니다.($text)", Toast.LENGTH_SHORT).show()
                 } else {
                     val (tagType1, tag) = tagConverter.toOriginalDataTag(type, text)
-                    moveToGalleryListFragment(view, "${tagType1.otherName}:$tag")
+                    val dataQuery = queryConverter.toQueryFromDataTag("${tagType1.otherName}:$tag")
+                    Navigation.findNavController(view).navigate(
+                        GalleryDetailFragmentDirections
+                            .actionGalleryDetailFragmentToGalleryListFragment()
+                            .setQuery(dataQuery)
+                    )
                 }
             }
 
-            private fun moveToGalleryListFragment(view: View, query: String) {
-                val dataQuery = queryConverter.toQueryFromDataTag(query)
-//                Navigation.findNavController(view).navigate(
-//                    GalleryDetailFragmentDirections
-//                        .actionGalleryDetail()
-//                        .setQuery(dataQuery)
-//                )
-            }
         }
         binding.tagsView.removeAllViews()
         if (tags == null) {
