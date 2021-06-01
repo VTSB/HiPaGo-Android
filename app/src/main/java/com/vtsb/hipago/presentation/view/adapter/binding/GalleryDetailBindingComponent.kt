@@ -89,11 +89,13 @@ class GalleryDetailBindingComponent @Inject constructor(
             }
 
         }
-        binding.tagsView.removeAllViews()
+
+        val tagsView = binding.tagsView
+        tagsView.removeAllViews()
         if (tags == null) {
             val itemBinding = ItemTagBinding.inflate(inflater, layout, false)
             itemBinding.tag = "None"
-            layout.addView(itemBinding.root)
+            tagsView.addView(itemBinding.root)
         } else {
             for (tag in tags) {
                 val itemBinding = ItemTagBinding.inflate(inflater, layout, false)
@@ -105,7 +107,7 @@ class GalleryDetailBindingComponent @Inject constructor(
                 } else if (c == '♀') {
                     itemBinding.itTag.setChipBackgroundColorResource(R.color.chip_tag_female)
                 }
-                layout.addView(itemBinding.root)
+                tagsView.addView(itemBinding.root)
             }
         }
 
