@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingComponent
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.vtsb.hipago.R
+import com.vtsb.hipago.databinding.ItemGalleryBlockType1Binding
 import com.vtsb.hipago.databinding.ItemTagBinding
 import com.vtsb.hipago.databinding.ItemTagListBinding
 import com.vtsb.hipago.domain.entity.GalleryBlock
@@ -23,11 +24,10 @@ import com.vtsb.hipago.util.converter.TagConverter
 import javax.inject.Inject
 
 // https://stackoverflow.com/questions/41926128/why-bindingadapter-must-be-static-method
-class TagBindingComponent @Inject constructor(
+class GalleryDetailBindingComponent @Inject constructor(
     private val tagConverter: TagConverter,
     private val queryConverter: QueryConverter,
 ): DataBindingComponent {
-
 
 
 

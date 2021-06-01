@@ -8,12 +8,9 @@
         <variable
             name="model"
             type="com.vtsb.hipago.domain.entity.GalleryBlock"/>
-        <variable
-            name="related"
-            type="java.util.List&lt;com.vtsb.hipago.domain.entity.GalleryBlock&gt;" />
     </data>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -134,18 +131,17 @@
                 app:layout_constraintStart_toStartOf="parent">
             </LinearLayout>
 
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/related"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="8dp"
-                app:inflateRelated="@{related}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tags" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </layout>

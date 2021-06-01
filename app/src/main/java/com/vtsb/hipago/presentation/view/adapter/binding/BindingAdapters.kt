@@ -1,4 +1,4 @@
-package com.vtsb.hipago.presentation.view.adapter
+package com.vtsb.hipago.presentation.view.adapter.binding
 
 import android.widget.ImageView
 import android.widget.TextView

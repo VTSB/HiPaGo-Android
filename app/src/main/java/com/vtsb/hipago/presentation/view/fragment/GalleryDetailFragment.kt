@@ -5,13 +5,17 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.Navigation
 import com.vtsb.hipago.R
 import com.vtsb.hipago.databinding.FragmentGalleryDetailBinding
+import com.vtsb.hipago.domain.entity.GalleryBlockType
 import com.vtsb.hipago.presentation.view.MainActivity
+import com.vtsb.hipago.presentation.view.adapter.GalleryListAdapter
+import com.vtsb.hipago.presentation.view.adapter.binding.GalleryDetailBindingComponent
+import com.vtsb.hipago.presentation.view.custom.listener.RecyclerItemClickListener
 import com.vtsb.hipago.presentation.viewmodel.GalleryDetailViewModel
 import com.vtsb.hipago.util.converter.TagConverter
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -19,20 +23,39 @@ class GalleryDetailFragment : Fragment() {
 
     private val viewModel: GalleryDetailViewModel by viewModels()
 
+    @Inject lateinit var bindingComponent: GalleryDetailBindingComponent
     @Inject lateinit var tagConverter: TagConverter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<FragmentGalleryDetailBinding>(inflater, R.layout.fragment_gallery_detail, container, false)
-
+        val binding = DataBindingUtil.inflate<FragmentGalleryDetailBinding>(inflater, R.layout.fragment_gallery_detail, container, false, bindingComponent)
 
         val galleryInformationFragmentArgs = GalleryDetailFragmentArgs.fromBundle(arguments)
         val galleryBlock = galleryInformationFragmentArgs.galleryBlock
-
         viewModel.init(galleryBlock)
+
+        val adapter = GalleryListAdapter(viewModel.getGalleryBlockList())
+        viewModel.updateRelated(adapter.listener)
+
+        binding.related.adapter = adapter
+        binding.related.addOnItemTouchListener(RecyclerItemClickListener(requireContext(), object: RecyclerItemClickListener.OnItemClickListener.Normal.Builder() {
+            override fun onItemClick(view: View, position: Int) {
+                val related = viewModel.getGalleryBlockList()[position]
+                when (related.type) {
+                    GalleryBlockType.MI_DETAILED, GalleryBlockType.MI_NOT_DETAILED-> {
+                        Navigation.findNavController(view).navigate(
+                            GalleryDetailFragmentDirections
+                                .actionGalleryDetailFragmentSelf(related)
+                        )
+                    }
+                    else-> {}
+                }
+            }
+        }))
 
         binding.model = galleryBlock
         binding.lifecycleOwner = viewLifecycleOwner
         binding.read.setOnClickListener { TODO("Move to Reader Fragment") }
+        binding.download.setOnClickListener { TODO("Make download function") }
 
         setHasOptionsMenu(true)
         val activity = requireActivity() as MainActivity
@@ -55,12 +78,5 @@ class GalleryDetailFragment : Fragment() {
         }
         return false
     }
-
-
-
-
-
-
-
 
 }
