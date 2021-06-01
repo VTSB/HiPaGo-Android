@@ -75,6 +75,7 @@ class GalleryBlockRepositoryImpl @Inject constructor(
             val galleryBlock = galleryServiceMapper.getDetailedGalleryBlock(id, url)
             flow.emit(galleryBlock)
             if (save) save(galleryBlock, url)
+
         } catch (e: Exception) {
             if (save) save(prevGalleryBlock, url)
         }

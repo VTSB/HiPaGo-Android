@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="info"
+            type="String" />
+
+        <variable
+            name="tags"
+            type="java.util.List&lt;String&gt;" />
+
+        <variable
+            name="listener"
+            type="com.vtsb.hipago.presentation.view.custom.listener.ClickListenerWithValue" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp">
+
+        <!-- https://stackoverflow.com/questions/39326086/data-binding-with-dynamically-added-elements -->
+        <!-- https://stackoverflow.com/questions/51724001/android-chip-custom-height-or-padding -->
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/itl_info"
+            style="@style/Widget.MaterialComponents.Chip.Action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{info}"
+            app:chipBackgroundColor="@color/chip_tag_type"
+            app:chipMinTouchTargetSize="0dp"
+            tools:text="tag" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/itl_tags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:inflateData="@{tags}"
+            app:inflateListener="@{listener}"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            app:chipSpacingHorizontal="5dp"
+            app:chipSpacingVertical="6dp"/>
+
+    </LinearLayout>
+
+</layout>

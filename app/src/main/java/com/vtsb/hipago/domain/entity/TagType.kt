@@ -5,7 +5,7 @@ enum class TagType(
     val otherName: String
 ) {
     BEFORE(0, "before"),
-    NO(0, "no"),
+    ID(0, "id"),
     TYPE(1, "type"),
     LANGUAGE(2, "language"),
     GROUP(3, "group"),
