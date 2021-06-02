@@ -85,7 +85,9 @@ class MapModule {
     @Singleton
     @Named("tagTransformerBiMap")
     fun provideTagTransformerBiMap(tagTransformGetter: TagTransformGetter): BiMap<String, String> {
-        return HashBiMap.create(tagTransformGetter.get())
+        val map = HashBiMap.create(tagTransformGetter.get())
+        map.putAll(tagTransformGetter.getLanguages())
+        return map
     }
 
     @Provides

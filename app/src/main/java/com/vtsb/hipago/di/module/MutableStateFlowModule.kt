@@ -18,16 +18,15 @@ class MutableStateFlowModule {
 
     @Provides
     @Singleton
+    @Named("localizationLanguageMSF")
+    fun provideLocalizationLanguageMSF(): MutableStateFlow<String> =
+        MutableStateFlow("korean")
+
+    @Provides
+    @Singleton
     @Named("tagLanguageMSF")
     fun provideTagLanguageMSF(): MutableStateFlow<String> =
         MutableStateFlow("korean")
-
-//    @Provides
-//    @Singleton
-//    @Named("languageNumberMSF")
-//    fun provideLanguageNumberMSF(): MutableStateFlow<Long> =
-//        MutableStateFlow(-1)
-
 
     @Provides
     @Singleton

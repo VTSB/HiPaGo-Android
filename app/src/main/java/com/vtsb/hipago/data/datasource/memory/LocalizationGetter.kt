@@ -16,7 +16,7 @@ class LocalizationGetter @Inject constructor(
 
         val jsonObject = JSONObject(when(language) {
             "korean" -> getKorean()
-            else -> ""
+            else -> "{}"
         })
 
         val map: MutableMap<TagType, MutableMap<String, String>> = EnumMap(TagType::class.java)

@@ -6,8 +6,9 @@ class TagTransformGetter @Inject constructor() {
 
     fun get(): Map<String, String> =
         hashMapOf(Pair("artist CG", "artistcg"), Pair("game CG", "gamecg"),
+            Pair("all", "(all)"))
 
-        Pair("all", "(all)"),
+    fun getLanguages(): Map<String, String> = hashMapOf(
         Pair("indonesian", "Bahasa Indonesia"),
         Pair("catalan", "català"),
         Pair("cebuano", "Cebuano"),
@@ -46,5 +47,6 @@ class TagTransformGetter @Inject constructor() {
         Pair("korean", "한국어"),
         Pair("chinese", "中文"),
         Pair("japanese", "日本語"))
+
 
 }
