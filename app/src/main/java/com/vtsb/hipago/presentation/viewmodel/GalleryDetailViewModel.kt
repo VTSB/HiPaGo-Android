@@ -24,8 +24,6 @@ class GalleryDetailViewModel @Inject constructor(
     private val imageUseCase: ImageUseCase,
 ) : ViewModel() {
 
-
-    private val relatedListMutableLiveData = MutableLiveData<List<GalleryBlock>>()
     private lateinit var galleryBlock: GalleryBlock
     private lateinit var images: SharedFlow<GalleryImages>
     private lateinit var galleryBlockList: MutableList<GalleryBlock>

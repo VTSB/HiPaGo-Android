@@ -2,6 +2,7 @@ package com.vtsb.hipago.di.module
 
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
+import com.vtsb.hipago.data.datasource.memory.TagTransformGetter
 import com.vtsb.hipago.domain.entity.TagType
 import dagger.Module
 import dagger.Provides
@@ -83,11 +84,8 @@ class MapModule {
     @Provides
     @Singleton
     @Named("tagTransformerBiMap")
-    fun provideTagTransformerBiMap(): BiMap<String, String> {
-        val tagTransformerBiMap: BiMap<String, String> = HashBiMap.create()
-        tagTransformerBiMap["artist CG"] = "artistcg"
-        tagTransformerBiMap["game CG"] = "gamecg"
-        return tagTransformerBiMap
+    fun provideTagTransformerBiMap(tagTransformGetter: TagTransformGetter): BiMap<String, String> {
+        return HashBiMap.create(tagTransformGetter.get())
     }
 
     @Provides
