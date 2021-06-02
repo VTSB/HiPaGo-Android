@@ -14,7 +14,7 @@ import com.vtsb.hipago.data.datasource.remote.entity.TagWithAmount
 import com.vtsb.hipago.data.mapper.GalleryDataServiceMapper
 import com.vtsb.hipago.data.mapper.GalleryServiceMapper
 import com.vtsb.hipago.domain.entity.TagType
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -28,7 +28,8 @@ class DatabaseInitializer @Inject constructor(
     @Named("tagTransformerBiMap") private val tagTransformerBiMap: BiMap<String, String>,
     @Named("stringTypeBiMap") private val stringType: BiMap<String, TagType>,
     @Named("tagLocalizationBiMap") private val tagLocalization: Array<BiMap<String, String>>,
-    @Named("localizationLanguageMSF") private val localizationLanguageMSF: StateFlow<String>,
+    @Named("localizationLanguageMSF") private val localizationLanguageMSF: MutableStateFlow<String>,
+    private val initializationStatus: InitializationStatus,
 ) {
 
     companion object {
@@ -44,7 +45,7 @@ class DatabaseInitializer @Inject constructor(
         private const val SPLITTER = ":"
     }
 
-    fun init() {
+    suspend fun init() {
 
         when (initializeDao.getLog(TAG_MODE_TYPE)) {
             null->initTagTypeFirst()
@@ -54,24 +55,25 @@ class DatabaseInitializer @Inject constructor(
             null-> initLocalizationFirst()
             DATA_MODE_COMPLETED-> initLocalizationCompleted()
         }
+        initializationStatus.completeLocalization()
 
         when (initializeDao.getLog(TAG_MODE_LANGUAGE)) {
             null-> initLanguageFirst()
             DATA_MODE_COMPLETED-> initLanguageCompleted()
         }
 
-        val success = when (initializeDao.getLog(TAG_MODE_ENGLISH)) {
+        if(when (initializeDao.getLog(TAG_MODE_ENGLISH)) {
             null-> initEnglishFirst()
             DATA_MODE_LOADING-> initEnglishLoading()
             DATA_MODE_COMPLETED-> true
-            else-> false
+            else-> false }) {
+            initializationStatus.completeTag()
         }
-
 
     }
 
     private fun initTagTypeFirst() {
-        val tagDataList: MutableList<TagData> = ArrayList<TagData>()
+        val tagDataList: MutableList<TagData> = ArrayList()
         for (value in stringType.values) {
             if (value.id.toInt() == 0) continue
             tagDataList.add(TagData(null, TagType.BEFORE, value.otherName, 0))
@@ -180,9 +182,8 @@ class DatabaseInitializer @Inject constructor(
         return initEnglishLoading(tagURLListInitializeLog)
     }
 
-    private fun initEnglishLoading(
-        initializeLogList: List<InitializeLog> =
-            initializeDao.getLogListLike(TAG_MODE_TEMP_ENGLISH)): Boolean {
+    private fun initEnglishLoading(initializeLogList: List<InitializeLog> =
+           initializeDao.getLogListLike(TAG_MODE_TEMP_ENGLISH)): Boolean {
 
         // real tag load start
         for ((tag, data) in initializeLogList) {
