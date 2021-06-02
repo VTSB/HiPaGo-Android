@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.vtsb.hipago.data.datasource.local.AppDatabase
 import com.vtsb.hipago.data.datasource.local.dao.GalleryBlockDao
+import com.vtsb.hipago.data.datasource.local.dao.InitializeDao
 import com.vtsb.hipago.data.datasource.local.dao.TagDao
 import dagger.Module
 import dagger.Provides
@@ -30,5 +31,11 @@ class DatabaseModule {
     @Singleton
     fun provideTagDao(appDatabase: AppDatabase): TagDao =
         appDatabase.tagDao()
+
+    @Provides
+    fun provideInitializeDao(appDatabase: AppDatabase): InitializeDao =
+        appDatabase.initializeDao()
+
+
 
 }

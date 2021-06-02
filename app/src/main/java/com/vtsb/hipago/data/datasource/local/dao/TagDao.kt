@@ -7,6 +7,7 @@ import com.vtsb.hipago.data.datasource.local.entity.TagDataLocal
 import com.vtsb.hipago.data.datasource.local.entity.TagDataTransform
 import com.vtsb.hipago.data.datasource.local.entity.pojo.SuggestionLocal
 import com.vtsb.hipago.data.datasource.local.entity.pojo.SuggestionOriginal
+import com.vtsb.hipago.data.datasource.local.entity.relation.LocalTagData
 import com.vtsb.hipago.domain.entity.TagType
 
 @Dao
@@ -17,7 +18,7 @@ abstract class TagDao {
     abstract fun insertTagDataTransforms(tagDataTransform: List<TagDataTransform>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract fun insertEnglishTag(tagData: TagData): Long?
+    abstract fun insertEnglishTag(tagData: TagData): Long
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -33,7 +34,7 @@ abstract class TagDao {
     }
 
     @Query("UPDATE `tag_data` SET amount=:amount WHERE type=:type AND name=:name;")
-    abstract fun updateEnglishTag(type: TagType, name: String, amount: Long)
+    abstract fun updateEnglishTag(type: TagType, name: String, amount: Int)
 
     @Update
     abstract fun updateEnglishTags(tagDataList: List<TagData>)
@@ -59,8 +60,13 @@ abstract class TagDao {
     @Query("SELECT tag_data.`tagId` FROM tag_data WHERE tag_data.type = :type AND tag_data.name = :englishTag;")
     abstract fun getTagNum(type: TagType, englishTag: String): Long?
 
-    @get:Query("SELECT * FROM tag_data_transform;")
-    abstract val allTagDataTransforms: List<TagDataTransform>
+    @Transaction
+    @Query("SELECT * FROM tag_data_transform;")
+    abstract fun getAllTagDataTransform(): List<TagDataTransform>
+
+    @Transaction
+    @Query("SELECT * FROM tag_data_local;")
+    abstract fun getAllLocalTagData(): List<LocalTagData>
 
     @Query("""SELECT tag_data_local.local FROM tag_data_local 
                 INNER JOIN tag_data ON tag_data.name=:englishTag AND tag_data.type=:tagType AND tag_data.`tagId` = tag_data_local.`tagId` 
@@ -68,9 +74,9 @@ abstract class TagDao {
     abstract fun getLocalTag(tagType: TagType, englishTag: String): String
 
     @RawQuery(observedEntities = [TagDataLocal::class, TagData::class])
-    abstract fun searchLocal(query: SupportSQLiteQuery?): List<SuggestionLocal>
+    abstract fun searchLocal(query: SupportSQLiteQuery): List<SuggestionLocal>
 
     @RawQuery(observedEntities = [TagData::class])
-    abstract fun searchEnglish(query: SupportSQLiteQuery?): List<SuggestionOriginal>
+    abstract fun searchEnglish(query: SupportSQLiteQuery): List<SuggestionOriginal>
 
 }

@@ -1,5 +1,6 @@
 package com.vtsb.hipago.data.mapper
 
+import com.vtsb.hipago.data.datasource.remote.entity.TagWithAmount
 import com.vtsb.hipago.data.datasource.remote.service.GalleryService
 import com.vtsb.hipago.data.datasource.remote.service.converter.ElementsConverter
 import com.vtsb.hipago.data.datasource.remote.service.converter.ResponseBodyConverter
@@ -20,9 +21,20 @@ class GalleryServiceMapper @Inject constructor(
             responseBodyConverter.toElements(
                 galleryService.getAllLanguages().execute().body()!!))
 
-    fun getAllSpecificAlphabetTags(typeName: String) =
-        responseBodyConverter.toElements(
-            galleryService.getAllSpecificAlphabetTags(typeName, 'a').execute().body()!!)
+    fun getAllTagAndAllURL(type: String): Pair<List<String>, List<TagWithAmount>> {
+        val elements = responseBodyConverter.toElements(
+            galleryService.getAllSpecificAlphabetTags(type, 'a').execute().body()!!)
+
+        val receivedTagURLList: List<String> = elementsConverter.toTagURLList(elements)
+        val tagWithAmountList: List<TagWithAmount> = elementsConverter.toTagWithAmountList(elements)
+
+        return Pair(receivedTagURLList, tagWithAmountList)
+    }
+
+    fun getAllTag(url: String): List<TagWithAmount> =
+        elementsConverter.toTagWithAmountList(
+            responseBodyConverter.toElements(
+                galleryService.getResponseBody(url).execute().body()!!))
 
     fun getDetailedGalleryBlock(id: Int, url: String) =
         elementsConverter.toGalleryBlockDetailed(
