@@ -1,7 +1,8 @@
 package com.vtsb.hipago
 
 import android.app.Application
-import com.vtsb.hipago.data.initializer.Initializer
+import com.vtsb.hipago.di.provider.MyContentProvider
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -9,8 +10,10 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        val hiltEntryPoint = EntryPointAccessors.fromApplication(this, MyContentProvider.SingletonContentProviderEntryPoint::class.java)
 
-        Initializer().init()
+        val initializer = hiltEntryPoint.initializer()
+        initializer.init()
 
     }
 

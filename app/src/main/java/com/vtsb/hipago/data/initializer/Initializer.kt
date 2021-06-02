@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class Initializer {
+class Initializer @Inject constructor() {
 
     @Inject
     lateinit var databaseInitializer: DatabaseInitializer
