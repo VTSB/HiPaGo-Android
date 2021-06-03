@@ -1,5 +1,6 @@
 package com.vtsb.hipago.data.repository
 
+import android.util.Log
 import com.vtsb.hipago.data.initializer.InitializationStatus
 import com.vtsb.hipago.data.mapper.GalleryDataServiceMapper
 import com.vtsb.hipago.data.mapper.TagDaoMapper
@@ -38,19 +39,11 @@ class SearchRepositoryImpl @Inject constructor(
         }
 
         return try {
-            //galleryDataServiceMapper.getSuggestionForQuery(lastQuery)
-            ArrayList()
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-            ArrayList()
-        } catch (e: IOException) {
-            e.printStackTrace()
-            ArrayList()
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
+            galleryDataServiceMapper.getSuggestionForQuery(lastQuery)
+        } catch (t: Throwable) {
+            Log.e(this.javaClass.simpleName, "Failed to get suggestion list from network", t)
             ArrayList()
         }
-
     }
 
 }

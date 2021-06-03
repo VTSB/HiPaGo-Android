@@ -5,6 +5,8 @@ import com.vtsb.hipago.data.datasource.local.entity.InitializeLog
 import com.vtsb.hipago.data.datasource.local.entity.TagData
 import com.vtsb.hipago.data.datasource.local.entity.TagDataLocal
 import com.vtsb.hipago.data.datasource.local.entity.TagDataTransform
+import com.vtsb.hipago.domain.entity.TagType
+import java.util.*
 
 @Dao
 abstract class InitializeDao {
@@ -31,7 +33,7 @@ abstract class InitializeDao {
 
     @Transaction
     open fun initTagType(tagDataList: List<TagData>, initializeLog: InitializeLog) {
-        insertEnglishTags(tagDataList)
+        upsertEnglishTags(tagDataList)
         insertLog(initializeLog)
     }
 
@@ -44,23 +46,34 @@ abstract class InitializeDao {
     @Transaction
     open fun initLanguageFirst(tagDataTransformList: List<TagDataTransform>, tagDataList: List<TagData>, initializeLog: InitializeLog) {
         insertTagDataTransforms(tagDataTransformList)
-        insertEnglishTags(tagDataList)
+        upsertEnglishTags(tagDataList)
         insertLog(initializeLog)
     }
 
     @Transaction
     open fun initEnglishFirst(tagDataList: List<TagData>, initializeLogList: List<InitializeLog>) {
-        insertEnglishTags(tagDataList)
+        upsertEnglishTags(tagDataList)
         insertLogList(initializeLogList)
     }
 
     @Transaction
     open fun initEnglishLoading(tagDataList: List<TagData>, tag: String) {
-        insertEnglishTags(tagDataList)
+        upsertEnglishTags(tagDataList)
         deleteLog(tag)
     }
 
     /////////////////////////////////////////
+    @Transaction
+    open fun upsertEnglishTags(tagDataList: List<TagData>) {
+        val insertResult = insertEnglishTags(tagDataList)
+        for (i in tagDataList.indices) {
+            if (insertResult[i] == -1L) {
+                val tagData = tagDataList[i]
+                updateEnglishTag(tagData.type, tagData.name, tagData.amount)
+            }
+        }
+    }
+
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insertTagDataTransforms(tagDataTransform: List<TagDataTransform>)
@@ -73,6 +86,7 @@ abstract class InitializeDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insertEnglishTags(tagDataList: List<TagData>): List<Long>
 
-
+    @Query("UPDATE `tag_data` SET amount=:amount WHERE type=:type AND name=:name;")
+    abstract fun updateEnglishTag(type: TagType, name: String, amount: Int)
 
 }
