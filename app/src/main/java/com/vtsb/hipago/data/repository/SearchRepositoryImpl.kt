@@ -38,8 +38,8 @@ class SearchRepositoryImpl @Inject constructor(
         }
 
         return try {
-            ArrayList()
             //galleryDataServiceMapper.getSuggestionForQuery(lastQuery)
+            ArrayList()
         } catch (e: InterruptedException) {
             e.printStackTrace()
             ArrayList()

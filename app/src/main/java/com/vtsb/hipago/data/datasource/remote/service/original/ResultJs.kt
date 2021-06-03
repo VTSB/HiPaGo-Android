@@ -1,5 +1,6 @@
 package com.vtsb.hipago.data.datasource.remote.service.original
 
+import android.util.Log
 import com.vtsb.hipago.domain.entity.TagType
 import com.vtsb.hipago.util.converter.QueryConverter
 import java.io.IOException
@@ -21,6 +22,7 @@ class ResultJs @Inject constructor(
     // edited version of do_search function
     @Throws(IOException::class, NoSuchAlgorithmException::class)
     fun do_search(query_string: String, language: String): List<Int> {
+        Log.d("test", "do_search($query_string, $language)")
         val positive_terms: MutableList<String> = ArrayList()
         val negative_terms: MutableList<String> = ArrayList()
         val terms: Array<String> =
