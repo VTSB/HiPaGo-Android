@@ -43,7 +43,7 @@ class ResultJs @Inject constructor(
         if (searchLanguage == null) {
             searchLanguage = language
         }
-        var results: List<Int>
+
 
         val firstResultDeferred: Deferred<List<Int>>
         val positiveTermDeferredList: MutableList<Deferred<List<Int>>> = ArrayList(positive_terms.size)
@@ -65,7 +65,7 @@ class ResultJs @Inject constructor(
             }
         }
 
-        results = firstResultDeferred.await()
+        var results: List<Int> = firstResultDeferred.await()
         for (deferred in positiveTermDeferredList) {
             val newResultSet: Set<Int> = HashSet(deferred.await())
             results = results.filter { newResultSet.contains(it) }

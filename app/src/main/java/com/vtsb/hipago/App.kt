@@ -14,7 +14,6 @@ class App : Application() {
 
         val initializer = hiltEntryPoint.initializer()
         initializer.init()
-
     }
 
 }
