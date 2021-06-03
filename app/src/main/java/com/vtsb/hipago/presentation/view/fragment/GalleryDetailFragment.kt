@@ -34,8 +34,6 @@ class GalleryDetailFragment : Fragment() {
         viewModel.init(galleryBlock)
 
         val adapter = GalleryListAdapter(viewModel.getGalleryBlockList())
-        viewModel.updateRelated(adapter.listener)
-
         binding.related.adapter = adapter
         binding.related.addOnItemTouchListener(RecyclerItemClickListener(requireContext(), object: RecyclerItemClickListener.OnItemClickListener.Normal.Builder() {
             override fun onItemClick(view: View, position: Int) {
@@ -56,6 +54,8 @@ class GalleryDetailFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.read.setOnClickListener { TODO("Move to Reader Fragment") }
         binding.download.setOnClickListener { TODO("Make download function") }
+
+        viewModel.updateRelated(adapter.listener)
 
         setHasOptionsMenu(true)
         val activity = requireActivity() as MainActivity

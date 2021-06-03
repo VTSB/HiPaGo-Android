@@ -351,7 +351,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
         loadModeItem?.setTextColor(ColorStateList.valueOf(colorPrimary))
         languageItem?.setTextColor(ColorStateList.valueOf(colorPrimary))
         loadModeItem = when (viewModel.getQuery()) {
-            "index" -> navigationView.findViewById(R.id.nav_recent)
+            "", "index" -> navigationView.findViewById(R.id.nav_recent)
             "popular" -> navigationView.findViewById(R.id.nav_popularity)
             "[recently_watched]" -> navigationView.findViewById(R.id.nav_recent_watched)
             "type:doujinshi" -> navigationView.findViewById(R.id.nav_type_doujinshi)

@@ -1,5 +1,6 @@
 package com.vtsb.hipago.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,8 @@ import com.vtsb.hipago.domain.usecase.GalleryBlockUseCase
 import com.vtsb.hipago.domain.usecase.ImageUseCase
 import com.vtsb.hipago.presentation.view.custom.adapter.RecyclerViewAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -38,13 +41,17 @@ class GalleryDetailViewModel @Inject constructor(
     }
 
     fun updateRelated(listener: RecyclerViewAdapter.Listener) {
+        listener.onRangeInsertedSync(0, galleryBlock.related.size)
         viewModelScope.launch {
             for ((idx, id) in galleryBlock.related.withIndex()) {
-                galleryBlockUseCase.getGalleryBlock(id)
-                    .collect {
-                        galleryBlockList[idx] = it
-                        viewModelScope.launch { listener.onItemChangedSync(idx) }
-                    }
+                CoroutineScope(Dispatchers.IO).launch {
+                    galleryBlockUseCase.getGalleryBlock(id)
+                        .collect {
+                            galleryBlockList[idx] = it
+                            viewModelScope.launch { listener.onItemChangedSync(idx) }
+                        }
+                }
+
             }
         }
     }

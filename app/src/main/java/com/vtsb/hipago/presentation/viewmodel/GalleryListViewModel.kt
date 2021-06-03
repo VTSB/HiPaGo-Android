@@ -18,11 +18,10 @@ import com.vtsb.hipago.presentation.view.custom.adapter.RecyclerViewAdapter
 import com.vtsb.hipago.util.Constants
 import com.vtsb.hipago.util.Constants.PAGE_SIZE
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onCompletion
 import java.sql.Date
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -57,7 +56,7 @@ class GalleryListViewModel @Inject constructor(
     private val maxPage = MutableLiveData(-1)
     private var contentRange = -1
 
-    private var isLoading = false
+    private var nowRunningJob: Job? = null
     private var haveInit = false
 
     val searchResultGetter = object: SearchCursorAdapter.SearchResultGetter {
@@ -82,7 +81,9 @@ class GalleryListViewModel @Inject constructor(
             offset = 3
             galleryBlockList.addAll(galleryBlockList)
             listener.onRangeInsertedSync(0, offset)
-            reloadGalleryBlock(id, 1, 1)
+            viewModelScope.launch {
+                reloadGalleryBlock(id, 1, 1)
+            }
 
         } catch (ignored: NumberFormatException) {
             offset = 0
@@ -114,7 +115,7 @@ class GalleryListViewModel @Inject constructor(
     }
 
     fun changeLoadMode(loadMode: String) {
-        if (this.query != loadMode) {
+        if (this.query != loadMode || (this.query.isEmpty() && loadMode != "index")) {
             setQuery(loadMode)
             resetValues()
             loadPageInitially()
@@ -155,7 +156,7 @@ class GalleryListViewModel @Inject constructor(
     }
 
     private fun loadTopPage() {
-        if (isLoading || tPage < 1) return
+        if (nowRunningJob?.isCompleted == false || tPage < 1) return
 
         val displayPage = tPage--
         loadPage(displayPage, callback = { resultList ->
@@ -175,7 +176,7 @@ class GalleryListViewModel @Inject constructor(
     }
 
     private fun loadBottomPage() {
-        if (isLoading || (maxPage.value != -1 && bPage > maxPage.value!!)) return
+        if (nowRunningJob?.isCompleted == false || (maxPage.value != -1 && bPage > maxPage.value!!)) return
 
         val displayPage = bPage++
         loadPage(displayPage, callback = { resultList ->
@@ -190,9 +191,9 @@ class GalleryListViewModel @Inject constructor(
     }
 
     private fun loadPage(displayPage: Int, callback: (List<GalleryBlock>) -> Unit) {
-        isLoading = true
+        //isLoading = true
         Log.d("test", "loadPage $displayPage")
-        CoroutineScope(Dispatchers.IO).launch {
+        nowRunningJob = CoroutineScope(Dispatchers.IO).launch {
             try {
                 val loadPage = displayPage - 1;
                 val galleryNumber = galleryBlockUseCase.getGalleryNumberListByPage(
@@ -228,8 +229,6 @@ class GalleryListViewModel @Inject constructor(
                 viewModelScope.launch {
                     loadStatus.value = -1
                 }
-            } finally {
-                isLoading = false
             }
         }
 
@@ -239,30 +238,32 @@ class GalleryListViewModel @Inject constructor(
     fun reloadGalleryBlock(id: Int, position:Int) {
         val displayPage = galleryIdPageMap[id]!!
         val offset = position - displayPage * PAGE_SIZE - offset
-        reloadGalleryBlock(id, displayPage, offset)
+        viewModelScope.launch {
+            reloadGalleryBlock(id, displayPage, offset)
+        }
     }
 
-    private fun reloadGalleryBlock(id: Int, displayPage: Int, offset: Int, skipDB: Boolean = false) {
+    private suspend fun reloadGalleryBlock(id: Int, displayPage: Int, offset: Int, skipDB: Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
-            galleryBlockUseCase.getGalleryBlock(id, save = true, skipDB)
-                .collect { galleryBlock ->
-                    // todo : filter
+            val flow = galleryBlockUseCase.getGalleryBlock(id, save = true, skipDB)
+            flow.collect { galleryBlock ->
+                // todo : filter
 
-                    pagePositionMap[displayPage]?.let { it ->
-                        val nowPosition = it + offset
-                        synchronized(nowPosition) {
-                            galleryBlockList[nowPosition] = galleryBlock
-                            viewModelScope.launch {
-                                listener.onItemChangedSync(nowPosition)
-                            }
-                        }
+                pagePositionMap[displayPage]?.let { it ->
+                    val nowPosition = it + offset
+                    galleryBlockList[nowPosition] = galleryBlock
+                    viewModelScope.launch {
+                        listener.onItemChangedSync(nowPosition)
                     }
                 }
+            }
+            flow.onCompletion { Log.d("test", "complete $id") }
         }
     }
 
     private fun resetValues() {
         this.listener.onRangeRemovedSync(0, galleryBlockList.size)
+        this.nowRunningJob?.cancel()
         // this.disposable.clear()
 
         this.galleryIdPageMap.clear()
