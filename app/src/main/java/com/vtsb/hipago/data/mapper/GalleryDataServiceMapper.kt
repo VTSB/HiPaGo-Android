@@ -61,7 +61,7 @@ class GalleryDataServiceMapper @Inject constructor(
             if (file.haswebp == 1) imageTypes.add(ImageType.WEBP)
             if (file.hasavif == 1) imageTypes.add(ImageType.AVIF)
 
-            list.add(GalleryImage(file.name, file.hash, imageTypes))
+            list.add(GalleryImage(file.name, file.hash, file.width, file.height, imageTypes))
         }
 
         return GalleryImages(id, list)
