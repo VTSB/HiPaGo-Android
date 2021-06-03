@@ -14,6 +14,10 @@ import com.vtsb.hipago.data.datasource.remote.entity.TagWithAmount
 import com.vtsb.hipago.data.mapper.GalleryDataServiceMapper
 import com.vtsb.hipago.data.mapper.GalleryServiceMapper
 import com.vtsb.hipago.domain.entity.TagType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Named
@@ -62,11 +66,12 @@ class DatabaseInitializer @Inject constructor(
             DATA_MODE_COMPLETED-> initLanguageCompleted()
         }
 
-        if(when (initializeDao.getLog(TAG_MODE_ENGLISH)) {
+        if (when (initializeDao.getLog(TAG_MODE_ENGLISH)) {
             null-> initEnglishFirst()
             DATA_MODE_LOADING-> initEnglishLoading()
             DATA_MODE_COMPLETED-> true
-            else-> false }) {
+            else-> false }
+        ) {
             initializationStatus.completeTag()
         }
 
@@ -117,7 +122,7 @@ class DatabaseInitializer @Inject constructor(
         }
     }
 
-    private fun initLanguageFirst() {
+    private suspend fun initLanguageFirst() {
         val languages = tagTransformGetter.getLanguages()
 
         val tagDataTransformList: MutableList<TagDataTransform> = ArrayList(tagTransformerBiMap.entries.size)
@@ -132,10 +137,24 @@ class DatabaseInitializer @Inject constructor(
         }
 
         val languageTagList = galleryDataServiceMapper.getAllLanguageTags()
-        for(languageTag in languageTagList) {
-            tagTransformerBiMap[languageTag.name] = languageTag.local
-            tagDataTransformList.add(TagDataTransform(languageTag.name, languageTag.local))
-            tagDataList.add(TagData(null, TagType.LANGUAGE, languageTag.name, 0))
+        val deferredList: MutableList<Deferred<Pair<TagDataTransform, TagData>>> = ArrayList(languageTagList.size)
+
+        coroutineScope {
+            for(languageTag in languageTagList) {
+                tagTransformerBiMap[languageTag.name] = languageTag.local
+                deferredList.add(async {
+                    val amount = galleryDataServiceMapper.getLanguageTagAmount(languageTag.name)
+                    val tagDataTransform = TagDataTransform(languageTag.name, languageTag.local)
+                    val tagData = TagData(null, TagType.LANGUAGE, languageTag.name, amount)
+                    return@async Pair(tagDataTransform, tagData)
+                })
+            }
+        }
+
+        for (deferred in deferredList) {
+            val result = deferred.await()
+            tagDataTransformList.add(result.first)
+            tagDataList.add(result.second)
         }
 
         initializeDao.initLanguageFirst(tagDataTransformList, tagDataList, InitializeLog(TAG_MODE_LANGUAGE, DATA_MODE_COMPLETED))
