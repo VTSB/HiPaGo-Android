@@ -52,8 +52,6 @@ class GalleryListViewModel @Inject constructor(
     private var bPage = 1
     private var offset = 0
 
-
-
     private val loadStatus = MutableLiveData(0)
     private val nowPage = MutableLiveData(1)
     private val maxPage = MutableLiveData(-1)
@@ -112,6 +110,7 @@ class GalleryListViewModel @Inject constructor(
         setPage(page)
         this.maxPage.value = tempMaxPage
         this.contentRange = tempContentRange
+        loadPageInitially()
     }
 
     fun changeLoadMode(loadMode: String) {
@@ -124,7 +123,7 @@ class GalleryListViewModel @Inject constructor(
 
     fun changeLanguage(language: String) {
         if (this.language != language) {
-            galleryBlockUseCase.clearGalleryNumberBuffer(this.query, this.language)
+            galleryBlockUseCase.clearGalleryNumberBuffer(this.searchQuery, this.language)
             this.language = language
             this.useLanguageMSF.compareAndSet(language, language)
             resetValues()
@@ -133,7 +132,6 @@ class GalleryListViewModel @Inject constructor(
     }
 
     private fun loadPageInitially() {
-        Log.d("test", "loadPageInitially $query, $loadMode")
         loadStatus.value = 0
         loadBottomPage()
     }
@@ -160,20 +158,20 @@ class GalleryListViewModel @Inject constructor(
         if (isLoading || tPage < 1) return
 
         val displayPage = tPage--
-        loadPage(
-            displayPage, callback = { resultList ->
-                synchronized(pagePositionMap) {
-                    pagePositionMap[displayPage] = 0
-                    val to = bPage
-                    for (i in displayPage + 1 until to) {
-                        val position: Int = pagePositionMap[i] ?: error("loadTopPageSeparated pagePositionHashMap position null:$i")
-                        pagePositionMap[i] = position + resultList.size
-                    }
-                    galleryBlockList.addAll(offset, galleryBlockList)
+        loadPage(displayPage, callback = { resultList ->
+            synchronized(pagePositionMap) {
+                pagePositionMap[displayPage] = 0
+                val to = bPage
+                for (i in displayPage + 1 until to) {
+                    val position: Int = pagePositionMap[i] ?: error("loadTopPageSeparated pagePositionHashMap position null:$i")
+                    pagePositionMap[i] = position + resultList.size
                 }
-                viewModelScope.launch {
-                    listener.onRangeInsertedSync(offset, resultList.size) }
-            })
+                galleryBlockList.addAll(offset, resultList)
+            }
+            viewModelScope.launch {
+                listener.onRangeInsertedSync(offset, resultList.size)
+            }
+        })
     }
 
     private fun loadBottomPage() {
@@ -181,13 +179,13 @@ class GalleryListViewModel @Inject constructor(
 
         val displayPage = bPage++
         loadPage(displayPage, callback = { resultList ->
-            val galleryArrayListSize: Int = galleryBlockList.size
             synchronized(pagePositionMap) {
-                pagePositionMap[displayPage] = galleryArrayListSize
+                pagePositionMap[displayPage] = galleryBlockList.size
                 galleryBlockList.addAll(resultList)
             }
             viewModelScope.launch {
-                listener.onRangeInsertedSync(galleryArrayListSize, resultList.size) }
+                listener.onRangeInsertedSync(galleryBlockList.size, resultList.size)
+            }
         })
     }
 
@@ -288,7 +286,6 @@ class GalleryListViewModel @Inject constructor(
     }
 
     fun getGalleryBlockList(): List<GalleryBlock> = galleryBlockList
-    fun getGalleryIdPageMap(): Map<Int, Int> = galleryIdPageMap
     fun getPagePositionMap(): Map<Int, Int> = pagePositionMap
     fun getBPage(): Int = bPage
     fun getTPage(): Int = tPage
