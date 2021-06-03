@@ -34,7 +34,7 @@ import kotlin.collections.ArrayList
 class GalleryListViewModel @Inject constructor(
     private val galleryBlockUseCase: GalleryBlockUseCase,
     private val searchUseCase: SearchUseCase,
-    private val application: Application,
+    private var application: Application?,
     @Named("useLanguageMSF") private val useLanguageMSF: MutableStateFlow<String>,
 ) : ViewModel() {
 
@@ -75,9 +75,10 @@ class GalleryListViewModel @Inject constructor(
         try {
             val id = query.toInt()
             val galleryBlockList: MutableList<GalleryBlock> = java.util.ArrayList()
-            galleryBlockList.add(getSplitter(application.resources.getString(R.string.gallery)))
+            galleryBlockList.add(getSplitter(application!!.resources.getString(R.string.gallery)))
             galleryBlockList.add(GalleryBlock(id, GalleryBlockType.LOADING, "", Date(0), mapOf(), "", LinkedList()))
-            galleryBlockList.add(getSplitter(application.resources.getString(R.string.search_word)))
+            galleryBlockList.add(getSplitter(application!!.resources.getString(R.string.search_word)))
+            application = null
             galleryIdPageMap[0] = 1
             galleryIdPageMap[id] = 1
             offset = 3

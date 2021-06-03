@@ -13,7 +13,7 @@ class GalleryBlockUseCase @Inject constructor(
     private val galleryNumberRepository: GalleryNumberRepository,
 ) {
 
-    fun getGalleryNumberListByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryIds =
+    suspend fun getGalleryNumberListByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryIds =
         galleryNumberRepository.getNumbersByPage(loadMode, query, language, page, doLoadLength)
 
     fun getGalleryBlock(id: Int, save: Boolean=true, skipDB: Boolean=false): SharedFlow<GalleryBlock> =

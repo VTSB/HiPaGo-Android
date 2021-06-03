@@ -5,7 +5,7 @@ import com.vtsb.hipago.domain.entity.NumberLoadMode
 
 interface GalleryNumberRepository {
 
-    fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryIds
+    suspend fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryIds
 
     fun clearBuffer(query: String, language: String)
 

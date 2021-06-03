@@ -290,7 +290,6 @@ class SearchJs @Inject constructor(
         return suggestions.toArray(arrayOfNulls<PojoSuggestion>(suggestions.size))
     }
 
-    @Throws(IOException::class)
     fun get_galleryids_from_data(data: Data?): ArrayList<Int> {
         if (data == null) {
             return ArrayList()
@@ -331,7 +330,6 @@ class SearchJs @Inject constructor(
         return galleryids
     }
 
-    @Throws(IOException::class, NoSuchAlgorithmException::class)
     fun get_suggestions_for_query(query: String, serial: Int): GetSuggestionForQuery {
         // todo : add other type splitter
         val newQuery = query.replace("_", " ")
@@ -353,7 +351,6 @@ class SearchJs @Inject constructor(
         return GetSuggestionForQuery(get_suggestions_from_data(field, data), serial)
     }
 
-    @Throws(IOException::class)
     fun get_galleryids_from_nozomi(area: String?, tag: String, language: String): ArrayList<Int> {
         //String nozomi_address = "//" + SearchlibJs.domain + "/" + SearchlibJs.compressed_nozomi_prefix + "/" + tag + "-" + language + CommonJs.nozomiextension;
         var nozomi_address = tag + "-" + language + commonJs.nozomiextension
@@ -368,12 +365,10 @@ class SearchJs @Inject constructor(
         return responseBodyConverter.toIntegerArrayListSafe(responseBody)
     }
 
-    @Throws(IOException::class, NoSuchAlgorithmException::class)
     fun get_galleryids_for_query(query: String): ArrayList<Int> {
         return get_galleryids_for_query(query, "all")
     }
 
-    @Throws(IOException::class, NoSuchAlgorithmException::class)
     fun get_galleryids_for_query(query: String, language_: String): ArrayList<Int> {
         if (query.contains(":")) {
             val sides = query.split(regex_get_galleryids_for_query).toTypedArray()
