@@ -5,9 +5,8 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import com.vtsb.hipago.data.datasource.local.entity.TagData
 import com.vtsb.hipago.data.datasource.local.entity.TagDataLocal
 import com.vtsb.hipago.data.datasource.local.entity.TagDataTransform
-import com.vtsb.hipago.data.datasource.local.entity.pojo.SuggestionLocal
-import com.vtsb.hipago.data.datasource.local.entity.pojo.SuggestionOriginal
 import com.vtsb.hipago.data.datasource.local.entity.relation.LocalTagData
+import com.vtsb.hipago.domain.entity.Suggestion
 import com.vtsb.hipago.domain.entity.TagType
 
 @Dao
@@ -28,8 +27,7 @@ abstract class TagDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract fun insertLocalTags(tagDataLocalList: List<TagDataLocal>)
 
-
-    fun updateEnglishTag(tagData: TagData) {
+    private fun updateEnglishTag(tagData: TagData) {
         updateEnglishTag(tagData.type, tagData.name, tagData.amount)
     }
 
@@ -44,16 +42,6 @@ abstract class TagDao {
     open fun upsertEnglishTag(tagData: TagData) {
         if (insertEnglishTag(tagData) == -1L) {
             updateEnglishTag(tagData)
-        }
-    }
-
-    @Transaction
-    open fun upsertEnglishTags(tagDataList: List<TagData>) {
-        val insertResult = insertEnglishTags(tagDataList)
-        for (i in tagDataList.indices) {
-            if (insertResult[i] == -1L) {
-                updateEnglishTag(tagDataList[i])
-            }
         }
     }
 
@@ -74,9 +62,9 @@ abstract class TagDao {
     abstract fun getLocalTag(tagType: TagType, englishTag: String): String
 
     @RawQuery(observedEntities = [TagDataLocal::class, TagData::class])
-    abstract fun searchLocal(query: SupportSQLiteQuery): List<SuggestionLocal>
+    abstract fun searchLocal(query: SupportSQLiteQuery): List<Suggestion>
 
     @RawQuery(observedEntities = [TagData::class])
-    abstract fun searchEnglish(query: SupportSQLiteQuery): List<SuggestionOriginal>
+    abstract fun searchEnglish(query: SupportSQLiteQuery): List<Suggestion>
 
 }

@@ -8,6 +8,7 @@ import com.vtsb.hipago.domain.repository.GalleryNumberRepository
 import com.vtsb.hipago.util.Constants.PAGE_SIZE
 import com.vtsb.hipago.util.converter.QueryConverter
 import com.vtsb.hipago.util.converter.TagConverter
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,15 +27,14 @@ class GalleryNumberRepositoryImpl @Inject constructor(
             NumberLoadMode.RECENTLY_WATCHED.otherName-> Pair(NumberLoadMode.RECENTLY_WATCHED, trimQuery)
             ""-> Pair(NumberLoadMode.NEW, "index")
             "index", "popular"-> Pair(NumberLoadMode.NEW, trimQuery)
-            else-> {
-                if (trimQuery.contains(queryConverter.getChar()) || !trimQuery.contains(':'))
-                    Pair(NumberLoadMode.SEARCH, query)
-                else
-                    Pair(NumberLoadMode.NEW, queryConverter.replace(tagConverter.toOriginalQuery(trimQuery)))
-            }
+            else-> Pair(
+                (if (trimQuery.contains(queryConverter.getChar()) || !trimQuery.contains(':'))
+                    NumberLoadMode.SEARCH
+                else NumberLoadMode.NEW)
+            , tagConverter.toOriginalQuery(trimQuery))
         }
 
-    override fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryIds {
+    override suspend fun getNumbersByPage(loadMode: NumberLoadMode, query: String, language:String, page: Int, doLoadLength: Boolean): GalleryIds {
         val from = (page * PAGE_SIZE)
         val to = from + PAGE_SIZE
 

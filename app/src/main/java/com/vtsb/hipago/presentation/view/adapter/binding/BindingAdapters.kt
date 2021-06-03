@@ -10,6 +10,7 @@ import com.vtsb.hipago.presentation.view.converter.ListConverter
 @BindingAdapter("bindThumbnail")
 fun bindThumbnail(view: ImageView, url: String) {
     if (url.isEmpty()) return
+    if (true) return
     Glide.with(view)
         .load("https:$url")
         .into(view)
@@ -17,6 +18,7 @@ fun bindThumbnail(view: ImageView, url: String) {
 
 @BindingAdapter("bindBigThumbnail")
 fun bindBigThumbnail(view: ImageView, url: String) {
+    if (true) return
     Glide.with(view.context)
         .load("https:$url")
         .placeholder(R.drawable.ic_baseline_hourglass_full_24).into(view)

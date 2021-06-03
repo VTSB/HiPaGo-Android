@@ -1,15 +1,13 @@
 package com.vtsb.hipago.data.mapper
 
+import android.util.Log
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.vtsb.hipago.data.datasource.local.dao.TagDao
-import com.vtsb.hipago.data.datasource.local.entity.pojo.SuggestionLocal
-import com.vtsb.hipago.data.datasource.local.entity.pojo.SuggestionOriginal
 import com.vtsb.hipago.data.datasource.remote.service.converter.KoreanQueryConverter
 import com.vtsb.hipago.domain.entity.Suggestion
 import com.vtsb.hipago.domain.entity.TagType
 import com.vtsb.hipago.util.Constants.SEARCH_LIMIT
 import com.vtsb.hipago.util.converter.TagConverter
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,8 +18,8 @@ class TagDaoMapper @Inject constructor(
     private val tagConverter: TagConverter,
 ) {
 
-    private fun getFromOriginal(text: String): List<Suggestion> {
-        var query = "SELECT `tag_data`.`name`, `tag_data`.`amount`, `tag_data`.`type` FROM `tag_data` \n"
+    fun getFromOriginal(text: String): List<Suggestion> {
+        var query = "SELECT `tag_data`.`name` tag, `tag_data`.`type` tagType, `tag_data`.`amount` FROM `tag_data` \n"
         if (text.isNotEmpty()) {
             if (text.indexOf(':') != -1) {
                 val args = text.split(":").toTypedArray()
@@ -38,24 +36,14 @@ class TagDaoMapper @Inject constructor(
         query += "	ORDER BY `tag_data`.`amount` DESC LIMIT $SEARCH_LIMIT;"
 
         val simpleSQLiteQuery = SimpleSQLiteQuery(query)
-        val suggestionOriginalList: List<SuggestionOriginal> = tagDao.searchEnglish(simpleSQLiteQuery)
-
-        val suggestionList: MutableList<Suggestion> = LinkedList()
-        for (suggestionOriginal in suggestionOriginalList) {
-            suggestionList.add(
-                Suggestion(
-                    suggestionOriginal.name,
-                    suggestionOriginal.type,
-                    suggestionOriginal.amount.toInt()))
-        }
-        return ArrayList(suggestionList)
+        return tagDao.searchEnglish(simpleSQLiteQuery)
     }
 
-    private fun getSuggestionArrayListFromLocal(text: String): ArrayList<Suggestion> {
+    fun getFromLocal(text: String): List<Suggestion> {
         // `tag_data_local`.`name`, `tag_data`.`amount`, `tag_type`.`type`
-        var query = """SELECT `tag_data_local`.`local`, `tag_data`.`amount`, `tag_data`.`type`
-	FROM `tag_data_local` 
-	INNER JOIN `tag_data` ON `tag_data_local`.`no`=`tag_data`.`no`
+        var query = """SELECT `tag_data_local`.`local` tag, `tag_data`.`type` tagType, `tag_data`.`amount`
+	FROM `tag_data_local`
+	INNER JOIN `tag_data` ON `tag_data_local`.`tagId`=`tag_data`.`tagId`
 """
         if (text.isNotEmpty()) {
             if (text.contains(':')) {
@@ -72,17 +60,9 @@ class TagDaoMapper @Inject constructor(
             }
         }
         query += "	ORDER BY `tag_data`.`amount` DESC LIMIT $SEARCH_LIMIT;"
+        Log.d("test", "query:$query")
         val simpleSQLiteQuery = SimpleSQLiteQuery(query)
-        val suggestionOriginalList: List<SuggestionLocal> = tagDao.searchLocal(simpleSQLiteQuery)
-        val suggestionList: MutableList<Suggestion> = LinkedList()
-        for (suggestionOriginal in suggestionOriginalList) {
-            suggestionList.add(
-                Suggestion(
-                    suggestionOriginal.local,
-                    suggestionOriginal.type,
-                    suggestionOriginal.amount.toInt()))
-        }
-        return ArrayList(suggestionList)
+        return tagDao.searchLocal(simpleSQLiteQuery)
     }
 
 

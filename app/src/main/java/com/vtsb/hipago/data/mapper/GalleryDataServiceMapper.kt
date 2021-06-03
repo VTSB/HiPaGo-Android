@@ -30,7 +30,7 @@ class GalleryDataServiceMapper @Inject constructor(
     @Named("stringTypeBiMap") private val stringType: BiMap<String, TagType>,
 ) {
 
-    fun doSearch(query: String, language: String): List<Int> =
+    suspend fun doSearch(query: String, language: String): List<Int> =
         resultJs.do_search(query, language)
 
     fun getSuggestionForQuery(query: String): List<Suggestion> {

@@ -1,7 +1,9 @@
 package com.vtsb.hipago.data.datasource.remote.service.original
 
+import android.util.Log
 import com.vtsb.hipago.domain.entity.TagType
 import com.vtsb.hipago.util.converter.QueryConverter
+import kotlinx.coroutines.*
 import java.io.IOException
 import java.security.NoSuchAlgorithmException
 import java.util.*
@@ -20,7 +22,7 @@ class ResultJs @Inject constructor(
 
     // edited version of do_search function
     @Throws(IOException::class, NoSuchAlgorithmException::class)
-    fun do_search(query_string: String, language: String): List<Int> {
+    suspend fun do_search(query_string: String, language: String): List<Int> {
         val positive_terms: MutableList<String> = ArrayList()
         val negative_terms: MutableList<String> = ArrayList()
         val terms: Array<String> =
@@ -41,36 +43,36 @@ class ResultJs @Inject constructor(
         if (searchLanguage == null) {
             searchLanguage = language
         }
-        var results: ArrayList<Int>
+        var results: List<Int>
 
-        // first result
-        results = if (positive_terms.isEmpty()) {
-            searchJs.get_galleryids_from_nozomi(null, "index", "all")
-        } else {
-            val term = positive_terms.removeAt(0)
-            searchJs.get_galleryids_for_query(term)
+        val firstResultDeferred: Deferred<List<Int>>
+        val positiveTermDeferredList: MutableList<Deferred<List<Int>>> = ArrayList(positive_terms.size)
+        val negativeTermDeferredList: MutableList<Deferred<List<Int>>> = ArrayList(negative_terms.size)
+
+        coroutineScope {
+            firstResultDeferred = if (positive_terms.isEmpty()) {
+                async { searchJs.get_galleryids_from_nozomi(null, "index", "all") }
+            } else {
+                val term = positive_terms.removeAt(0)
+                async { searchJs.get_galleryids_for_query(term) }
+            }
+
+            for (term in positive_terms) {
+                positiveTermDeferredList.add( async { searchJs.get_galleryids_for_query(term, searchLanguage) } )
+            }
+            for (term in negative_terms) {
+                negativeTermDeferredList.add( async { searchJs.get_galleryids_for_query(term, searchLanguage) } )
+            }
         }
 
-        // positive results
-        for (term in positive_terms) {
-            val new_results_set: Set<Int> = HashSet(searchJs.get_galleryids_for_query(term, searchLanguage))
-            val resultSet = ArrayList<Int>()
-            for (no in results) {
-                if (new_results_set.contains(no)) resultSet.add(no)
-            }
-            results = resultSet
+        results = firstResultDeferred.await()
+        for (deferred in positiveTermDeferredList) {
+            val newResultSet: Set<Int> = HashSet(deferred.await())
+            results = results.filter { newResultSet.contains(it) }
         }
-
-        // negative results
-        for (term in negative_terms) {
-            val new_results_set: Set<Int> = HashSet(searchJs.get_galleryids_for_query(term, searchLanguage))
-
-            // https://stackoverflow.com/questions/1196586/calling-remove-in-foreach-loop-in-java
-            val it = results.iterator()
-            while (it.hasNext()) {
-                val no = it.next()
-                if (new_results_set.contains(no)) it.remove()
-            }
+        for (deferred in negativeTermDeferredList) {
+            val newResultSet: Set<Int> = HashSet(deferred.await())
+            results = results.filterNot { newResultSet.contains(it) }
         }
         return results
     }
