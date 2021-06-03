@@ -63,7 +63,7 @@ class ResponseBodyConverter @Inject constructor() {
                 private var top = 0
                 private val buffer = ByteArray(4)
                 override fun call(length: Int, byteArray: ByteArray) {
-                    for (i in 0..length) {
+                    for (i in 0 until length) {
                         buffer[top] = byteArray[i]
                         if (++top == 4) {
                             val view = DataView(buffer)

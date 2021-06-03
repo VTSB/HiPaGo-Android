@@ -45,6 +45,7 @@ class GalleryListViewModel @Inject constructor(
     private lateinit var listener: RecyclerViewAdapter.Listener
     private lateinit var loadMode: NumberLoadMode
     private lateinit var query: String
+    private lateinit var searchQuery: String
     private var language: String = useLanguageMSF.value
 
     private var tPage = 0
@@ -64,7 +65,6 @@ class GalleryListViewModel @Inject constructor(
     val searchResultGetter = object: SearchCursorAdapter.SearchResultGetter {
             override fun getSuggestions(query: String): List<Suggestion> =
                 searchUseCase.getSuggestions(query)}
-
 
     // call only once
     fun init(listener: RecyclerViewAdapter.Listener) {
@@ -92,10 +92,11 @@ class GalleryListViewModel @Inject constructor(
     }
 
     fun setQuery(query: String) {
-        Log.d("test", "setQuery $query")
         val result = galleryBlockUseCase.getLoadModeFromQuery(query)
         this.loadMode = result.first
-        this.query = result.second
+        this.searchQuery = result.second
+        this.query = query
+        Log.d("test", "setQuery ${result.first}, ${result.second}, $query")
     }
 
     private fun getSplitter(title: String): GalleryBlock =
@@ -197,7 +198,7 @@ class GalleryListViewModel @Inject constructor(
                 val loadPage = displayPage - 1;
                 val galleryNumber = galleryBlockUseCase.getGalleryNumberListByPage(
                     loadMode,
-                    query,
+                    searchQuery,
                     language,
                     loadPage,
                     contentRange == -1)
@@ -206,7 +207,6 @@ class GalleryListViewModel @Inject constructor(
 
                 // todo: apply filter
                 // bla bla~~
-
 
                 viewModelScope.launch {
                     if (loadStatus.value == 0) loadStatus.value = 1

@@ -61,7 +61,6 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
     private lateinit var navigationView: NavigationView
 
     private lateinit var startScroller: SmoothScroller
-    private lateinit var query: String
 
     private var colorPrimary by Delegates.notNull<Int>()
     private var loadModeItem: NavigationMenuItemView? = null
@@ -70,7 +69,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
         val galleryListFragmentArgs: GalleryListFragmentArgs = GalleryListFragmentArgs.fromBundle(requireArguments())
-        query = galleryListFragmentArgs.query
+        val query = galleryListFragmentArgs.query
         viewModel.setQuery(query)
 
         adapter = GalleryListAdapter(viewModel.getGalleryBlockList())
@@ -287,7 +286,7 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
 
         super.onCreateOptionsMenu(menu, inflater)
 
-        searchView.setQuery(query, false)
+        searchView.setQuery(viewModel.getQuery(), false)
         viewModel.init(adapter.listener)
     }
 
