@@ -259,14 +259,16 @@ class GalleryListFragment : NavigationView.OnNavigationItemSelectedListener, Fra
                 val cursor = searchView.suggestionsAdapter.cursor
                 cursor.moveToPosition(position)
                 val tag = cursor.getString(1)
-                val before = cursor.getString(4)
+                val tagTypeStr = cursor.getString(2)
+
                 val nowQuery = searchView.query.toString()
                 val splitter: Char = queryConverter.getChar()
                 val adder = if (splitter == ' ') " " else "$splitter "
+
                 val transformedTag: String = queryConverter.transformNotSplitAble(tag)
                 val idx = nowQuery.lastIndexOf(splitter)
                 var newQuery = if (idx == -1) "" else nowQuery.substring(0, idx) + adder
-                newQuery += if (before == null) "$transformedTag:" else "$before:$transformedTag$adder"
+                newQuery += if (tagTypeStr == TagType.BEFORE.otherName) "$transformedTag:" else "$tagTypeStr:$transformedTag$adder"
                 searchView.setQuery(newQuery, false)
                 return true
             }
