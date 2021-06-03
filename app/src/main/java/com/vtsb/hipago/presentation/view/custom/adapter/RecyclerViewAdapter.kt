@@ -2,7 +2,7 @@ package com.vtsb.hipago.presentation.view.custom.adapter
 
 import androidx.recyclerview.widget.RecyclerView
 
-abstract class RecyclerViewAdapter<T : RecyclerView.ViewHolder?> : RecyclerView.Adapter<T>() {
+abstract class RecyclerViewAdapter<T : RecyclerView.ViewHolder> : RecyclerView.Adapter<T>() {
 
     val listener: Listener = object: Listener {
         override fun onItemChangedSync(position: Int) {
