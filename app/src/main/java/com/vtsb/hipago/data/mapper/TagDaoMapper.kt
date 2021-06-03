@@ -20,7 +20,7 @@ class TagDaoMapper @Inject constructor(
     private val tagConverter: TagConverter,
 ) {
 
-    private fun getFromOriginal(text: String): List<Suggestion> {
+    fun getFromOriginal(text: String): List<Suggestion> {
         var query = "SELECT `tag_data`.`name`, `tag_data`.`amount`, `tag_data`.`type` FROM `tag_data` \n"
         if (text.isNotEmpty()) {
             if (text.indexOf(':') != -1) {
@@ -51,11 +51,11 @@ class TagDaoMapper @Inject constructor(
         return ArrayList(suggestionList)
     }
 
-    private fun getSuggestionArrayListFromLocal(text: String): ArrayList<Suggestion> {
+    fun getFromLocal(text: String): ArrayList<Suggestion> {
         // `tag_data_local`.`name`, `tag_data`.`amount`, `tag_type`.`type`
         var query = """SELECT `tag_data_local`.`local`, `tag_data`.`amount`, `tag_data`.`type`
-	FROM `tag_data_local` 
-	INNER JOIN `tag_data` ON `tag_data_local`.`no`=`tag_data`.`no`
+	FROM `tag_data_local`
+	INNER JOIN `tag_data` ON `tag_data_local`.`tagId`=`tag_data`.`tagId`
 """
         if (text.isNotEmpty()) {
             if (text.contains(':')) {
@@ -80,7 +80,8 @@ class TagDaoMapper @Inject constructor(
                 Suggestion(
                     suggestionOriginal.local,
                     suggestionOriginal.type,
-                    suggestionOriginal.amount.toInt()))
+                    suggestionOriginal.amount
+                ))
         }
         return ArrayList(suggestionList)
     }

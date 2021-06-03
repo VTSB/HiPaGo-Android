@@ -115,7 +115,7 @@ class GalleryBlockDaoMapper @Inject constructor(
             tagId = galleryBlockDao.getTagNum(newTagType, original)
 
             if (tagId == null) {
-                val tagData = TagData(null, newTagType, original, 1)
+                val tagData = TagData(null, newTagType, original, 0)
                 tagId = galleryBlockDao.insertEnglishTag(tagData)
                 if (tagId == null) {
                     Log.e(this.javaClass.name, "number insert fail:$newTagType, $tag")
