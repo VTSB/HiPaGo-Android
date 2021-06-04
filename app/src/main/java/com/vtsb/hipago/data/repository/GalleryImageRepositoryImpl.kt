@@ -44,6 +44,7 @@ class GalleryImageRepositoryImpl @Inject constructor(
             withContext(Dispatchers.IO) {
                 try {
                     val result = galleryDataServiceMapper.getGalleryImages(id)
+                    dataBuffer[id] = result
                     emit(result)
                 } catch (t: Throwable) {
                     error(t)
