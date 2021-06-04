@@ -2,17 +2,17 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/mr_view_type"
+    <item android:id="@+id/view_type"
         android:title="@string/view_type"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/mr_favorite"
+    <item android:id="@+id/favorite"
         android:icon="@drawable/ic_baseline_star_border_24"
         android:title="@string/favorite"
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/mr_page_indicator"
+        android:id="@+id/page_indicator"
         android:title="@string/indicator"
         app:showAsAction="always|withText" />
 
