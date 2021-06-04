@@ -8,9 +8,12 @@ import com.vtsb.hipago.util.helper.FileHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,20 +25,34 @@ class GalleryImageRepositoryImpl @Inject constructor(
     private val commonJs: CommonJs,
 ) : GalleryImageRepository {
 
-    private val galleryImageBuffer: MutableMap<Int, SharedFlow<GalleryImages>> = ConcurrentHashMap()
+    private val flowBuffer: MutableMap<Int, Flow<GalleryImages>> = ConcurrentHashMap()
+    private val dataBuffer: MutableMap<Int, GalleryImages> = ConcurrentHashMap()
 
-    override fun loadList(id: Int): SharedFlow<GalleryImages> {
-        val bufferedFlow = galleryImageBuffer[id]
+    override fun loadList(id: Int): Flow<GalleryImages> {
+
+        val bufferedData = dataBuffer[id]
+        if (bufferedData != null) {
+            return flowOf(bufferedData)
+        }
+
+        val bufferedFlow = flowBuffer[id]
         if (bufferedFlow != null) {
             return bufferedFlow
         }
 
-        val newFlow = MutableSharedFlow<GalleryImages>(1, 1, BufferOverflow.DROP_OLDEST)
-        galleryImageBuffer[id] = newFlow
-
-        CoroutineScope(Dispatchers.IO).launch {
-            newFlow.emit(galleryDataServiceMapper.getGalleryImages(id))
+        val newFlow = flow {
+            withContext(Dispatchers.IO) {
+                try {
+                    val result = galleryDataServiceMapper.getGalleryImages(id)
+                    emit(result)
+                } catch (t: Throwable) {
+                    error(t)
+                }
+            }
+            flowBuffer.remove(id)
         }
+        flowBuffer[id] = newFlow
+
         return newFlow
     }
 
